@@ -1,10 +1,6 @@
 import axios from "axios";
 
-// Docker 네트워크에서 Spring Boot 컨테이너 접근 (localhost❌)
-const API_URL =
-  typeof window === "undefined"
-    ? "http://springboot_container:8080" // 서버 사이드 (Docker 네트워크 내부)
-    : "http://localhost:8080"; // 클라이언트 사이드 (개발 환경)
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080"; // 기본값 설정
 
 export const api = axios.create({
   baseURL: API_URL,
