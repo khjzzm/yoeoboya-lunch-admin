@@ -36,9 +36,12 @@ jobs:
         with:
           node-version: 20
 
-      # 의존성 설치
-      - name: Install dependencies
-        run: npm ci
+      # package-lock.json 삭제 & 종속성 설치 (버전 충돌 방지)
+      - name: Clean install dependencies
+        run: |
+          rm -rf package-lock.json
+          npm install
+          npm ci
 
       # Next.js 빌드
       - name: Build Next.js
@@ -71,8 +74,7 @@ jobs:
             docker stop admin_container || true
             docker rm admin_container || true
             docker run -d --name admin_container --network yeoboya_lunch_network -p 3001:3001 ${{ secrets.DOCKER_USERNAME }}/yeoboya-lunch-admin:latest
-            docker system prune -f
-            
+            docker image prune -f
 
       - name: Remove Runner IP from Security Group   # 보안 그룹에서 런너 IP 제거
         if: always()   # 이전 단계 실패 여부와 관계없이 항상 실행
