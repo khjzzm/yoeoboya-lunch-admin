@@ -1,6 +1,9 @@
 services:
   admin:
-    build: .
+    build:
+      context: .
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
     image: yeoboya-lunch-admin:latest
     container_name: admin_container
     restart: unless-stopped
@@ -11,11 +14,11 @@ services:
       - PORT=3001
     ports:
       - "3001:3001"
-#    healthcheck:
-#      test: [ "CMD", "curl", "-f", "http://localhost:3001" ]
-#      interval: 10s
-#      retries: 5
-#      timeout: 5s
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "-H", "Cache-Control: no-cache", "http://localhost:3001" ]
+      interval: 10s
+      retries: 5
+      timeout: 5s
     deploy:
       resources:
         limits:
