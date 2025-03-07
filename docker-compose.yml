@@ -1,34 +1,31 @@
 services:
   admin:
     build:
-      context: .
-      args:
-        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
-    image: yeoboya-lunch-admin:latest
-    container_name: admin_container
-    restart: unless-stopped
+      context: .  # 현재 디렉토리에서 Dockerfile을 사용해 빌드
+    image: yeoboya-lunch-admin:latest  # 생성될 이미지 이름
+    container_name: admin_container  # 컨테이너 이름 지정
+    restart: unless-stopped  # 수동으로 멈출 때까지 자동 재시작
     networks:
-      - yeoboya_lunch_network
-    environment:
-      - HOST=0.0.0.0
-      - PORT=3001
+      - yeoboya_lunch_network  # 네트워크에 연결 (다른 서비스와 통신 가능)
+    env_file:
+      - .env  # 환경 변수 파일 불러오기
     ports:
-      - "3001:3001"
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "-H", "Cache-Control: no-cache", "http://localhost:3001" ]
+      - "3001:3001"  # 호스트와 컨테이너 포트 매핑
+    healthcheck:  # 컨테이너 상태 확인 (헬스체크)
+      test: [ "CMD", "curl", "-f", "http://localhost:3001/api/health" ]
       interval: 10s
       retries: 5
       timeout: 5s
     deploy:
       resources:
         limits:
-          cpus: "0.5"
-          memory: "512MB"
+          cpus: "0.5"  # 최대 0.5개의 CPU 코어 사용
+          memory: "512MB"  # 최대 512MB RAM 사용
 
 networks:
   yeoboya_lunch_network:
     name: yeoboya_lunch_network
-    external: true
+    external: true  # 기존 네트워크 사용
 
 volumes:
   mysql_data:

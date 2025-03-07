@@ -1,38 +1,31 @@
-# ✅ Next.js 15 지원하는 공식 이미지 사용
+# Next.js 15 지원하는 공식 이미지 사용
 FROM node:20-alpine AS builder
 
 # 작업 디렉토리 설정
 WORKDIR /app
 
-# package.json과 lock 파일 복사
+# package.json과 lock 파일 복사 (의존성 캐싱 최적화)
 COPY package.json package-lock.json* pnpm-lock.yaml* yarn.lock* ./
 
-# 의존성 설치
+# 의존성 설치 (캐싱 활용하여 빌드 속도 향상)
 RUN npm install --frozen-lockfile
 
-# 앱 코드 복사
+# Next.js 앱 코드 복사
 COPY . .
 
-# 환경 변수 빌드 시점에 설정
-ARG NEXT_PUBLIC_API_URL
-ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
-
-# Next.js 빌드
+# Next.js 빌드 실행
 RUN npm run build
 
-# 실행 단계 (작은 이미지로)
+# 실행 단계 (경량화된 이미지 사용)
 FROM node:20-alpine
 
 WORKDIR /app
 
-# 빌드된 파일 복사
+# 빌드된 파일 복사 (필요한 파일만 복사하여 용량 최적화)
 COPY --from=builder /app/package.json .
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 
-# 포트 노출
-EXPOSE 3001
-
-# Next.js 실행
-CMD ["npm", "run", "start"]
+# 환경 변수를 런타임에서 적용 (ENTRYPOINT 활용)
+ENTRYPOINT ["sh", "-c", "NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL npm run start"]
