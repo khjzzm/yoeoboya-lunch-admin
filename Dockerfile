@@ -27,5 +27,6 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 
-# 런타임 환경 변수 적용 (빌드된 코드에서 API URL 변경 가능)
-ENTRYPOINT ["sh", "-c", "NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL npm run start -p 3001"]
+# 환경 변수를 런타임에서 적용 (ENTRYPOINT 활용)
+ENTRYPOINT ["sh", "-c", "NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL npm run start"]
+EXPOSE 3001
