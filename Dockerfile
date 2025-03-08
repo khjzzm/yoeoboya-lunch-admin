@@ -28,5 +28,5 @@ COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 
 # 환경 변수를 런타임에서 적용 (ENTRYPOINT 활용)
-ENTRYPOINT ["sh", "-c", "API_URL=$API_URL npm run start"]
+ENTRYPOINT ["sh", "-c", "NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL npm run start"]
 EXPOSE 3001
