@@ -8,9 +8,7 @@ services:
     networks:
       - yeoboya_lunch_network  # 네트워크에 연결 (다른 서비스와 통신 가능)
     env_file:
-      - .env  # 환경 변수 파일 불러오기
-    environment:
-      - API_URL=${API_URL}
+      - .env
     ports:
       - "3001:3001"  # 호스트와 컨테이너 포트 매핑
     healthcheck:  # 컨테이너 상태 확인 (헬스체크)
