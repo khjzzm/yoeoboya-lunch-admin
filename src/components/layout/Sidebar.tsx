@@ -39,6 +39,11 @@ export default function Sidebar() {
           label: "리소스",
           onClick: () => router.push("/security/resource"),
         },
+        {
+          key: "token",
+          label: "토큰",
+          onClick: () => router.push("/security/resource/token"),
+        },
       ],
     },
     {
