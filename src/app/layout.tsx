@@ -1,7 +1,7 @@
 import Providers from "./providers";
 import { PublicEnvScript } from "next-runtime-env";
 import React from "react";
-import AppLayout from "@/components/layout/Layout";
+import LayoutWrapper from "@/components/layout/LayoutWrapper";
 
 export const metadata = {
   title: "여보야 점심시간",
@@ -16,7 +16,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </head>
     <body>
     <Providers>
-      <AppLayout>{children}</AppLayout>
+      <LayoutWrapper>{children}</LayoutWrapper>
     </Providers>
     </body>
     </html>
