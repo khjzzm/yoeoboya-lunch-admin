@@ -17,12 +17,12 @@ export function useFetchTokenIgnoreUrls() {
     queryKey: ["fetchTokenIgnoreUrls"],
     queryFn: async () => {
       const {data} = await api.get("/resource/token-ignore-url");
-      return data?.data ?? []; // ✅ 데이터가 없을 경우 빈 배열 반환
+      return data?.data ?? []; // 데이터가 없을 경우 빈 배열 반환
     },
   });
 }
 
-// ✅ 토큰 무시 URL 추가 및 수정
+// 토큰 무시 URL 추가 및 수정
 export function useUpdateTokenIgnoreUrl() {
   const queryClient = useQueryClient();
 
@@ -39,10 +39,10 @@ export function useUpdateTokenIgnoreUrl() {
 
 
 /**
- * ✅ 토큰 무시 URL 삭제 훅
+ * 토큰 무시 URL 삭제 훅
  */
 export function useDeleteTokenIgnoreUrl() {
-  const queryClient = useQueryClient(); // ✅ 데이터 캐싱을 위한 QueryClient
+  const queryClient = useQueryClient(); // 데이터 캐싱을 위한 QueryClient
 
   return useMutation({
     mutationFn: async (id: number) => {
@@ -52,10 +52,32 @@ export function useDeleteTokenIgnoreUrl() {
     },
     onSuccess: () => {
       message.success("✅ 삭제 완료!");
-      queryClient.invalidateQueries({queryKey: ["fetchTokenIgnoreUrls"]}); // ✅ 데이터 다시 불러오기
+      queryClient.invalidateQueries({queryKey: ["fetchTokenIgnoreUrls"]}); // 데이터 다시 불러오기
     },
     onError: () => {
       message.error("🚨 삭제 중 오류 발생!");
+    },
+  });
+}
+
+/**
+ * 리소스에 역할 추가하는 훅
+ */
+export function useAddResourceRole() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (resourceData: { resourceId: number; role: string }) => {
+      const { data } = await api.post("/resource", resourceData);
+      if (data.code !== 200) throw new Error("리소스 역할 업데이트 실패");
+      return data;
+    },
+    onSuccess: () => {
+      message.success("✅ 리소스 역할이 업데이트되었습니다!");
+      queryClient.invalidateQueries({ queryKey: ["fetchResources"] }); // ✅ 최신 데이터 다시 불러오기
+    },
+    onError: () => {
+      message.error("🚨 리소스 역할 업데이트 중 오류 발생!");
     },
   });
 }
