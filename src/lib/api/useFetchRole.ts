@@ -14,7 +14,7 @@ export function useFetchRole() {
 }
 
 /** 권한 정보 수정 Hook */
-export function useUpdateRole() {
+export function useUpdateSecurityStatus() {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -28,6 +28,25 @@ export function useUpdateRole() {
     },
     onError: () => {
       message.error("권한 정보 변경에 실패했습니다.");
+    },
+  });
+}
+
+/** 역할 정보 수정 Hook */
+export function useUpdateRole() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (updateData: { loginId: string; role: string }) => {
+      const { data } = await api.post(`/role/authority-update`, updateData);
+      return data;
+    },
+    onSuccess: () => {
+      message.success("역할이 성공적으로 변경되었습니다.");
+      queryClient.invalidateQueries({ queryKey: ["fetchRole"] });
+    },
+    onError: () => {
+      message.error("역할 변경에 실패했습니다.");
     },
   });
 }

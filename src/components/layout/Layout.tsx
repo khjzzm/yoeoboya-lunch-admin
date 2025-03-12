@@ -2,7 +2,7 @@
 
 import { Layout } from "antd";
 import Sidebar from "./Sidebar";
-import AppHeader from "./Header"; // ✅ 올바르게 import
+import AppHeader from "./Header";
 
 const { Content } = Layout;
 

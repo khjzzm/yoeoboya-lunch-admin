@@ -1,7 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { useFetchResources, useAddResourceRole } from "@/lib/api/useFetchResources";
-import { Table, Spin, Tooltip, Select, Tag} from "antd";
+import { Table, Spin, Tooltip, Select, Tag, message } from "antd";
 import type { ColumnsType } from "antd/es/table";
 
 interface Resource {
@@ -15,23 +16,43 @@ interface Resource {
 }
 
 const roleOptions = [
-  { label: "관리자", value: "ROLE_ADMIN" },
+  { label: "어드민", value: "ROLE_ADMIN" },
   { label: "매니저", value: "ROLE_MANAGER" },
-  { label: "일반 사용자", value: "ROLE_USER" },
+  { label: "유저", value: "ROLE_USER" },
   { label: "게스트", value: "ROLE_GUEST" },
-  { label: "차단된 사용자", value: "ROLE_BLOCK" },
+  { label: "차단", value: "ROLE_BLOCK" },
 ];
 
 export default function ResourcesPage() {
   const { data, isLoading, error } = useFetchResources();
   const addResourceRole = useAddResourceRole(); // 리소스 역할 추가 훅
 
+  // 페이지 크기 상태 추가
+  const [pageSize, setPageSize] = useState(20);
+
+  // 선택된 역할 값을 저장하는 상태 (원래 값 복구용)
+  const [selectedRoles, setSelectedRoles] = useState<Record<number, string>>({});
+
   // 데이터가 undefined일 경우 대비하여 기본값 설정
   const resources: Resource[] = Array.isArray(data) ? data : [];
 
   // 권한 변경 함수
-  const handleRoleChange = (resourceId: number, newRole: string) => {
-    addResourceRole.mutate({ resourceId, role: newRole });
+  const handleRoleChange = async (resourceId: number, newRole: string) => {
+    // 이전 역할 값을 저장
+    const prevRole = selectedRoles[resourceId] || data?.find((item: Resource) => item.resourceId === resourceId)?.roleDesc;
+
+    // UI 즉시 반영
+    setSelectedRoles((prev) => ({ ...prev, [resourceId]: newRole }));
+
+    try {
+      await addResourceRole.mutateAsync({ resourceId, role: newRole });
+      message.success("권한이 성공적으로 변경되었습니다.");
+    } catch (error) {
+      console.log(error);
+      // 실패 시 원래 값으로 복구
+      setSelectedRoles((prev) => ({ ...prev, [resourceId]: prevRole }));
+      message.error("권한 변경 실패. 다시 시도하세요.");
+    }
   };
 
   // 테이블 컬럼 정의
@@ -47,7 +68,7 @@ export default function ResourcesPage() {
       dataIndex: "resourceName",
       key: "resourceName",
       sorter: (a, b) => a.resourceName.localeCompare(b.resourceName),
-      defaultSortOrder: "ascend", // 기본 정렬
+      defaultSortOrder: "ascend",
       render: (text, record) => (
         <Tooltip title={record.resourceDesc || "설명 없음"}>
           <span>{text}</span>
@@ -59,10 +80,9 @@ export default function ResourcesPage() {
       dataIndex: "httpMethod",
       key: "httpMethod",
       render: (text) => {
-        let color = "black"; // 기본값
-
+        let color = "black";
         if (text === "GET") color = "blue";
-        else if (text === "POST") color = "orange"
+        else if (text === "POST") color = "orange";
         else if (text === "DELETE") color = "red";
         else if (text === "PATCH") color = "green";
 
@@ -88,7 +108,7 @@ export default function ResourcesPage() {
       key: "roleDesc",
       render: (text, record) => (
         <Select
-          defaultValue={text || ""}
+          value={selectedRoles[record.resourceId] ?? text ?? ""}
           style={{ width: 150 }}
           options={roleOptions}
           onChange={(value) => handleRoleChange(record.resourceId, value)}
@@ -110,7 +130,15 @@ export default function ResourcesPage() {
           dataSource={resources}
           columns={columns}
           rowKey="resourceId"
-          pagination={{ pageSize: 20 }}
+          pagination={{
+            pageSize: pageSize,
+            showSizeChanger: true,
+            pageSizeOptions: [10, 20, 50, 100], //  올바른 숫자 배열로 설정
+            showTotal: (total, range) => `${range[0]}-${range[1]} / 총 ${total}개`,
+            onChange: (page, pageSize) => {
+              setPageSize(pageSize); // 선택한 페이지 크기로 상태 업데이트
+            },
+          }}
         />
       )}
     </div>

@@ -1,18 +1,15 @@
 "use client";
 
-import {useState} from "react";
-import {useLogin} from "@/lib/api/useLogin";
-import {Form, Input, Button, Card, Typography} from "antd";
+import { useLogin } from "@/lib/api/useLogin";
+import { Form, Input, Button, Card, Typography } from "antd";
 
-const {Title} = Typography;
+const { Title } = Typography;
 
 export default function LoginPage() {
-  const [loginId, setLoginId] = useState("");
-  const [password, setPassword] = useState("");
-  const loginMutation = useLogin(); // ✅ useLogin 훅 사용
+  const loginMutation = useLogin();
 
-  const handleLogin = () => {
-    loginMutation.mutate({loginId, password});
+  const handleLogin = (values: { loginId: string; password: string }) => {
+    loginMutation.mutate(values);
   };
 
   return (
@@ -28,20 +25,33 @@ export default function LoginPage() {
           </Title>
 
           <Form layout="vertical" onFinish={handleLogin}>
-            <Form.Item label="아이디" name="loginId" rules={[{required: true, message: "아이디를 입력하세요!"}]}>
-              <Input value={loginId} onChange={(e) => setLoginId(e.target.value)} placeholder="아이디 입력"/>
+            <Form.Item
+              label="아이디"
+              name="loginId"
+              rules={[{ required: true, message: "아이디를 입력하세요!" }]}
+            >
+              <Input placeholder="아이디 입력" />
             </Form.Item>
 
-            <Form.Item label="비밀번호" name="password" rules={[{required: true, message: "비밀번호를 입력하세요!"}]}>
-              <Input.Password value={password} onChange={(e) => setPassword(e.target.value)} placeholder="비밀번호 입력"/>
+            <Form.Item
+              label="비밀번호"
+              name="password"
+              rules={[{ required: true, message: "비밀번호를 입력하세요!" }]}
+            >
+              <Input.Password placeholder="비밀번호 입력" />
             </Form.Item>
 
-            <Button type="primary" htmlType="submit" className="w-full" loading={loginMutation.isPending}>
-              {loginMutation.isPending ? "로그인 중..." : "로그인"}
-            </Button>
+            <Form.Item>
+              <Button
+                type="primary"
+                htmlType="submit"
+                className="w-full"
+                loading={loginMutation.isPending}
+              >
+                {loginMutation.isPending ? "로그인 중..." : "로그인"}
+              </Button>
+            </Form.Item>
           </Form>
-
-
         </Card>
       </div>
     </div>

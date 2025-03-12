@@ -1,73 +1,84 @@
-import { useMutation } from "@tanstack/react-query";
-import { api } from "@/lib/utils/api";
-import { useRouter } from "next/navigation";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {api} from "@/lib/utils/api";
+import {useRouter} from "next/navigation";
+import {useAuthStore} from "@/store/useAuthStore";
+import {message} from "antd";
+import Cookies from "js-cookie";
+import {User} from "@/interfaces/auth";
 
+/** 로그인 Hook */
 export function useLogin() {
+  const setUser = useAuthStore((state) => state.setUser);
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (loginData: { loginId: string; password: string }) => {
-      const { data } = await api.post("/user/sign-in", loginData);
-
+      const {data} = await api.post("/user/sign-in", loginData);
       if (data?.code !== 200 || !data?.data?.accessToken || !data?.data?.refreshToken) {
-        throw new Error("로그인 실패");
+        throw new Error("로그인 실패: 응답 데이터 오류");
       }
 
-      return data.data;
+      const userData: User = {
+        loginId: data.data.subject,
+        accessToken: data.data.accessToken,
+        refreshToken: data.data.refreshToken,
+      };
+
+      return userData;
     },
-    onSuccess: (userData) => {
-      if (!userData || !userData.accessToken || !userData.refreshToken) {
-        alert("로그인 실패: 올바른 응답이 아닙니다.");
-        return;
+    onSuccess: async (userData) => {
+      Cookies.set("token", userData.accessToken, {path: "/"});
+      Cookies.set("refreshToken", userData.refreshToken, {path: "/"});
+
+      const {data: memberData} = await api.get(`/member/${userData.loginId}/summary`);
+      if (memberData?.data) {
+        userData = {
+          ...userData,
+          ...memberData.data
+        };
       }
+      setUser(userData);
 
-      document.cookie = `token=${userData.accessToken}; path=/;`;
-      document.cookie = `refreshToken=${userData.refreshToken}; path=/;`;
-
-      localStorage.setItem("accessToken", userData.accessToken);
-      localStorage.setItem("refreshToken", userData.refreshToken);
-
-      router.push("/"); // 로그인 후 대시보드 이동
+      message.success("로그인 성공! 🎉");
+      queryClient.invalidateQueries({queryKey: ["fetchMemberSummary", userData.loginId]});
+      router.push("/");
     },
     onError: () => {
-      alert("로그인 실패. 다시 시도하세요.");
+      message.error("로그인 실패. 다시 시도하세요.");
     },
   });
 }
 
+/** 로그아웃 Hook */
 export function useLogout() {
+  const {logout} = useAuthStore();
   const router = useRouter();
 
   return useMutation({
     mutationFn: async () => {
-      const refreshToken = document.cookie.split("; ").find((row) => row.startsWith("refreshToken="))?.split("=")[1];
-      const accessToken = document.cookie.split("; ").find((row) => row.startsWith("token="))?.split("=")[1];
+      const token = Cookies.get("token");
+      const refreshToken = Cookies.get("refreshToken");
 
-      console.log(accessToken)
-      console.log(refreshToken)
-
-      if (!accessToken || !refreshToken) {
+      if (!token || !refreshToken) {
         throw new Error("로그아웃 실패: 토큰이 없습니다.");
       }
 
       await api.post("/user/sign-out", {
-        accessToken,
-        refreshToken,
+        accessToken: token,
+        refreshToken: refreshToken,
       });
-
-      return;
     },
     onSuccess: () => {
-      // ✅ 로컬스토리지 및 쿠키에서 토큰 제거
-      localStorage.removeItem("token");
+      Cookies.remove("token");
+      Cookies.remove("refreshToken");
 
-      document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-      document.cookie = "refreshToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-
-      router.push("/login"); // ✅ 로그아웃 후 로그인 페이지로 이동
+      logout();
+      message.success("로그아웃 되었습니다.");
+      router.push("/login");
     },
     onError: () => {
-      alert("로그아웃 실패. 다시 시도하세요.");
+      message.error("로그아웃 실패. 다시 시도하세요.");
     },
   });
 }
