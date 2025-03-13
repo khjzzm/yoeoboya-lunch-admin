@@ -83,7 +83,6 @@ export function useLogout() {
   });
 }
 
-
 interface SignUpData {
   loginId: string;
   email: string;
@@ -91,6 +90,7 @@ interface SignUpData {
   password: string;
 }
 
+/** 회원가입 Hook */
 export function useSignUp() {
   const setUser = useAuthStore((state) => state.setUser);
   const router = useRouter();
@@ -101,7 +101,6 @@ export function useSignUp() {
       if (data?.code !== 201) {
         throw new Error("회원가입 실패: 응답 데이터 오류");
       }
-
       return signUpData;
     },
     onSuccess: async (signUpData) => {
@@ -117,7 +116,7 @@ export function useSignUp() {
           throw new Error("자동 로그인 실패: 응답 오류");
         }
 
-        const userData = {
+        let userData = {
           loginId: data.data.subject,
           accessToken: data.data.accessToken,
           refreshToken: data.data.refreshToken,
@@ -126,11 +125,12 @@ export function useSignUp() {
         Cookies.set("token", userData.accessToken, { path: "/" });
         Cookies.set("refreshToken", userData.refreshToken, { path: "/" });
 
-        const { data: memberData } = await api.get(`/member/${userData.loginId}/summary`);
+        const {data: memberData} = await api.get(`/member/${userData.loginId}/summary`);
         if (memberData?.data) {
-          userData.email = memberData.data.email;
-          userData.name = memberData.data.name;
-          userData.role = memberData.data.roleDesc;
+          userData = {
+            ...userData,
+            ...memberData.data
+          };
         }
 
         setUser(userData);
@@ -138,11 +138,13 @@ export function useSignUp() {
         message.success("자동 로그인 완료! 🎉");
         router.push("/");
       } catch (error) {
-        message.error("자동 로그인에 실패했습니다. 다시 로그인하세요.");
+        console.error("자동 로그인 중 오류 발생:", error);
+        throw new Error("자동 로그인 실패. 다시 로그인하세요.");
       }
     },
-    onError: () => {
-      message.error("회원가입 실패. 다시 시도하세요.");
+    onError: (error) => {
+      console.error("회원가입 또는 자동 로그인 실패:", error);
+      message.error(error.message || "회원가입 실패. 다시 시도하세요.");
     },
   });
 }

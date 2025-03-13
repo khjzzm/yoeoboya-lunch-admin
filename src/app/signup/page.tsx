@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useSignUp } from "@/lib/api/useLogin";
 import { Form, Input, Button, Card, Typography } from "antd";
 
@@ -12,17 +11,21 @@ export default function SignUpPage() {
 
   const handleSignUp = (values: { loginId: string; email: string; name: string; password: string }) => {
     signUpMutation.mutate(values, {
-      onError: (error: any) => {
-        if (error?.response?.data?.validation) {
-          const errors = error.response.data.validation.map((err: { field: string; message: string }) => ({
-            name: err.field,
-            errors: [err.message],
-          }));
-          form.setFields(errors);
+      onError: (error: unknown) => {
+        if (typeof error === "object" && error !== null && "response" in error) {
+          const axiosError = error as { response?: { data?: { validation?: { field: string; message: string }[] } } };
+
+          if (axiosError?.response?.data?.validation) {
+            const errors = axiosError.response.data.validation.map((err) => ({
+              name: err.field as string,
+              errors: [err.message as string],
+            }));
+            form.setFields(errors);
+          }
         }
       },
     });
-  };
+  };;
 
   return (
     <div className="flex flex-col h-screen items-center justify-center bg-gray-100">
