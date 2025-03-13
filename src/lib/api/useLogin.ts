@@ -82,3 +82,67 @@ export function useLogout() {
     },
   });
 }
+
+
+interface SignUpData {
+  loginId: string;
+  email: string;
+  name: string;
+  password: string;
+}
+
+export function useSignUp() {
+  const setUser = useAuthStore((state) => state.setUser);
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: async (signUpData: SignUpData) => {
+      const { data } = await api.post("/user/sign-up", signUpData);
+      if (data?.code !== 201) {
+        throw new Error("회원가입 실패: 응답 데이터 오류");
+      }
+
+      return signUpData;
+    },
+    onSuccess: async (signUpData) => {
+      message.success("회원가입 성공! 자동 로그인 중...");
+
+      try {
+        const { data } = await api.post("/user/sign-in", {
+          loginId: signUpData.loginId,
+          password: signUpData.password,
+        });
+
+        if (!data?.data?.accessToken || !data?.data?.refreshToken) {
+          throw new Error("자동 로그인 실패: 응답 오류");
+        }
+
+        const userData = {
+          loginId: data.data.subject,
+          accessToken: data.data.accessToken,
+          refreshToken: data.data.refreshToken,
+        };
+
+        Cookies.set("token", userData.accessToken, { path: "/" });
+        Cookies.set("refreshToken", userData.refreshToken, { path: "/" });
+
+        const { data: memberData } = await api.get(`/member/${userData.loginId}/summary`);
+        if (memberData?.data) {
+          userData.email = memberData.data.email;
+          userData.name = memberData.data.name;
+          userData.role = memberData.data.roleDesc;
+        }
+
+        setUser(userData);
+
+        message.success("자동 로그인 완료! 🎉");
+        router.push("/");
+      } catch (error) {
+        message.error("자동 로그인에 실패했습니다. 다시 로그인하세요.");
+      }
+    },
+    onError: () => {
+      message.error("회원가입 실패. 다시 시도하세요.");
+    },
+  });
+}

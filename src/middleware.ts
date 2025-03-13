@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 const protectedRoutes = ["/"];
 
 export function middleware(req: NextRequest) {
-  const token = req.cookies.get("token")?.value; // ✅ 쿠키에서 JWT 가져오기
+  const token = req.cookies.get("token")?.value;
   const { pathname } = req.nextUrl;
 
   console.log(`🚀 [Middleware] 현재 경로: ${pathname}`);
@@ -18,12 +18,12 @@ export function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
-  return NextResponse.next(); // ✅ 정상적인 요청은 그대로 진행
+  return NextResponse.next();
 }
 
 // `matcher`를 사용하여 특정 경로에서만 `middleware` 실행
 export const config = {
   matcher: [
-    "/((?!api|_next/static|_next/image|favicon.ico|login).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|login|signup).*)",
   ],
 };
