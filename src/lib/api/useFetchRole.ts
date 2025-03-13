@@ -19,7 +19,7 @@ export function useUpdateSecurityStatus() {
 
   return useMutation({
     mutationFn: async (updateData: { loginId: string; enabled: boolean; accountNonLocked: boolean }) => {
-      const { data } = await api.post(`/role/security-update`, updateData);
+      const { data } = await api.post(`/role/security`, updateData);
       return data;
     },
     onSuccess: () => {
@@ -38,7 +38,7 @@ export function useUpdateRole() {
 
   return useMutation({
     mutationFn: async (updateData: { loginId: string; role: string }) => {
-      const { data } = await api.post(`/role/authority-update`, updateData);
+      const { data } = await api.post(`/role/authority`, updateData);
       return data;
     },
     onSuccess: () => {
