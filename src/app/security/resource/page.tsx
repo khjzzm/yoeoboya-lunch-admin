@@ -112,6 +112,7 @@ export default function ResourcesPage() {
           style={{ width: 150 }}
           options={roleOptions}
           onChange={(value) => handleRoleChange(record.resourceId, value)}
+          disabled={record.resourceType === "ROLE"}
         />
       ),
       sorter: (a, b) => (a.roleDesc || "").localeCompare(b.roleDesc || ""),
