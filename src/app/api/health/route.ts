@@ -1,3 +1,5 @@
+import { NextResponse } from "next/server";
+
 export async function GET() {
-  return new Response("Healthy", { status: 200 });
+  return NextResponse.json({ message: "Hello from Yeoboya-lunch" });
 }
