@@ -83,6 +83,9 @@ export function useLogout() {
   });
 }
 
+
+
+/** 회원가입 Data and Hook */
 interface SignUpData {
   loginId: string;
   email: string;
@@ -90,7 +93,6 @@ interface SignUpData {
   password: string;
 }
 
-/** 회원가입 Hook */
 export function useSignUp() {
   const setUser = useAuthStore((state) => state.setUser);
   const router = useRouter();

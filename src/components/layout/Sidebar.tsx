@@ -1,80 +1,87 @@
 "use client";
 
-import { Layout, Menu } from "antd";
-import { HomeOutlined, SettingOutlined, UserOutlined, SafetyCertificateOutlined } from "@ant-design/icons";
-import { useRouter } from "next/navigation";
-import { usePathname } from "next/navigation"; // ✅ 현재 경로 가져오기
-import { useEffect, useState } from "react";
+import {Layout, Menu, Typography, Button} from "antd";
+import {
+  HomeOutlined,
+  SettingOutlined,
+  UserOutlined,
+  SafetyCertificateOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+} from "@ant-design/icons";
+import {useRouter} from "next/navigation";
+import {usePathname} from "next/navigation";
+import {useEffect, useState} from "react";
 
-const { Sider } = Layout;
+const {Sider} = Layout;
+const {Title} = Typography;
 
 export default function Sidebar() {
   const router = useRouter();
-  const pathname = usePathname(); // ✅ 현재 경로 가져오기
-  const [selectedKey, setSelectedKey] = useState<string>(""); // ✅ 클라이언트에서만 설정
+  const pathname = usePathname();
+  const [selectedKey, setSelectedKey] = useState<string>("");
+  const [collapsed, setCollapsed] = useState(false); // ✅ 사이드바 접기/펼치기 상태
 
   useEffect(() => {
-    setSelectedKey(pathname); // ✅ 클라이언트에서 selectedKey 설정
+    setSelectedKey(pathname);
   }, [pathname]);
 
-  // ✅ Menu items 배열
+  const toggleSidebar = () => {
+    setCollapsed(!collapsed);
+  };
+
   const menuItems = [
-    {
-      key: "/",
-      icon: <HomeOutlined />,
-      label: "홈",
-      onClick: () => router.push("/"),
-    },
-    {
-      key: "/member",
-      icon: <UserOutlined />,
-      label: "회원정보",
-      onClick: () => router.push("/member"),
-    },
+    {key: "/", icon: <HomeOutlined/>, label: "홈", onClick: () => router.push("/")},
+    {key: "/member", icon: <UserOutlined/>, label: "회원정보", onClick: () => router.push("/member")},
     {
       key: "authorization",
-      icon: <SafetyCertificateOutlined />,
+      icon: <SafetyCertificateOutlined/>,
       label: "보안관리",
       children: [
-        {
-          key: "/security/role/authorities",
-          label: "회원권한",
-          onClick: () => router.push("/security/role/authorities"),
-        },
-        {
-          key: "/security/resource",
-          label: "리소스",
-          onClick: () => router.push("/security/resource"),
-        },
-        {
-          key: "/security/resource/token",
-          label: "토큰",
-          onClick: () => router.push("/security/resource/token"),
-        },
+        {key: "/security/role/authorities", label: "회원권한", onClick: () => router.push("/security/role/authorities")},
+        {key: "/security/resource", label: "리소스", onClick: () => router.push("/security/resource")},
+        {key: "/security/resource/token", label: "토큰", onClick: () => router.push("/security/resource/token")},
       ],
     },
-    {
-      key: "/settings",
-      icon: <SettingOutlined />,
-      label: "설정",
-      onClick: () => router.push("/settings"),
-    },
+    {key: "/settings", icon: <SettingOutlined/>, label: "설정", onClick: () => router.push("/settings")},
   ];
 
   return (
-    <Sider collapsible style={{ background: "#001529" }}>
+    <Sider
+      collapsible
+      collapsed={collapsed}
+      onCollapse={setCollapsed}
+      className="bg-white shadow-md"
+      width={250}
+      trigger={null} // 기본 토글 버튼 제거 (커스텀 버튼 사용)
+    >
+      {/* 토글 버튼 */}
+      <div className={`flex items-center p-4 border-b ${collapsed ? "justify-center" : "justify-between"}`}>
+        {/* 펼쳐진 상태에서는 가운데 정렬된 타이틀 */}
+        {!collapsed && <Title level={4} style={{marginBottom: 0}} className="text-gray-800 text-center w-full">관리자 메뉴</Title>}
+
+        {/* 접혔을 때는 중앙에 아이콘 정렬 */}
+        <Button
+          type="text"
+          icon={collapsed ? <MenuUnfoldOutlined/> : <MenuFoldOutlined/>}
+          onClick={toggleSidebar}
+          className="text-gray-800"
+        />
+      </div>
+
+      {/* 메뉴 리스트 */}
       <Menu
-        theme="dark"
         mode="inline"
-        selectedKeys={selectedKey ? [selectedKey] : []} // ✅ 초기에는 빈 값, 이후 업데이트됨
+        selectedKeys={selectedKey ? [selectedKey] : []}
         defaultOpenKeys={["authorization"]}
-        items={menuItems.map(({ key, icon, label, children, onClick }) => ({
+        items={menuItems.map(({key, icon, label, children, onClick}) => ({
           key,
           icon,
-          label,
+          label: collapsed && !children ? undefined : label,
           children,
           onClick,
         }))}
+        className="bg-white text-gray-800"
       />
     </Sider>
   );

@@ -1,6 +1,11 @@
 "use client";
 
-import { UserOutlined, LogoutOutlined, SettingOutlined, ProfileOutlined } from "@ant-design/icons";
+import {
+  UserOutlined,
+  LogoutOutlined,
+  SettingOutlined,
+  ProfileOutlined,
+} from "@ant-design/icons";
 import { Layout, Avatar, Dropdown, MenuProps, Typography, Space } from "antd";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -35,21 +40,15 @@ export default function AppHeader() {
   ];
 
   return (
-    <Header
-      style={{
-        background: "#fff",
-        padding: "0 16px",
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-      }}
-    >
-      <h1 className="text-lg font-semibold">{pageTitle}</h1>
+    <Header className="bg-[#0d47a1] px-6 flex justify-between items-center shadow-md">
+      <Text className="text-white text-lg font-semibold">{pageTitle}</Text>
 
       <Dropdown menu={{ items: menuItems }} placement="bottomRight">
-        <Space>
-          <Avatar size="large" icon={<UserOutlined />} />
-          <Text strong>
+        <Space className="cursor-pointer">
+          <Avatar size="large" className="bg-white text-blue-500">
+            <UserOutlined />
+          </Avatar>
+          <Text strong className="text-white">
             {user?.name || user?.loginId}
           </Text>
         </Space>

@@ -55,13 +55,13 @@ export default function RoleAuthoritiesPage() {
 
   // 컬럼 정의 (ColumnsType 사용)
   const columns: ColumnsType<RoleData> = [
-    { title: "로그인 ID", dataIndex: "loginId", key: "loginId" },
-    { title: "이메일", dataIndex: "email", key: "email" },
-    { title: "이름", dataIndex: "name", key: "name" },
-    { title: "인증 제공자", dataIndex: "provider", key: "provider" },
+    { title: <div style={{ textAlign: "center" }}>로그인 ID</div>, dataIndex: "loginId", key: "loginId" },
+    { title: <div style={{ textAlign: "center" }}>이메일</div>, dataIndex: "email", key: "email" },
+    { title: <div style={{ textAlign: "center" }}>이름</div>, dataIndex: "name", key: "name" },
+    { title: <div style={{ textAlign: "center" }}>인증 제공자</div>, dataIndex: "provider", key: "provider" },
 
     {
-      title: "역할",
+      title: <div style={{ textAlign: "center" }}>역할</div>,
       dataIndex: "authority",
       key: "authority",
       render: (role, record) => (
@@ -75,7 +75,7 @@ export default function RoleAuthoritiesPage() {
     },
 
     {
-      title: "활성화 상태",
+      title: <div style={{ textAlign: "center" }}>활성화 상태</div>,
       dataIndex: "enabled",
       key: "enabled",
       render: (_, record) => (
@@ -88,7 +88,7 @@ export default function RoleAuthoritiesPage() {
     },
 
     {
-      title: "계정 상태",
+      title: <div style={{ textAlign: "center" }}>계정 상태</div>,
       dataIndex: "accountNonLocked",
       key: "accountNonLocked",
       render: (_, record) => (
@@ -110,9 +110,8 @@ export default function RoleAuthoritiesPage() {
   if (error) return <p>데이터를 불러오는 중 오류 발생 🚨</p>;
 
   return (
-    <div style={{ padding: 20 }}>
-      <h1 className="text-lg font-semibold">🔐 권한 정보</h1>
-
+    <div>
+      <h1 className="text-2xl font-bold text-gray-800 border-b pb-2 mb-4">🔐 회원 권한</h1>
       {/* 데이터 테이블 */}
       <Table
         dataSource={data?.data.list || []}

@@ -58,13 +58,13 @@ export default function ResourcesPage() {
   // 테이블 컬럼 정의
   const columns: ColumnsType<Resource> = [
     {
-      title: "ID",
+      title: <div style={{ textAlign: "center" }}>ID</div>,
       dataIndex: "resourceId",
       key: "resourceId",
       sorter: (a, b) => a.resourceId - b.resourceId,
     },
     {
-      title: "리소스 이름",
+      title: <div style={{ textAlign: "center" }}>리소스 이름</div>,
       dataIndex: "resourceName",
       key: "resourceName",
       sorter: (a, b) => a.resourceName.localeCompare(b.resourceName),
@@ -76,7 +76,7 @@ export default function ResourcesPage() {
       ),
     },
     {
-      title: "HTTP 메서드",
+      title: <div style={{ textAlign: "center" }}>HTTP 메서드</div>,
       dataIndex: "httpMethod",
       key: "httpMethod",
       render: (text) => {
@@ -91,19 +91,19 @@ export default function ResourcesPage() {
       sorter: (a, b) => (a.httpMethod || "").localeCompare(b.httpMethod || ""),
     },
     {
-      title: "순서",
+      title: <div style={{ textAlign: "center" }}>순서</div>,
       dataIndex: "orderNum",
       key: "orderNum",
       sorter: (a, b) => a.orderNum - b.orderNum,
     },
     {
-      title: "리소스 타입",
+      title: <div style={{ textAlign: "center" }}>리소스 타입</div>,
       dataIndex: "resourceType",
       key: "resourceType",
       sorter: (a, b) => a.resourceType.localeCompare(b.resourceType),
     },
     {
-      title: "권한",
+      title: <div style={{ textAlign: "center" }}>권한</div>,
       dataIndex: "roleDesc",
       key: "roleDesc",
       render: (text, record) => (
@@ -120,12 +120,12 @@ export default function ResourcesPage() {
   ];
 
   return (
-    <div style={{ padding: 20 }}>
-      <h1 className="text-lg font-semibold">📌 리소스 목록</h1>
+    <div>
+      <h1 className="text-2xl font-bold text-gray-800 border-b pb-2 mb-4">📌 리소스 관리</h1>
       {isLoading ? (
-        <Spin size="large" style={{ display: "block", margin: "20px auto" }} />
+        <Spin size="large" style={{display: "block", margin: "20px auto"}}/>
       ) : error ? (
-        <p style={{ color: "red" }}>🚨 데이터를 불러오는 중 오류 발생</p>
+        <p style={{color: "red"}}>🚨 데이터를 불러오는 중 오류 발생</p>
       ) : (
         <Table
           dataSource={resources}
