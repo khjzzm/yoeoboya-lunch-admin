@@ -7,7 +7,7 @@ import Cookies from "js-cookie";
 import {User} from "@/interfaces/auth";
 
 /** 로그인 Hook */
-export function useLogin() {
+export function useUser() {
   const setUser = useAuthStore((state) => state.setUser);
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -31,7 +31,7 @@ export function useLogin() {
       Cookies.set("token", userData.accessToken, {path: "/"});
       Cookies.set("refreshToken", userData.refreshToken, {path: "/"});
 
-      const {data: memberData} = await api.get(`/member/${userData.loginId}/summary`);
+      const {data: memberData} = await api.get(`/member/${userData.loginId} `);
       if (memberData?.data) {
         userData = {
           ...userData,
@@ -83,16 +83,13 @@ export function useLogout() {
   });
 }
 
-
-
-/** 회원가입 Data and Hook */
+/** 회원가입 Hook  */
 interface SignUpData {
   loginId: string;
   email: string;
   name: string;
   password: string;
 }
-
 export function useSignUp() {
   const setUser = useAuthStore((state) => state.setUser);
   const router = useRouter();
@@ -127,7 +124,7 @@ export function useSignUp() {
         Cookies.set("token", userData.accessToken, { path: "/" });
         Cookies.set("refreshToken", userData.refreshToken, { path: "/" });
 
-        const {data: memberData} = await api.get(`/member/${userData.loginId}/summary`);
+        const {data: memberData} = await api.get(`/member/${userData.loginId} `);
         if (memberData?.data) {
           userData = {
             ...userData,
@@ -147,6 +144,60 @@ export function useSignUp() {
     onError: (error) => {
       console.error("회원가입 또는 자동 로그인 실패:", error);
       message.error(error.message || "회원가입 실패. 다시 시도하세요.");
+    },
+  });
+}
+
+/** Token 재발급 Hook */
+export function useRefreshToken() {
+  const { user, setUser } = useAuthStore();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => {
+      if (!user?.loginId) throw new Error("❌ 로그인 정보 없음, 다시 로그인 필요!");
+      const oldRefreshToken = Cookies.get("refreshToken");
+
+      // Access Token 재발급 API 요청
+      const { data } = await api.post("/user/reissue", {
+        loginId: user.loginId,
+        refreshToken: oldRefreshToken, // 기존 Refresh Token 사용
+        provider: user.provider,
+      });
+
+      if (!data?.data?.accessToken || !data?.data?.refreshToken) {
+        throw new Error("토큰 갱신 실패: 응답 데이터 오류");
+      }
+
+      return {
+        accessToken: data.data.accessToken,
+        refreshToken: data.data.refreshToken,
+      };
+    },
+    onSuccess: async ({ accessToken, refreshToken }) => {
+      Cookies.set("token", accessToken, { path: "/", secure: true, sameSite: "Strict" });
+      Cookies.set("refreshToken", refreshToken, { path: "/", secure: true, sameSite: "Strict" });
+
+      // 사용자 정보 업데이트
+      const loginId = user?.loginId;
+      if (loginId) {
+        const { data: memberData } = await api.get(`/member/${loginId} `);
+        if (memberData?.data) {
+          setUser({ ...user, ...memberData.data });
+        }
+      }
+
+      // React Query 캐시 무효화
+      queryClient.invalidateQueries({ queryKey: ["fetchMemberSummary", loginId] });
+      console.log("✅ Access & Refresh Token 갱신 완료:", accessToken, refreshToken);
+    },
+    onError: () => {
+      console.error("❌ Access Token 갱신 실패");
+      message.error("세션이 만료되었습니다. 다시 로그인하세요.");
+      Cookies.remove("token");
+      Cookies.remove("refreshToken");
+      useAuthStore.getState().logout();
+      window.location.href = "/login";
     },
   });
 }

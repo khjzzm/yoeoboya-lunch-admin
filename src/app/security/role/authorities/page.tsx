@@ -2,7 +2,7 @@
 
 import { Table, Spin, Switch, Tooltip, Select } from "antd";
 import { ColumnsType } from "antd/es/table";
-import { useFetchRole, useUpdateSecurityStatus, useUpdateRole } from "@/lib/api/useFetchRole";
+import { useRole, useUpdateSecurityStatus, useUpdateRole } from "@/lib/api/useRole";
 
 // Role 데이터 타입 정의
 interface RoleData {
@@ -26,7 +26,7 @@ const roleOptions = [
 ];
 
 export default function RoleAuthoritiesPage() {
-  const { data, isLoading, error } = useFetchRole();
+  const { data, isLoading, error } = useRole();
   const updateSecurityStatus = useUpdateSecurityStatus();
   const updateRole = useUpdateRole();
 

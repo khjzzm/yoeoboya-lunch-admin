@@ -8,6 +8,8 @@ export const api = axios.create({
   withCredentials: true, // 쿠키 포함 요청
 });
 
+console.log(API_URL)
+
 // 요청 인터셉터 (JWT 토큰 자동 추가)
 api.interceptors.request.use(
   async (config) => {
@@ -33,7 +35,7 @@ api.interceptors.response.use(
         alert("🚫 접근 권한이 없습니다.");
       } else if (status === 401) {
         console.log(status)
-        Cookies.remove("token"); // ✅ 401 발생 시 토큰 삭제
+        Cookies.remove("token"); //  401 발생 시 토큰 삭제
       }
     }
 

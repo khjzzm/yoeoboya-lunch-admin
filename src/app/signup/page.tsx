@@ -1,6 +1,6 @@
 "use client";
 
-import { useSignUp } from "@/lib/api/useLogin";
+import { useSignUp } from "@/lib/api/useUser";
 import { Form, Input, Button, Card, Typography } from "antd";
 
 const { Title } = Typography;

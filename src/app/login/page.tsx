@@ -1,7 +1,7 @@
 "use client";
 
 import {useState} from "react";
-import {useLogin} from "@/lib/api/useLogin";
+import {useUser} from "@/lib/api/useUser";
 import {useRouter} from "next/navigation";
 import {Form, Input, Button, Card, Typography, Alert} from "antd";
 
@@ -9,12 +9,12 @@ const {Title, Text} = Typography;
 
 export default function LoginPage() {
   const [form] = Form.useForm();
-  const loginMutation = useLogin();
+  const loginMutation = useUser();
   const router = useRouter();
-  const [errorMessage, setErrorMessage] = useState<string | null>(null); // ✅ 전체 에러 메시지 상태 추가
+  const [errorMessage, setErrorMessage] = useState<string | null>(null); //  전체 에러 메시지 상태 추가
 
   const handleLogin = (values: { loginId: string; password: string }) => {
-    setErrorMessage(null); // ✅ 새로운 요청 전에 에러 초기화
+    setErrorMessage(null); //  새로운 요청 전에 에러 초기화
 
     loginMutation.mutate(values, {
       onError: (error: unknown) => {
@@ -23,7 +23,7 @@ export default function LoginPage() {
             response?: { data?: { message?: string; validation?: { field: string; message: string }[] } };
           };
 
-          // ✅ API에서 제공한 공통 오류 메시지 처리
+          //  API에서 제공한 공통 오류 메시지 처리
           if (axiosError?.response?.data?.message) {
             setErrorMessage(axiosError.response.data.message);
           } else {

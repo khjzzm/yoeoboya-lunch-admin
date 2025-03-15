@@ -4,7 +4,7 @@ import {
   useFetchTokenIgnoreUrls,
   useUpdateTokenIgnoreUrl,
   useDeleteTokenIgnoreUrl,
-} from "@/lib/api/useFetchResources";
+} from "@/lib/api/useResources";
 import {Table, Spin, Button, Input, Switch, Form, Modal, message, Space, Tooltip} from "antd";
 import {useEffect, useState} from "react";
 import {EditOutlined, DeleteOutlined, PlusOutlined} from "@ant-design/icons";

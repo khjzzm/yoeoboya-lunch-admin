@@ -1,16 +1,16 @@
 "use client";
 
-import { useFetchMembers } from "@/lib/api/useFetchMembers";
+import { useMembers } from "@/lib/api/useMembers";
 import { Table, Spin } from "antd";
 
 
 export default function MemberPage() {
-  const { data, isLoading } = useFetchMembers();
+  const { data, isLoading } = useMembers();
 
-  // ✅ 데이터가 없을 경우 대비
+  //  데이터가 없을 경우 대비
   const members = data?.data?.list || [];
 
-  // ✅ 테이블 컬럼 정의
+  //  테이블 컬럼 정의
   const columns = [
     {
       title: <div style={{ textAlign: "center" }}>로그인 ID</div>,

@@ -1,4 +1,4 @@
-import Providers from "./providers";
+import Providers from "./providers"; //  클라이언트 전용 Providers.tsx
 import { PublicEnvScript } from "next-runtime-env";
 import React from "react";
 import LayoutWrapper from "@/components/layout/LayoutWrapper";
@@ -16,7 +16,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <title>{metadata.title}</title>
     </head>
     <body>
-    <Providers>
+    <Providers> {/*  QueryClientProvider가 감싸지도록 적용 */}
       <LayoutWrapper>{children}</LayoutWrapper>
     </Providers>
     </body>

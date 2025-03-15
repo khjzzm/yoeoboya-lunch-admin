@@ -20,7 +20,7 @@ export default function Sidebar() {
   const router = useRouter();
   const pathname = usePathname();
   const [selectedKey, setSelectedKey] = useState<string>("");
-  const [collapsed, setCollapsed] = useState(false); // ✅ 사이드바 접기/펼치기 상태
+  const [collapsed, setCollapsed] = useState(false); //  사이드바 접기/펼치기 상태
 
   useEffect(() => {
     setSelectedKey(pathname);

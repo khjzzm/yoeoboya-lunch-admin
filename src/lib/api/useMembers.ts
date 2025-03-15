@@ -1,7 +1,7 @@
 import {useQuery} from "@tanstack/react-query";
 import {api} from "@/lib/utils/api";
 
-export function useFetchMembers() {
+export function useMembers() {
   return useQuery({
     queryKey: ["fetchMembers"],
     queryFn: async () => {
@@ -14,10 +14,10 @@ export function useFetchMembers() {
 /** 특정 회원 요약 정보 조회 */
 export function useFetchMemberSummary(memberLoginId: string) {
   return useQuery({
-    queryKey: ["fetchMemberSummary", memberLoginId], // ✅ 캐시를 위한 키
+    queryKey: ["fetchMemberSummary", memberLoginId], //  캐시를 위한 키
     queryFn: async () => {
-      const {data} = await api.get(`/member/${memberLoginId}/summary`);
-      return data.data; //
+      const {data} = await api.get(`/member/${memberLoginId}`);
+      return data.data;
     },
     enabled: !!memberLoginId,
     staleTime: 1000 * 60 * 5,

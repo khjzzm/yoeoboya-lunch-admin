@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useFetchResources, useAddResourceRole } from "@/lib/api/useFetchResources";
+import { useResources, useAddResourceRole } from "@/lib/api/useResources";
 import { Table, Spin, Tooltip, Select, Tag, message } from "antd";
 import type { ColumnsType } from "antd/es/table";
 
@@ -24,7 +24,7 @@ const roleOptions = [
 ];
 
 export default function ResourcesPage() {
-  const { data, isLoading, error } = useFetchResources();
+  const { data, isLoading, error } = useResources();
   const addResourceRole = useAddResourceRole(); // 리소스 역할 추가 훅
 
   // 페이지 크기 상태 추가

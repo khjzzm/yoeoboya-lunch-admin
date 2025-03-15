@@ -2,16 +2,7 @@ import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {api} from "@/lib/utils/api";
 import {message} from "antd";
 
-export function useFetchResources() {
-  return useQuery({
-    queryKey: ["fetchResources"],
-    queryFn: async () => {
-      const {data} = await api.get("/resource");
-      return data?.data ?? [];
-    },
-  });
-}
-
+/** 토큰 무시 URL 조회 Hook */
 export function useFetchTokenIgnoreUrls() {
   return useQuery({
     queryKey: ["fetchTokenIgnoreUrls"],
@@ -22,7 +13,7 @@ export function useFetchTokenIgnoreUrls() {
   });
 }
 
-// 토큰 무시 URL 추가 및 수정
+/** 토큰 무시 URL 추가 및 수정 Hook */
 export function useUpdateTokenIgnoreUrl() {
   const queryClient = useQueryClient();
 
@@ -37,10 +28,7 @@ export function useUpdateTokenIgnoreUrl() {
   });
 }
 
-
-/**
- * 토큰 무시 URL 삭제 훅
- */
+/** 토큰 무시 URL 삭제 Hook */
 export function useDeleteTokenIgnoreUrl() {
   const queryClient = useQueryClient(); // 데이터 캐싱을 위한 QueryClient
 
@@ -60,9 +48,18 @@ export function useDeleteTokenIgnoreUrl() {
   });
 }
 
-/**
- * 리소스에 역할 추가하는 훅
- */
+/** 리소스조회 Hook */
+export function useResources() {
+  return useQuery({
+    queryKey: ["fetchResources"],
+    queryFn: async () => {
+      const {data} = await api.get("/resource");
+      return data?.data ?? [];
+    },
+  });
+}
+
+/** 리소스에 역할 추가하는 Hook */
 export function useAddResourceRole() {
   const queryClient = useQueryClient();
 
@@ -74,7 +71,7 @@ export function useAddResourceRole() {
     },
     onSuccess: () => {
       message.success("✅ 리소스 역할이 업데이트되었습니다!");
-      queryClient.invalidateQueries({ queryKey: ["fetchResources"] }); // ✅ 최신 데이터 다시 불러오기
+      queryClient.invalidateQueries({ queryKey: ["fetchResources"] }); //  최신 데이터 다시 불러오기
     },
     onError: () => {
       message.error("🚨 리소스 역할 업데이트 중 오류 발생!");

@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^5.67.1",
+    "@tanstack/react-query-devtools": "^5.68.0",
     "antd": "^5.11.3-alpha.0",
     "axios": "^1.8.1",
     "js-cookie": "^3.0.5",

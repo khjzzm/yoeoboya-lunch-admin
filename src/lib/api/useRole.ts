@@ -3,7 +3,7 @@ import { api } from "@/lib/utils/api";
 import { message } from "antd";
 
 /** 권한 정보 조회 Hook */
-export function useFetchRole() {
+export function useRole() {
   return useQuery({
     queryKey: ["fetchRole"],
     queryFn: async () => {

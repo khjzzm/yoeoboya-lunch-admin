@@ -9,7 +9,7 @@ import {
 import { Layout, Avatar, Dropdown, MenuProps, Typography, Space } from "antd";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useLogout } from "@/lib/api/useLogin";
+import { useLogout } from "@/lib/api/useUser";
 import { useAuthStore } from "@/store/useAuthStore";
 
 const { Header } = Layout;
@@ -45,7 +45,7 @@ export default function AppHeader() {
 
       <Dropdown menu={{ items: menuItems }} placement="bottomRight">
         <Space className="cursor-pointer">
-          <Avatar size="large" className="bg-white text-blue-500">
+          <Avatar size="small" className="bg-white text-blue-500">
             <UserOutlined />
           </Avatar>
           <Text strong className="text-white">
