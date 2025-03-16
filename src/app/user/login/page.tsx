@@ -89,7 +89,7 @@ export default function LoginPage() {
           <Text type="secondary">계정이 없으신가요?</Text>
           <Button
             type="link"
-            onClick={() => router.push("/signup")}
+            onClick={() => router.push("/user/signup")}
             className="font-medium"
           >
             회원가입

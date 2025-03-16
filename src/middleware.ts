@@ -13,8 +13,8 @@ export function middleware(req: NextRequest) {
     pathname.startsWith("/_next/") ||
     pathname.startsWith("/static/") ||
     pathname.startsWith("/favicon.ico") ||
-    pathname.startsWith("/login") ||
-    pathname.startsWith("/signup")
+    pathname.startsWith("/user/login") ||
+    pathname.startsWith("/user/signup")
   ) {
     return NextResponse.next();
   }
@@ -32,7 +32,7 @@ export function middleware(req: NextRequest) {
   //  로그인 필요한 페이지인데, 토큰이 없거나 유효하지 않다면 로그인 페이지로 리디렉트
   if (!isValidToken) {
     console.log("🔒 보호된 경로 접근 시도! 로그인 페이지로 리디렉트합니다.");
-    return NextResponse.redirect(new URL("/login", req.url));
+    return NextResponse.redirect(new URL("/user/login", req.url));
   }
 
   return NextResponse.next();

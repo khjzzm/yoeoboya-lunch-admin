@@ -43,7 +43,15 @@ export default function Sidebar() {
         {key: "/security/resource/token", label: "토큰", onClick: () => router.push("/security/resource/token")},
       ],
     },
-    {key: "/settings", icon: <SettingOutlined/>, label: "설정", onClick: () => router.push("/settings")},
+    {
+      key: "/settings",
+      icon: <SettingOutlined/>,
+      label: "설정",
+      children: [
+        {key: "/member/setting/profile", label: "프로필", onClick: () => router.push("/member/setting/profile")},
+        {key: "/member/setting/security", label: "비밀번호 및 인증", onClick: () => router.push("/member/setting/security")},
+      ],
+    }
   ];
 
   return (

@@ -75,7 +75,7 @@ export function useLogout() {
 
       logout();
       message.success("로그아웃 되었습니다.");
-      router.push("/login");
+      router.push("/user/login");
     },
     onError: () => {
       message.error("로그아웃 실패. 다시 시도하세요.");
@@ -197,7 +197,30 @@ export function useRefreshToken() {
       Cookies.remove("token");
       Cookies.remove("refreshToken");
       useAuthStore.getState().logout();
-      window.location.href = "/login";
+      window.location.href = "/user/login";
+    },
+  });
+}
+
+
+//** 비밀번호 변경 API Hook */
+export function useChangePassword() {
+  return useMutation({
+    mutationFn: async (passwordData: {
+      oldPassword: string;
+      newPassword: string;
+      confirmNewPassword: string;
+    }) => {
+      const { data } = await api.patch("/password", passwordData);
+      return data;
+    },
+    onSuccess: () => {
+      message.success("비밀번호 변경 완료! 🎉");
+      form.resetFields(); // 입력 폼 초기화
+    },
+    onError: (error) => {
+      console.error("비밀번호 변경 실패", error);
+      message.error(error.message || "비밀번호 변경 실패");
     },
   });
 }
