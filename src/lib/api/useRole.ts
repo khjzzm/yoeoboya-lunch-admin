@@ -1,14 +1,21 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { api } from "@/lib/utils/api";
-import { message } from "antd";
+import {useQuery, useMutation, useQueryClient} from "@tanstack/react-query";
+import {api} from "@/lib/utils/api";
+import {message} from "antd";
+import {handleApiError} from "@/lib/utils/handleApiError";
 
 /** 권한 정보 조회 Hook */
-export function useRole() {
+export function useRole(page: number, pageSize: number, filters?: Record<string, string | string[]>) {
   return useQuery({
-    queryKey: ["fetchRole"],
+    queryKey: ["fetchRole", page, pageSize, filters],
     queryFn: async () => {
-      const { data } = await api.get(`/role/authorities?page=1&size=60`);
-      return data;
+      const params = new URLSearchParams({
+        page: String(page),
+        size: String(pageSize),
+        ...(filters || {}),
+      });
+
+      const {data} = await api.get(`/role/authorities?${params.toString()}`);
+      return data
     },
   });
 }
@@ -19,12 +26,15 @@ export function useUpdateSecurityStatus() {
 
   return useMutation({
     mutationFn: async (updateData: { loginId: string; enabled: boolean; accountNonLocked: boolean }) => {
-      const { data } = await api.post(`/role/security`, updateData);
+      const {data} = await api.post(`/role/security`, updateData);
       return data;
     },
     onSuccess: () => {
       message.success("권한 정보가 성공적으로 변경되었습니다.");
-      queryClient.invalidateQueries({ queryKey: ["fetchRole"] });
+      queryClient.invalidateQueries({queryKey: ["fetchRole"]});
+    },
+    onError: (error) => {
+      handleApiError(error);
     },
   });
 }
@@ -35,12 +45,15 @@ export function useUpdateRole() {
 
   return useMutation({
     mutationFn: async (updateData: { loginId: string; role: string }) => {
-      const { data } = await api.post(`/role/authority`, updateData);
+      const {data} = await api.post(`/role/authority`, updateData);
       return data;
     },
     onSuccess: () => {
       message.success("역할이 성공적으로 변경되었습니다.");
-      queryClient.invalidateQueries({ queryKey: ["fetchRole"] });
+      queryClient.invalidateQueries({queryKey: ["fetchRole"]});
+    },
+    onError: (error) => {
+      handleApiError(error);
     },
   });
 }

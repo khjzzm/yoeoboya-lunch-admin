@@ -5,7 +5,7 @@ import {
   useUpdateTokenIgnoreUrl,
   useDeleteTokenIgnoreUrl,
 } from "@/lib/api/useResources";
-import {Table, Spin, Button, Input, Switch, Form, Modal, Space, Tooltip} from "antd";
+import {Table, Button, Input, Switch, Form, Modal, Space, Tooltip} from "antd";
 import {useEffect, useState} from "react";
 import {EditOutlined, DeleteOutlined, PlusOutlined} from "@ant-design/icons";
 import {handleApiError} from "@/lib/utils/handleApiError";
@@ -38,7 +38,7 @@ export default function TokenIgnoreUrlsPage() {
   // Switch 변경 시 상태 업데이트 + Form 값 반영
   const handleSwitchChange = (checked: boolean) => {
     setSwitchState(checked); // 상태 변경
-    form.setFieldsValue({ isIgnore: checked }); // Form에도 값 반영
+    form.setFieldsValue({isIgnore: checked}); // Form에도 값 반영
   };
 
   // 모달 열기
@@ -78,7 +78,7 @@ export default function TokenIgnoreUrlsPage() {
         onError: (error) => {
           handleApiError(error);
         },
-        onSettled : () => {
+        onSettled: () => {
           setIsModalOpen(false);
         }
       });
@@ -122,6 +122,7 @@ export default function TokenIgnoreUrlsPage() {
     },
   ];
 
+  if (error) return <p>데이터를 불러오는 중 오류 발생 🚨</p>;
   return (
     <div>
       {/* 제목 */}
@@ -131,34 +132,27 @@ export default function TokenIgnoreUrlsPage() {
           <Button
             type="primary"
             shape="circle"
-            icon={<PlusOutlined />}
+            icon={<PlusOutlined/>}
             onClick={() => showModal()}
           />
         </Tooltip>
       </div>
 
       {/* 테이블 */}
-      {isLoading ? (
-        <div className="flex justify-center items-center h-32">
-          <Spin size="large"/>
-        </div>
-      ) : error ? (
-        <p className="text-red-500">🚨 데이터를 불러오는 중 오류 발생</p>
-      ) : (
-        <Table
-          dataSource={tokenIgnoreUrls || []}
-          columns={columns}
-          rowKey="id"
-          bordered
-          pagination={{pageSize: 10}}
-        />
-      )}
+      <Table
+        dataSource={tokenIgnoreUrls || []}
+        columns={columns}
+        rowKey="id"
+        bordered
+        loading={isLoading}
+        pagination={{pageSize: 10}}
+      />
 
       {/* 추가 및 수정 모달 */}
       <Modal title="🔧 토큰 무시 URL 설정" open={isModalOpen} onCancel={handleCancel} onOk={handleSave}>
         <Form form={form} layout="vertical">
-          <Form.Item name="url" label="URL" rules={[{ required: true, message: "URL을 입력하세요!" }]}>
-            <Input placeholder="/test" />
+          <Form.Item name="url" label="URL" rules={[{required: true, message: "URL을 입력하세요!"}]}>
+            <Input placeholder="/test"/>
           </Form.Item>
 
           <Form.Item name="isIgnore" label="토큰 인증 설정" valuePropName="checked">

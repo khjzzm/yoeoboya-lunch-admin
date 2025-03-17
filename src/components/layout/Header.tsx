@@ -3,7 +3,6 @@
 import {
   UserOutlined,
   LogoutOutlined,
-  SettingOutlined,
   ProfileOutlined,
 } from "@ant-design/icons";
 import { Layout, Avatar, Dropdown, MenuProps, Typography, Space } from "antd";
@@ -34,9 +33,8 @@ export default function AppHeader() {
   };
 
   const menuItems: MenuProps["items"] = [
-    { key: "1", icon: <SettingOutlined />, label: "설정" },
-    { key: "2", icon: <ProfileOutlined />, label: "프로필" },
-    { key: "3", icon: <LogoutOutlined />, label: "로그아웃", onClick: handleLogout },
+    { key: "1", icon: <ProfileOutlined />, label: "프로필" },
+    { key: "2", icon: <LogoutOutlined />, label: "로그아웃", onClick: handleLogout },
   ];
 
   return (

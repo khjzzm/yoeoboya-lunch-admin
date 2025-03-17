@@ -2,7 +2,7 @@
 
 import {useState} from "react";
 import {useResources, useAddResourceRole} from "@/lib/api/useResources";
-import {Table, Spin, Tooltip, Select, Tag} from "antd";
+import {Table, Tooltip, Select, Tag} from "antd";
 import type {ColumnsType} from "antd/es/table";
 import {handleApiError} from "@/lib/utils/handleApiError";
 
@@ -26,23 +26,19 @@ const roleOptions = [
 
 export default function ResourcesPage() {
   const {data, isLoading, error} = useResources();
-  const addResourceRole = useAddResourceRole(); // 리소스 역할 추가 훅
-
-  // 페이지 크기 상태 추가
+  const resources: Resource[] = Array.isArray(data) ? data : [];
   const [pageSize, setPageSize] = useState(20);
+  const addResourceRole = useAddResourceRole(); // 리소스 역할 추가 훅
 
   // 선택된 역할 값을 저장하는 상태 (원래 값 복구용)
   const [selectedRoles, setSelectedRoles] = useState<Record<number, string>>({});
-
-  // 데이터가 undefined일 경우 대비하여 기본값 설정
-  const resources: Resource[] = Array.isArray(data) ? data : [];
 
   const handleRoleChange = (resourceId: number, newRole: string) => {
     const prevRole = selectedRoles[resourceId] || data?.find((item: Resource) => item.resourceId === resourceId)?.roleDesc;
     setSelectedRoles((prev) => ({...prev, [resourceId]: newRole}));
 
     addResourceRole.mutate({resourceId, role: newRole}, {
-        onError: () => {
+        onError: (error) => {
           handleApiError(error);
           setSelectedRoles((prev) => ({...prev, [resourceId]: prevRole}));
         },
@@ -114,29 +110,25 @@ export default function ResourcesPage() {
     },
   ];
 
+  if (error) return <p>데이터를 불러오는 중 오류 발생 🚨</p>;
   return (
     <div>
       <h1 className="text-2xl font-bold text-gray-800 border-b pb-2 mb-4">📌 리소스 관리</h1>
-      {isLoading ? (
-        <Spin size="large" style={{display: "block", margin: "20px auto"}}/>
-      ) : error ? (
-        <p style={{color: "red"}}>🚨 데이터를 불러오는 중 오류 발생</p>
-      ) : (
-        <Table
-          dataSource={resources}
-          columns={columns}
-          rowKey="resourceId"
-          pagination={{
-            pageSize: pageSize,
-            showSizeChanger: true,
-            pageSizeOptions: [10, 20, 50, 100], //  올바른 숫자 배열로 설정
-            showTotal: (total, range) => `${range[0]}-${range[1]} / 총 ${total}개`,
-            onChange: (page, pageSize) => {
-              setPageSize(pageSize); // 선택한 페이지 크기로 상태 업데이트
-            },
-          }}
-        />
-      )}
+      <Table
+        dataSource={resources}
+        columns={columns}
+        rowKey="resourceId"
+        loading={isLoading}
+        pagination={{
+          pageSize: pageSize,
+          showSizeChanger: true,
+          pageSizeOptions: [10, 20, 50, 100], //  올바른 숫자 배열로 설정
+          showTotal: (total, range) => `${range[0]}-${range[1]} / 총 ${total}개`,
+          onChange: (page, pageSize) => {
+            setPageSize(pageSize); // 선택한 페이지 크기로 상태 업데이트
+          },
+        }}
+      />
     </div>
   );
 }

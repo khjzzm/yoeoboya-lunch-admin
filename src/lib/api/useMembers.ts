@@ -1,11 +1,22 @@
 import {useQuery} from "@tanstack/react-query";
 import {api} from "@/lib/utils/api";
 
-export function useMembers() {
+/** 회원정보 가져오기 */
+export function useMembers(
+  page: number,
+  pageSize: number,
+  filters?: Record<string, string | string[]>
+) {
   return useQuery({
-    queryKey: ["fetchMembers"],
+    queryKey: ["fetchMembers", page, pageSize, filters],
     queryFn: async () => {
-      const {data} = await api.get(`/member?page=1&size=10`);
+      const params = new URLSearchParams({
+        page: String(page),
+        size: String(pageSize),
+        ...(filters || {}),
+      });
+
+      const { data } = await api.get(`/member?${params.toString()}`);
       return data;
     },
   });

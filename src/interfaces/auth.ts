@@ -5,8 +5,6 @@ export interface User {
   name?: string;
   provider?: string;
   role?: string;
-  accessToken: string;
-  refreshToken: string;
 }
 
 // Auth 상태관리 인터페이스
