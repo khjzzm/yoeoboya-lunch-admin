@@ -1,27 +1,24 @@
 "use client";
 
 import { useSignUp } from "@/lib/api/useUser";
-import { Form, Input, Button, Card, Typography } from "antd";
+import {Form, Input, Button, Card, Typography, Alert} from "antd";
+import {handleApiError} from "@/lib/utils/handleApiError";
+import {useState} from "react";
+import {SignUpData} from "@/interfaces/auth";
 
 const { Title } = Typography;
 
 export default function SignUpPage() {
   const [form] = Form.useForm();
   const signUpMutation = useSignUp();
+  const [errorMessage, setErrorMessage] = useState<string | null>(null); //  전체 에러 메시지 상태 추가
 
-  const handleSignUp = (values: { loginId: string; email: string; name: string; password: string }) => {
+  const handleSignUp = (values: SignUpData) => {
     signUpMutation.mutate(values, {
-      onError: (error: unknown) => {
-        if (typeof error === "object" && error !== null && "response" in error) {
-          const axiosError = error as { response?: { data?: { validation?: { field: string; message: string }[] } } };
-
-          if (axiosError?.response?.data?.validation) {
-            const errors = axiosError.response.data.validation.map((err) => ({
-              name: err.field as string,
-              errors: [err.message as string],
-            }));
-            form.setFields(errors);
-          }
+      onError: (error) => {
+        const returnedError = handleApiError(error, false, form);
+        if (returnedError) {
+          setErrorMessage(returnedError);
         }
       },
     });
@@ -30,6 +27,16 @@ export default function SignUpPage() {
   return (
     <div className="flex flex-col h-screen items-center justify-center bg-gray-100">
       <Card className="w-full max-w-md shadow-lg p-8">
+
+        {errorMessage && (
+          <Alert
+            message={errorMessage}
+            type="error"
+            showIcon
+            className="mb-4"
+          />
+        )}
+
         <Title level={4} className="text-center">회원가입</Title>
 
         <Form form={form} layout="vertical" onFinish={handleSignUp}>

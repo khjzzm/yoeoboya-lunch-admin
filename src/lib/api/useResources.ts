@@ -23,6 +23,7 @@ export function useUpdateTokenIgnoreUrl() {
       return data;
     },
     onSuccess: () => {
+      message.success("등록 완료!");
       queryClient.invalidateQueries({queryKey: ["fetchTokenIgnoreUrls"]});
     },
   });
@@ -39,11 +40,8 @@ export function useDeleteTokenIgnoreUrl() {
       return data;
     },
     onSuccess: () => {
-      message.success("✅ 삭제 완료!");
+      message.success("삭제 완료!");
       queryClient.invalidateQueries({queryKey: ["fetchTokenIgnoreUrls"]}); // 데이터 다시 불러오기
-    },
-    onError: () => {
-      message.error("🚨 삭제 중 오류 발생!");
     },
   });
 }
@@ -70,11 +68,8 @@ export function useAddResourceRole() {
       return data;
     },
     onSuccess: () => {
-      message.success("✅ 리소스 역할이 업데이트되었습니다!");
+      message.success("리소스 역할이 업데이트되었습니다!");
       queryClient.invalidateQueries({ queryKey: ["fetchResources"] }); //  최신 데이터 다시 불러오기
-    },
-    onError: () => {
-      message.error("🚨 리소스 역할 업데이트 중 오류 발생!");
     },
   });
 }

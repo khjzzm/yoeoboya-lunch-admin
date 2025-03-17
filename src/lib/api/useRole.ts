@@ -26,9 +26,6 @@ export function useUpdateSecurityStatus() {
       message.success("권한 정보가 성공적으로 변경되었습니다.");
       queryClient.invalidateQueries({ queryKey: ["fetchRole"] });
     },
-    onError: () => {
-      message.error("권한 정보 변경에 실패했습니다.");
-    },
   });
 }
 
@@ -44,9 +41,6 @@ export function useUpdateRole() {
     onSuccess: () => {
       message.success("역할이 성공적으로 변경되었습니다.");
       queryClient.invalidateQueries({ queryKey: ["fetchRole"] });
-    },
-    onError: () => {
-      message.error("역할 변경에 실패했습니다.");
     },
   });
 }

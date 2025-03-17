@@ -4,7 +4,7 @@ import {useRouter} from "next/navigation";
 import {useAuthStore} from "@/store/useAuthStore";
 import {message} from "antd";
 import Cookies from "js-cookie";
-import {User} from "@/interfaces/auth";
+import {ChangePasswordData, SignUpData, User} from "@/interfaces/auth";
 
 /** 로그인 Hook */
 export function useUser() {
@@ -43,10 +43,7 @@ export function useUser() {
       message.success("로그인 성공! 🎉");
       queryClient.invalidateQueries({queryKey: ["fetchMemberSummary", userData.loginId]});
       router.push("/");
-    },
-    onError: () => {
-      message.error("로그인 실패. 다시 시도하세요.");
-    },
+    }
   });
 }
 
@@ -76,20 +73,11 @@ export function useLogout() {
       logout();
       message.success("로그아웃 되었습니다.");
       router.push("/user/login");
-    },
-    onError: () => {
-      message.error("로그아웃 실패. 다시 시도하세요.");
-    },
+    }
   });
 }
 
 /** 회원가입 Hook  */
-interface SignUpData {
-  loginId: string;
-  email: string;
-  name: string;
-  password: string;
-}
 export function useSignUp() {
   const setUser = useAuthStore((state) => state.setUser);
   const router = useRouter();
@@ -141,10 +129,6 @@ export function useSignUp() {
         throw new Error("자동 로그인 실패. 다시 로그인하세요.");
       }
     },
-    onError: (error) => {
-      console.error("회원가입 또는 자동 로그인 실패:", error);
-      message.error(error.message || "회원가입 실패. 다시 시도하세요.");
-    },
   });
 }
 
@@ -192,7 +176,6 @@ export function useRefreshToken() {
       console.log("✅ Access & Refresh Token 갱신 완료:", accessToken, refreshToken);
     },
     onError: () => {
-      console.error("❌ Access Token 갱신 실패");
       message.error("세션이 만료되었습니다. 다시 로그인하세요.");
       Cookies.remove("token");
       Cookies.remove("refreshToken");
@@ -205,22 +188,24 @@ export function useRefreshToken() {
 
 //** 비밀번호 변경 API Hook */
 export function useChangePassword() {
+  const logout = useAuthStore((state) => state.logout);
+  const router = useRouter();
+
   return useMutation({
-    mutationFn: async (passwordData: {
-      oldPassword: string;
-      newPassword: string;
-      confirmNewPassword: string;
-    }) => {
-      const { data } = await api.patch("/password", passwordData);
+    mutationFn: async (passwordData: ChangePasswordData) => {
+      const { data } = await api.patch("/user/password", passwordData);
+      if (data?.code !== 200) {
+        throw new Error("비밀번호 변경 실패: 응답 데이터 오류");
+      }
       return data;
     },
     onSuccess: () => {
-      message.success("비밀번호 변경 완료! 🎉");
-      form.resetFields(); // 입력 폼 초기화
-    },
-    onError: (error) => {
-      console.error("비밀번호 변경 실패", error);
-      message.error(error.message || "비밀번호 변경 실패");
-    },
+      message.success("비밀번호 변경 완료!");
+      Cookies.remove("token");
+      Cookies.remove("refreshToken");
+      logout();
+      router.push("/user/login");
+      message.info("보안을 위해 다시 로그인하세요.");
+    }
   });
 }

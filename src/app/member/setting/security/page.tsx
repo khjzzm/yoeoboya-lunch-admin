@@ -1,91 +1,97 @@
 "use client";
 
-import { useState } from "react";
-import { Form, Input, Button, message } from "antd";
-import { useChangePassword } from "@/lib/api/useUser";
+import {Form, Input, Button, Card} from "antd";
+import {useChangePassword} from "@/lib/api/useUser";
+import {useAuthStore} from "@/store/useAuthStore";
+import {ChangePasswordData} from "@/interfaces/auth";
+import {useEffect} from "react";
+import {handleApiError} from "@/lib/utils/handleApiError";
+
 
 export default function SecuritySettingsPage() {
+  const {user} = useAuthStore();
   const [form] = Form.useForm();
-  const changePassword = useChangePassword(); // ✅ isLoading 제거
+  const changePassword = useChangePassword();
 
-  // 🔥 폼 제출 시 실행
-  // 🔥 폼 제출 시 실행
-  const onFinish = (values: {old}) => {
+  // useEffect(() => {
+  //   if (errorMessage) {
+  //     notification.error({
+  //       message: "에러",
+  //       description: errorMessage,
+  //       placement: "topRight",
+  //       duration: 3,
+  //     });
+  //   }
+  // }, [errorMessage]);
+
+  useEffect(() => {
+    if (user) {
+      form.setFieldsValue(user);
+    }
+  }, [user, form]);
+
+  const onFinish = (values: ChangePasswordData) => {
     changePassword.mutate(values, {
-      onError: (error: unknown) => {
-        if (typeof error === "object" && error !== null && "response" in error) {
-          const axiosError = error as { response?: { data?: { validation?: { field: string; message: string }[] } } };
-
-          if (axiosError?.response?.data?.validation) {
-            const errors = axiosError.response.data.validation.map((err) => ({
-              name: err.field as string,
-              errors: [err.message as string],
-            }));
-            form.setFields(errors);
-          }
-        }
-      },
-    });
+      onError: (error) =>{
+        handleApiError(error, true, form)
+      }
+    })
   };
 
   return (
-    <div className="w-full h-screen flex flex-col items-center justify-center bg-gray-100">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6">🔐 보안 설정</h1>
+    <div className="w-full min-h-screen flex flex-col items-center bg-gray-100 py-12">
+      <h1 className="text-2xl font-semibold text-gray-800 mb-4">🔐 보안 설정</h1>
 
-      <Form
-        form={form}
-        layout="vertical"
-        onFinish={onFinish}
-        className="w-full max-w-lg bg-white p-6 shadow-md rounded-lg"
-      >
-        {/* 🔑 현재 비밀번호 */}
-        <Form.Item
-          label="현재 비밀번호"
-          name="oldPassword"
-          rules={[{ required: true, message: "현재 비밀번호를 입력해주세요." }]}
+      <Card className="w-full max-w-lg shadow-md p-6 bg-white">
+
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={onFinish}
         >
-          <Input.Password placeholder="현재 비밀번호" />
-        </Form.Item>
+          <Form.Item name="loginId" label="아이디" rules={[{required: true, message: "아이디를 입력하세요!"}]}>
+            <Input disabled/>
+          </Form.Item>
 
-        {/* 🔑 새 비밀번호 */}
-        <Form.Item
-          label="새 비밀번호"
-          name="newPassword"
-          rules={[
-            { required: true, message: "새 비밀번호를 입력해주세요." },
-            { min: 8, message: "비밀번호는 최소 8자 이상이어야 합니다." },
-          ]}
-        >
-          <Input.Password placeholder="새 비밀번호" />
-        </Form.Item>
+          <Form.Item name="email" label="이메일" rules={[{required: true, message: "이메일을 입력하세요!"}]}>
+            <Input disabled/>
+          </Form.Item>
 
-        {/* 🔑 새 비밀번호 확인 */}
-        <Form.Item
-          label="새 비밀번호 확인"
-          name="confirmNewPassword"
-          dependencies={["newPassword"]}
-          rules={[
-            { required: true, message: "새 비밀번호를 다시 입력해주세요." },
-            ({ getFieldValue }) => ({
-              validator(_, value) {
-                if (!value || getFieldValue("newPassword") === value) {
-                  return Promise.resolve();
-                }
-                return Promise.reject(new Error("비밀번호가 일치하지 않습니다."));
-              },
-            }),
-          ]}
-        >
-          <Input.Password placeholder="새 비밀번호 확인" />
-        </Form.Item>
+          <Form.Item name="oldPassword" label="현재 비밀번호" rules={[{required: true, message: "현재 비밀번호를 입력하세요!"}]}>
+            <Input.Password/>
+          </Form.Item>
 
-        {/* 🔥 변경 버튼 */}
-        <Form.Item>
-          <Button type="primary" htmlType="submit" block>
-            비밀번호 변경
-          </Button>
-        </Form.Item>
-      </Form>
+          <Form.Item name="newPassword" label="새 비밀번호" rules={[{required: true, message: "새 비밀번호를 입력하세요!"}]}>
+            <Input.Password/>
+          </Form.Item>
+
+          <Form.Item
+            name="confirmNewPassword"
+            label="새 비밀번호 확인"
+            dependencies={["newPassword"]}
+            validateTrigger="onBlur"
+            rules={[
+              {required: true, message: "새 비밀번호를 다시 입력하세요!"},
+              ({getFieldValue}) => ({
+                validator(_, value) {
+                  if (!value || getFieldValue("newPassword") === value) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(new Error("비밀번호가 일치하지 않습니다."));
+                },
+              }),
+            ]}
+          >
+            <Input.Password/>
+          </Form.Item>
+
+          <Form.Item>
+            <Button type="primary" htmlType="submit" block loading={changePassword.isPending}>
+              변경하기
+            </Button>
+          </Form.Item>
+        </Form>
+      </Card>
     </div>
   );
 }

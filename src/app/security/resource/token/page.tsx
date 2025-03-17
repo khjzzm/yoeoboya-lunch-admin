@@ -5,9 +5,10 @@ import {
   useUpdateTokenIgnoreUrl,
   useDeleteTokenIgnoreUrl,
 } from "@/lib/api/useResources";
-import {Table, Spin, Button, Input, Switch, Form, Modal, message, Space, Tooltip} from "antd";
+import {Table, Spin, Button, Input, Switch, Form, Modal, Space, Tooltip} from "antd";
 import {useEffect, useState} from "react";
 import {EditOutlined, DeleteOutlined, PlusOutlined} from "@ant-design/icons";
+import {handleApiError} from "@/lib/utils/handleApiError";
 
 // TokenIgnoreUrl 인터페이스
 interface TokenIgnoreUrl {
@@ -40,7 +41,6 @@ export default function TokenIgnoreUrlsPage() {
     form.setFieldsValue({ isIgnore: checked }); // Form에도 값 반영
   };
 
-
   // 모달 열기
   const showModal = (record?: TokenIgnoreUrl) => {
     setSelectedRecord(record || {id: 0, url: "", isIgnore: false});
@@ -62,11 +62,10 @@ export default function TokenIgnoreUrlsPage() {
     if (selectedRecord) {
       deleteTokenIgnoreUrl.mutate(selectedRecord.id, {
         onSuccess: () => {
-          message.success("✅ 삭제 완료!");
           setIsDeleteModalOpen(false);
         },
-        onError: () => {
-          message.error("🚨 삭제 중 오류 발생!");
+        onError: (error) => {
+          handleApiError(error);
         },
       });
     }
@@ -75,8 +74,14 @@ export default function TokenIgnoreUrlsPage() {
   // 저장
   const handleSave = () => {
     form.validateFields().then((values) => {
-      updateTokenIgnoreUrl.mutate(values);
-      setIsModalOpen(false);
+      updateTokenIgnoreUrl.mutate(values, {
+        onError: (error) => {
+          handleApiError(error);
+        },
+        onSettled : () => {
+          setIsModalOpen(false);
+        }
+      });
     });
   };
 

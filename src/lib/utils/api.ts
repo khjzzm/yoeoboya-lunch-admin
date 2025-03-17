@@ -32,9 +32,8 @@ api.interceptors.response.use(
       const status = error.response.status;
 
       if (status === 403) {
-        alert("🚫 접근 권한이 없습니다.");
+        console.error("🚫 접근 권한이 없습니다.")
       } else if (status === 401) {
-        console.log(status)
         Cookies.remove("token"); //  401 발생 시 토큰 삭제
       }
     }

@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { useResources, useAddResourceRole } from "@/lib/api/useResources";
-import { Table, Spin, Tooltip, Select, Tag, message } from "antd";
-import type { ColumnsType } from "antd/es/table";
+import {useState} from "react";
+import {useResources, useAddResourceRole} from "@/lib/api/useResources";
+import {Table, Spin, Tooltip, Select, Tag} from "antd";
+import type {ColumnsType} from "antd/es/table";
+import {handleApiError} from "@/lib/utils/handleApiError";
 
 interface Resource {
   resourceId: number;
@@ -16,15 +17,15 @@ interface Resource {
 }
 
 const roleOptions = [
-  { label: "어드민", value: "ROLE_ADMIN" },
-  { label: "매니저", value: "ROLE_MANAGER" },
-  { label: "유저", value: "ROLE_USER" },
-  { label: "게스트", value: "ROLE_GUEST" },
-  { label: "차단", value: "ROLE_BLOCK" },
+  {label: "어드민", value: "ROLE_ADMIN"},
+  {label: "매니저", value: "ROLE_MANAGER"},
+  {label: "유저", value: "ROLE_USER"},
+  {label: "게스트", value: "ROLE_GUEST"},
+  {label: "차단", value: "ROLE_BLOCK"},
 ];
 
 export default function ResourcesPage() {
-  const { data, isLoading, error } = useResources();
+  const {data, isLoading, error} = useResources();
   const addResourceRole = useAddResourceRole(); // 리소스 역할 추가 훅
 
   // 페이지 크기 상태 추가
@@ -36,35 +37,29 @@ export default function ResourcesPage() {
   // 데이터가 undefined일 경우 대비하여 기본값 설정
   const resources: Resource[] = Array.isArray(data) ? data : [];
 
-  // 권한 변경 함수
-  const handleRoleChange = async (resourceId: number, newRole: string) => {
-    // 이전 역할 값을 저장
+  const handleRoleChange = (resourceId: number, newRole: string) => {
     const prevRole = selectedRoles[resourceId] || data?.find((item: Resource) => item.resourceId === resourceId)?.roleDesc;
+    setSelectedRoles((prev) => ({...prev, [resourceId]: newRole}));
 
-    // UI 즉시 반영
-    setSelectedRoles((prev) => ({ ...prev, [resourceId]: newRole }));
-
-    try {
-      await addResourceRole.mutateAsync({ resourceId, role: newRole });
-      message.success("권한이 성공적으로 변경되었습니다.");
-    } catch (error) {
-      console.log(error);
-      // 실패 시 원래 값으로 복구
-      setSelectedRoles((prev) => ({ ...prev, [resourceId]: prevRole }));
-      message.error("권한 변경 실패. 다시 시도하세요.");
-    }
+    addResourceRole.mutate({resourceId, role: newRole}, {
+        onError: () => {
+          handleApiError(error);
+          setSelectedRoles((prev) => ({...prev, [resourceId]: prevRole}));
+        },
+      }
+    );
   };
 
   // 테이블 컬럼 정의
   const columns: ColumnsType<Resource> = [
     {
-      title: <div style={{ textAlign: "center" }}>ID</div>,
+      title: <div style={{textAlign: "center"}}>ID</div>,
       dataIndex: "resourceId",
       key: "resourceId",
       sorter: (a, b) => a.resourceId - b.resourceId,
     },
     {
-      title: <div style={{ textAlign: "center" }}>리소스 이름</div>,
+      title: <div style={{textAlign: "center"}}>리소스 이름</div>,
       dataIndex: "resourceName",
       key: "resourceName",
       sorter: (a, b) => a.resourceName.localeCompare(b.resourceName),
@@ -76,7 +71,7 @@ export default function ResourcesPage() {
       ),
     },
     {
-      title: <div style={{ textAlign: "center" }}>HTTP 메서드</div>,
+      title: <div style={{textAlign: "center"}}>HTTP 메서드</div>,
       dataIndex: "httpMethod",
       key: "httpMethod",
       render: (text) => {
@@ -91,25 +86,25 @@ export default function ResourcesPage() {
       sorter: (a, b) => (a.httpMethod || "").localeCompare(b.httpMethod || ""),
     },
     {
-      title: <div style={{ textAlign: "center" }}>순서</div>,
+      title: <div style={{textAlign: "center"}}>순서</div>,
       dataIndex: "orderNum",
       key: "orderNum",
       sorter: (a, b) => a.orderNum - b.orderNum,
     },
     {
-      title: <div style={{ textAlign: "center" }}>리소스 타입</div>,
+      title: <div style={{textAlign: "center"}}>리소스 타입</div>,
       dataIndex: "resourceType",
       key: "resourceType",
       sorter: (a, b) => a.resourceType.localeCompare(b.resourceType),
     },
     {
-      title: <div style={{ textAlign: "center" }}>권한</div>,
+      title: <div style={{textAlign: "center"}}>권한</div>,
       dataIndex: "roleDesc",
       key: "roleDesc",
       render: (text, record) => (
         <Select
           value={selectedRoles[record.resourceId] ?? text ?? ""}
-          style={{ width: 150 }}
+          style={{width: 150}}
           options={roleOptions}
           onChange={(value) => handleRoleChange(record.resourceId, value)}
           disabled={record.resourceType === "ROLE"}

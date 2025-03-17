@@ -4,6 +4,7 @@ import {useState} from "react";
 import {useUser} from "@/lib/api/useUser";
 import {useRouter} from "next/navigation";
 import {Form, Input, Button, Card, Typography, Alert} from "antd";
+import {handleApiError} from "@/lib/utils/handleApiError";
 
 const {Title, Text} = Typography;
 
@@ -17,18 +18,10 @@ export default function LoginPage() {
     setErrorMessage(null); //  새로운 요청 전에 에러 초기화
 
     loginMutation.mutate(values, {
-      onError: (error: unknown) => {
-        if (typeof error === "object" && error !== null && "response" in error) {
-          const axiosError = error as {
-            response?: { data?: { message?: string; validation?: { field: string; message: string }[] } };
-          };
-
-          //  API에서 제공한 공통 오류 메시지 처리
-          if (axiosError?.response?.data?.message) {
-            setErrorMessage(axiosError.response.data.message);
-          } else {
-            setErrorMessage("로그인 실패. 다시 시도하세요.");
-          }
+      onError: (error) => {
+        const returnedError = handleApiError(error, false, form);
+        if (returnedError) {
+          setErrorMessage(returnedError);
         }
       },
     });
