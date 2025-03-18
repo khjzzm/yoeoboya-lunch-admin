@@ -1,6 +1,18 @@
 import {useQuery} from "@tanstack/react-query";
 import {api} from "@/lib/utils/api";
 
+
+/** 내정보 가져오기 */
+export function useMeInfo() {
+  return useQuery({
+    queryKey: ["fetchMeInfo"],
+    queryFn: async () => {
+      const { data } = await api.get(`/me`);
+      return data;
+    },
+  });
+}
+
 /** 회원정보 가져오기 */
 export function useMembers(
   page: number,

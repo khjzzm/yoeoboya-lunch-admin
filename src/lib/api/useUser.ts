@@ -29,7 +29,7 @@ export function useUser() {
       Cookies.set("token", loginData.accessToken, {path: "/"});
       Cookies.set("refreshToken", loginData.refreshToken, {path: "/"});
 
-      const {data: memberData} = await api.get(`/member/${loginData.loginId} `);
+      const {data: memberData} = await api.get(`/me`);
       if (memberData?.data) {
         loginData = {
           ...memberData.data
@@ -109,7 +109,7 @@ export function useSignUp() {
         Cookies.set("token", userData.accessToken, {path: "/"});
         Cookies.set("refreshToken", userData.refreshToken, {path: "/"});
 
-        const {data: memberData} = await api.get(`/member/${userData.loginId} `);
+        const {data: memberData} = await api.get(`/me`);
         if (memberData?.data) {
           userData = {
             ...userData,
@@ -162,7 +162,7 @@ export function useRefreshToken() {
       // 사용자 정보 업데이트
       const loginId = user?.loginId;
       if (loginId) {
-        const {data: memberData} = await api.get(`/member/${loginId} `);
+        const {data: memberData} = await api.get(`/me`);
         if (memberData?.data) {
           setUser({
             ...user,
