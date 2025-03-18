@@ -44,7 +44,7 @@ export default function Sidebar() {
       ],
     },
     {
-      key: "/settings",
+      key: "/me/settings",
       icon: <SettingOutlined />,
       label: "계정관리",
       onClick: () => router.push("/me/settings")

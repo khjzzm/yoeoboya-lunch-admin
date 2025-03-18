@@ -30,7 +30,7 @@ export default function SecuritySettings() {
 
   return (
     <div className="w-full bg-white p-12 rounded-lg shadow-md">
-      <Title level={2} className="text-gray-800 mb-6">🔐 보안 설정</Title>
+      <Title level={2} className="text-gray-800 mb-6">🔐 비밀번호 및 인증</Title>
 
       <Form form={form} layout="vertical" onFinish={onFinish} className="w-full">
         <div className="grid grid-cols-2 gap-6">

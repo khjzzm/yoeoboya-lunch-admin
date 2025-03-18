@@ -34,7 +34,7 @@ export default function ProfileSettings() {
 
   return (
     <div className="w-full bg-white p-12 rounded-lg shadow-md">
-      <Title level={2} className="text-gray-800 mb-6">👤 내 정보</Title>
+      <Title level={2} className="text-gray-800 mb-6">👤 프로필</Title>
 
       {/* 프로필 이미지 */}
       <div className="flex items-center space-x-6 mb-6">
