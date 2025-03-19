@@ -19,16 +19,32 @@ export const handleApiError = (
     const validationErrors = axiosError.response?.data?.validation;
 
     if (validationErrors && validationErrors.length > 0) {
-      const errors = validationErrors.map((err) => ({
-        name: err.field, // 필드 이름
-        errors: [err.message], // 해당 필드 에러 메시지
-      }));
+
+      // todo errors
+      const errors = validationErrors.map((err) => {
+        let fieldName: string | string[];
+
+        if (err.field.includes(".")) {
+          fieldName = err.field.split("."); // ✅ "." 기준으로 분리 → ["info", "bio"]
+          console.log("✅ 변환된 필드명:", fieldName); // 🔍 디버깅 로그 추가
+        } else {
+          fieldName = err.field; // ✅ 단일 필드는 그대로 유지 ("bio")
+          console.log("🔹 단일 필드:", fieldName);
+        }
+
+        return {
+          name: fieldName, // ✅ `string | string[]` 타입 적용
+          errors: [err.message],
+        };
+      });
+
+
       if (form) {
         form.setFields(errors);
       } else if (showMessage) {
         message.error("입력한 값이 올바르지 않습니다.");
       }
-      return; // 폼 에러가 있는 경우, 추가 메시지 없이 종료
+      return;
     } else {
       const errorMessage = axiosError.response?.data?.message || "오류 발생. 다시 시도하세요.";
       if (showMessage) {

@@ -17,7 +17,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <title>{metadata.title}</title>
     </head>
     <body>
-    <Providers> {/*  QueryClientProvider가 감싸지도록 적용 */}
+    <Providers>
       <Layout>{children}</Layout>
     </Providers>
     </body>

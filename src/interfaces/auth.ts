@@ -25,6 +25,7 @@ export interface UserInfo {
 
 // 프로필 이미지 정보
 export interface ProfileImage {
+  profileImageNo: number;
   fileName: string;
   imageUrl: string;
   thumbnailUrl: string;

@@ -2,7 +2,7 @@ import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {api} from "@/lib/utils/api";
 import {useRouter} from "next/navigation";
 import {useAuthStore} from "@/store/useAuthStore";
-import {message} from "antd";
+import {message, notification} from "antd";
 import Cookies from "js-cookie";
 import {ChangePasswordData, SignUpData} from "@/interfaces/auth";
 
@@ -200,12 +200,20 @@ export function useChangePassword() {
       return data;
     },
     onSuccess: () => {
-      message.success("비밀번호 변경 완료!");
-      Cookies.remove("token");
-      Cookies.remove("refreshToken");
-      logout();
-      router.push("/user/login");
-      message.info("보안을 위해 다시 로그인하세요.");
+      // ✅ 1. Notification 표시
+      notification.warning({
+        message: "비밀번호 변경 완료",
+        description: "보안을 위해 3초 후 로그아웃됩니다.",
+        duration: 5, // 3초 동안 표시
+      });
+
+      // ✅ 2. 3초 후 로그아웃 및 페이지 이동
+      setTimeout(() => {
+        Cookies.remove("token");
+        Cookies.remove("refreshToken");
+        logout();
+        router.push("/user/login");
+      }, 3000);
     }
   });
 }

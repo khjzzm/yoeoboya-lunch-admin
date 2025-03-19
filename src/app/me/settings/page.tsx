@@ -1,13 +1,13 @@
 "use client";
 
 import {useRef, useState, useEffect, useMemo, RefObject, createRef} from "react";
-import { Layout, Menu, Typography } from "antd";
-import { UserOutlined, LockOutlined } from "@ant-design/icons";
-import ProfileSettings from "@/components/settings/ProfileSettings";
-import SecuritySettings from "@/components/settings/SecuritySettings";
-import AppLayout from "@/components/layout/Layout";
+import {Layout, Menu, Typography} from "antd";
+import {UserOutlined, LockOutlined, BankOutlined} from "@ant-design/icons";
+import ProfileSettings from "@/components/me/settings/ProfileSettings";
+import SecuritySettings from "@/components/me/settings/SecuritySettings";
+import AccountSettings from "@/components/me/settings/AccountSettings";
 
-const { Content, Sider } = Layout;
+const {Content, Sider} = Layout;
 
 export default function SettingsPage() {
   const contentRef = useRef<HTMLDivElement>(null);
@@ -19,52 +19,22 @@ export default function SettingsPage() {
       {
         key: "profile",
         label: "프로필",
-        icon: <UserOutlined />,
-        component: <ProfileSettings />,
+        icon: <UserOutlined/>,
+        component: <ProfileSettings/>,
       },
       {
-        key: "security1",
+        key: "security",
         label: "비밀번호 및 인증",
-        icon: <LockOutlined />,
-        component: <SecuritySettings />,
+        icon: <LockOutlined/>,
+        component: <SecuritySettings/>,
       },
       {
-        key: "security2",
-        label: "비밀번호 및 인증",
-        icon: <LockOutlined />,
-        component: <SecuritySettings />,
-      },
-      {
-        key: "security3",
-        label: "비밀번호 및 인증",
-        icon: <LockOutlined />,
-        component: <SecuritySettings />,
-      },
-      {
-        key: "security4",
-        label: "비밀번호 및 인증",
-        icon: <LockOutlined />,
-        component: <SecuritySettings />,
-      },
-      {
-        key: "security5",
-        label: "비밀번호 및 인증",
-        icon: <LockOutlined />,
-        component: <SecuritySettings />,
-      },      {
-        key: "security6",
-        label: "비밀번호 및 인증",
-        icon: <LockOutlined />,
-        component: <SecuritySettings />,
-      },      {
-        key: "security7",
-        label: "비밀번호 및 인증",
-        icon: <LockOutlined />,
-        component: <SecuritySettings />,
-      },
-
-    ],
-    []
+        key: "account",
+        label: "계좌등록",
+        icon: <BankOutlined/>,
+        component: <AccountSettings/>,
+      }
+    ], []
   );
 
   // 동적 ref 배열: 각 섹션마다 React.createRef() 생성 (useMemo로 캐싱)
@@ -141,12 +111,11 @@ export default function SettingsPage() {
   }));
 
   return (
-    <AppLayout contentStyle={{ margin: "0px", padding: "0px", background: "#f0f0f0" }}>
-    <Layout className="h-screen flex m-0 p-0">
+    <Layout className="h-screen">
       {/* 사이드바 메뉴 */}
       <Sider width={250} className="bg-white shadow-md flex flex-col m-0 p-0">
         <Typography.Title level={4} className="text-gray-800 text-center my-4">
-          설정
+          계정관리
         </Typography.Title>
         <Menu
           mode="inline"
@@ -167,12 +136,10 @@ export default function SettingsPage() {
             ref={sectionRefs[section.key]}
             className="w-full mb-12"
           >
-            <Typography.Title level={5}>{section.label}</Typography.Title>
             {section.component}
           </div>
         ))}
       </Content>
     </Layout>
-    </AppLayout>
   );
 }
