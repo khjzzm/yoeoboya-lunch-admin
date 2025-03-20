@@ -4,7 +4,7 @@ import {useState} from "react";
 import {useResources, useAddResourceRole} from "@/lib/api/useResources";
 import {Table, Tooltip, Select, Tag} from "antd";
 import type {ColumnsType} from "antd/es/table";
-import {handleApiError} from "@/lib/utils/handleApiError";
+import {apiErrorMessage} from "@/lib/utils/apiErrorMessage";
 
 interface Resource {
   resourceId: number;
@@ -39,7 +39,7 @@ export default function ResourcesPage() {
 
     addResourceRole.mutate({resourceId, role: newRole}, {
         onError: (error) => {
-          handleApiError(error);
+          apiErrorMessage(error);
           setSelectedRoles((prev) => ({...prev, [resourceId]: prevRole}));
         },
       }

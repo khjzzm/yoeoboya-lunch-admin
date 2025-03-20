@@ -42,7 +42,7 @@ export default function SearchFilters({ onSearch, filterOptions }: FilterProps) 
           onChange={(value) => {
             setSelectedFilter(value);
             setSearchValue("");
-            setSelectedRoles([]); // ✅ 필터 변경 시 역할 선택 초기화
+            setSelectedRoles([]); //  필터 변경 시 역할 선택 초기화
           }}
           style={{ minWidth: 120 }}
         />

@@ -1,7 +1,7 @@
 import {useQuery, useMutation, useQueryClient} from "@tanstack/react-query";
 import {api} from "@/lib/utils/api";
 import {message} from "antd";
-import {handleApiError} from "@/lib/utils/handleApiError";
+import {apiErrorMessage} from "@/lib/utils/apiErrorMessage";
 
 /** 권한 정보 조회 Hook */
 export function useRole(page: number, pageSize: number, filters?: Record<string, string | string[]>) {
@@ -34,7 +34,7 @@ export function useUpdateSecurityStatus() {
       queryClient.invalidateQueries({queryKey: ["fetchRole"]});
     },
     onError: (error) => {
-      handleApiError(error);
+      apiErrorMessage(error);
     },
   });
 }
@@ -53,7 +53,7 @@ export function useUpdateRole() {
       queryClient.invalidateQueries({queryKey: ["fetchRole"]});
     },
     onError: (error) => {
-      handleApiError(error);
+      apiErrorMessage(error);
     },
   });
 }

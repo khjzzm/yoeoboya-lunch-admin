@@ -200,14 +200,14 @@ export function useChangePassword() {
       return data;
     },
     onSuccess: () => {
-      // ✅ 1. Notification 표시
+      //  1. Notification 표시
       notification.warning({
         message: "비밀번호 변경 완료",
         description: "보안을 위해 3초 후 로그아웃됩니다.",
         duration: 5, // 3초 동안 표시
       });
 
-      // ✅ 2. 3초 후 로그아웃 및 페이지 이동
+      //  2. 3초 후 로그아웃 및 페이지 이동
       setTimeout(() => {
         Cookies.remove("token");
         Cookies.remove("refreshToken");

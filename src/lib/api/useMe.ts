@@ -2,6 +2,7 @@ import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {api} from "@/lib/utils/api";
 import {message, notification} from "antd";
 import {useAuthStore} from "@/store/useAuthStore";
+import {AxiosError} from "axios";
 
 
 /** 내 정보 수정 Hook */
@@ -119,14 +120,14 @@ export function useSetDefaultProfileImage() {
 /** 프로필 이미지 업로드 Hook */
 export function useUploadProfileImage() {
   const queryClient = useQueryClient();
-  const { user, setUser } = useAuthStore(); // 사용자 정보 업데이트
+  const {user, setUser} = useAuthStore(); // 사용자 정보 업데이트
 
   return useMutation({
     mutationFn: async (file: File) => {
       const formData = new FormData();
       formData.append("file", file);
 
-      const { data } = await api.post("/profile-image", formData, {
+      const {data} = await api.post("/profile-image", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -142,7 +143,7 @@ export function useUploadProfileImage() {
 
       // 최신 사용자 정보 가져와서 `user` 업데이트
       try {
-        const { data: memberData } = await api.get("/me");
+        const {data: memberData} = await api.get("/me");
         if (memberData?.data) {
           setUser({
             ...user,
@@ -153,12 +154,55 @@ export function useUploadProfileImage() {
         console.error("사용자 정보 업데이트 실패", error);
       }
 
-      queryClient.invalidateQueries({ queryKey: ["fetchProfileImages"] });
+      queryClient.invalidateQueries({queryKey: ["fetchProfileImages"]});
     },
-    onError: () => {
+    onError: (error: AxiosError<{ message?: string; detail?: string }>) => {
+      const errorMessage = error.response?.data?.message || "프로필 사진 업로드 실패";
+      const errorDetail = error.response?.data?.detail || "이미지를 업로드하는 중 오류가 발생했습니다.";
+
       notification.error({
-        message: "프로필 사진 업로드 실패",
-        description: "이미지를 업로드하는 중 오류가 발생했습니다.",
+        message: errorMessage,
+        description: errorDetail,
+      });
+    },
+  });
+}
+
+/** 프로필 이미지 삭제 Hook */
+export function useDeleteProfileImage() {
+  const queryClient = useQueryClient();
+  const {user, setUser} = useAuthStore(); // 사용자 정보 업데이트
+
+  return useMutation({
+    mutationFn: async (imageNo: number) => {
+      const {data} = await api.delete(`/profile-image`, {
+        params: {imageNo},
+      });
+      return data;
+    },
+    onSuccess: async () => {
+      message.success("프로필 이미지가 삭제되었습니다.");
+      // 최신 사용자 정보 가져와서 `user` 업데이트
+      try {
+        const {data: memberData} = await api.get("/me");
+        if (memberData?.data) {
+          setUser({
+            ...user,
+            ...memberData.data,
+          });
+        }
+      } catch (error) {
+        console.error("사용자 정보 업데이트 실패", error);
+      }
+
+      queryClient.invalidateQueries({queryKey: ["fetchProfileImages"]});
+    },
+    onError: (error: AxiosError<{ message?: string; detail?: string }>) => {
+      const errorDescription = error.response?.data?.message || "프로필 사진 삭제 실패";
+
+      notification.error({
+        message: "이미지를 삭제하는 중 오류가 발생했습니다.",
+        description: errorDescription,
       });
     },
   });

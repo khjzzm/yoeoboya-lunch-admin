@@ -1,13 +1,12 @@
 "use client";
 
-import {Form, Input, Button, Upload, Avatar, Typography, Modal} from "antd";
-import {StarOutlined, PlusCircleOutlined} from "@ant-design/icons";
+import {Form, Input, Button, Upload, Avatar, Typography, Modal, Popconfirm} from "antd";
+import {StarOutlined, PlusCircleOutlined, CloseOutlined} from "@ant-design/icons";
 import {useAuthStore} from "@/store/useAuthStore";
 import {useEffect, useState} from "react";
-import {User} from "@/interfaces/auth";
-import {useSetDefaultProfileImage, useUploadProfileImage, useUpdateMyInfo} from "@/lib/api/useMe";
+import {useSetDefaultProfileImage, useUploadProfileImage, useUpdateMyInfo, useDeleteProfileImage} from "@/lib/api/useMe";
 import Image from "next/image";
-import {handleApiError} from "@/lib/utils/handleApiError"; // ✅ next/image 사용
+import {applyApiValidationErrors} from "@/lib/utils/apiErrorMessage";
 
 const {Title} = Typography;
 
@@ -17,10 +16,13 @@ export default function ProfileSettings() {
   const [currentProfileImage, setCurrentProfileImage] = useState<string | null>(null); // 대표 이미지 (실제 변경될 값)
   const [selectedImage, setSelectedImage] = useState<string | null>(null); // 모달에서 표시할 이미지
   const [selectedImageId, setSelectedImageId] = useState<number | null>(null); // 선택된 이미지 ID
+  const [hoveredImageId, setHoveredImageId] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const setDefaultProfileImage = useSetDefaultProfileImage(); // 대표사진 등록 API 호출
-  const uploadProfileImage = useUploadProfileImage(); //사진 업로드
+  const setDefaultProfileImage = useSetDefaultProfileImage();
+  const uploadProfileImage = useUploadProfileImage();
   const updateMyInfo = useUpdateMyInfo();
+  const deleteProfileImage = useDeleteProfileImage();
+
 
   useEffect(() => {
     if (user) {
@@ -30,22 +32,23 @@ export default function ProfileSettings() {
     }
   }, [user, form]);
 
-  const onFinish = (values: { info?: { bio?: string; nickName?: string; phoneNumber?: string } }) => {
-    const updateData: { bio?: string; nickName?: string; phoneNumber?: string } = {};
+  const onFinish = ({info}: { info?: { bio?: string; nickName?: string; phoneNumber?: string } }) => {
+    //  기존 에러 메시지 초기화 (입력값 유지)
+    form.setFields(
+      Object.keys(info || {}).map((key) => ({name: ["info", key], errors: []}))
+    );
 
-    if (values.info?.bio !== undefined) updateData.bio = values.info.bio;
-    if (values.info?.nickName !== undefined) updateData.nickName = values.info.nickName;
-    if (values.info?.phoneNumber !== undefined) updateData.phoneNumber = values.info.phoneNumber;
-
-    updateMyInfo.mutate(updateData, {
-      onError: (error) => {
-        handleApiError(error, true, form);
-      },
-    })
+    updateMyInfo.mutate(info || {}, {
+      onError: (error) => applyApiValidationErrors(error, form),
+    });
   };
 
-  const handleImageUpload = ({ file }: { file: File }) => {
+  const handleImageUpload = ({file}: { file: File }) => {
     uploadProfileImage.mutate(file);
+  };
+
+  const handleDeleteProfileImage = (imageNo: number) => {
+    deleteProfileImage.mutate(imageNo);
   };
 
   /** 썸네일 클릭 시 모달만 열기 (대표 사진 변경 X) */
@@ -87,13 +90,13 @@ export default function ProfileSettings() {
           <Upload
             showUploadList={false}
             beforeUpload={(file) => {
-              handleImageUpload({ file: file as File }); // ✅ 직접 함수 호출
-              return false; // ✅ 기본 업로드 이벤트를 막음 (중복 요청 방지)
+              handleImageUpload({file: file as File}); //  직접 함수 호출
+              return false; //  기본 업로드 이벤트를 막음 (중복 요청 방지)
             }}
           >
             <Button
               shape="circle"
-              icon={<PlusCircleOutlined />}
+              icon={<PlusCircleOutlined/>}
               className="absolute bottom-0 right-0 bg-white shadow-md"
             />
           </Upload>
@@ -101,16 +104,28 @@ export default function ProfileSettings() {
 
         {/* 썸네일 목록 */}
         <div className="flex space-x-2">
-          {user?.profileImages?.map((image, index) => (
-            <Avatar
-              key={index}
-              size={60}
-              src={image.thumbnailUrl}
-              className={`cursor-pointer transition-all duration-200 hover:scale-105 ${
-                selectedImageId === image.profileImageNo ? "border-2 border-blue-500" : ""
-              }`}
-              onClick={() => handleImageClick(image.imageUrl, image.profileImageNo)}
-            />
+          {user?.profileImages?.map((image) => (
+            <div
+              key={image.profileImageNo}
+              className="relative group"
+              onMouseEnter={() => setHoveredImageId(image.profileImageNo)}
+            >
+              {/* 썸네일 */}
+              <Avatar
+                size={60}
+                src={image.thumbnailUrl}
+                className="cursor-pointer transition-all duration-200 hover:scale-105 border border-gray-300"
+                onClick={() => handleImageClick(image.imageUrl, image.profileImageNo)}
+              />
+
+              {hoveredImageId === image.profileImageNo && (
+                <Popconfirm title="프로필 이미지를 삭제하시겠습니까?" onConfirm={() => handleDeleteProfileImage(image.profileImageNo)} okText="삭제" cancelText="취소" >
+                  <button className="absolute -top-2 -right-2 w-6 h-6 flex items-center justify-center bg-white border border-gray-300 rounded-full shadow-md hover:bg-red-500" >
+                    <CloseOutlined className="text-red-500 hover:text-white text-sm"/>
+                  </button>
+                </Popconfirm>
+              )}
+            </div>
           ))}
         </div>
       </div>
@@ -130,7 +145,7 @@ export default function ProfileSettings() {
           </Form.Item>
 
           <Form.Item name={["info", "phoneNumber"]} label="전화번호" className="col-span-1">
-            <Input/>
+            <Input placeholder="010-1234-5678"/>
           </Form.Item>
         </div>
 
@@ -163,7 +178,7 @@ export default function ProfileSettings() {
           <Button
             key="set-default"
             type="primary"
-            icon={<StarOutlined />}
+            icon={<StarOutlined/>}
             onClick={handleSetAsDefault}
             disabled={!selectedImageId}
           >

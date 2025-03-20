@@ -3,7 +3,7 @@ interface ValidationError {
   message: string;
 }
 
-export interface ValidationResponse {
+export interface ApiResponse {
   code: number;
   message: string;
   validation?: ValidationError[];

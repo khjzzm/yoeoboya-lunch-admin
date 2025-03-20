@@ -8,7 +8,7 @@ import {
 import {Table, Button, Input, Switch, Form, Modal, Space, Tooltip} from "antd";
 import {useEffect, useState} from "react";
 import {EditOutlined, DeleteOutlined, PlusOutlined} from "@ant-design/icons";
-import {handleApiError} from "@/lib/utils/handleApiError";
+import {apiErrorMessage} from "@/lib/utils/apiErrorMessage";
 
 // TokenIgnoreUrl 인터페이스
 interface TokenIgnoreUrl {
@@ -65,7 +65,7 @@ export default function TokenIgnoreUrlsPage() {
           setIsDeleteModalOpen(false);
         },
         onError: (error) => {
-          handleApiError(error);
+          apiErrorMessage(error);
         },
       });
     }
@@ -76,7 +76,7 @@ export default function TokenIgnoreUrlsPage() {
     form.validateFields().then((values) => {
       updateTokenIgnoreUrl.mutate(values, {
         onError: (error) => {
-          handleApiError(error);
+          apiErrorMessage(error);
         },
         onSettled: () => {
           setIsModalOpen(false);

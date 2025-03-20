@@ -2,7 +2,7 @@
 
 import { useSignUp } from "@/lib/api/useUser";
 import {Form, Input, Button, Card, Typography, Alert} from "antd";
-import {handleApiError} from "@/lib/utils/handleApiError";
+import {apiErrorMessage, applyApiValidationErrors} from "@/lib/utils/apiErrorMessage";
 import {useState} from "react";
 import {SignUpData} from "@/interfaces/auth";
 
@@ -16,10 +16,9 @@ export default function SignUpPage() {
   const handleSignUp = (values: SignUpData) => {
     signUpMutation.mutate(values, {
       onError: (error) => {
-        const returnedError = handleApiError(error, false, form);
-        if (returnedError) {
-          setErrorMessage(returnedError);
-        }
+        if (applyApiValidationErrors(error, form)) return;
+        const returnedError = apiErrorMessage(error, false);
+        if (returnedError) setErrorMessage(returnedError);
       },
     });
   };

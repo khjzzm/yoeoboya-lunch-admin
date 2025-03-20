@@ -4,7 +4,7 @@ import {useState} from "react";
 import {useUser} from "@/lib/api/useUser";
 import {useRouter} from "next/navigation";
 import {Form, Input, Button, Card, Typography, Alert} from "antd";
-import {handleApiError} from "@/lib/utils/handleApiError";
+import {apiErrorMessage, applyApiValidationErrors} from "@/lib/utils/apiErrorMessage";
 
 const {Title, Text} = Typography;
 
@@ -15,14 +15,11 @@ export default function LoginPage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null); //  전체 에러 메시지 상태 추가
 
   const handleLogin = (values: { loginId: string; password: string }) => {
-    setErrorMessage(null); //  새로운 요청 전에 에러 초기화
-
     loginMutation.mutate(values, {
       onError: (error) => {
-        const returnedError = handleApiError(error, false, form);
-        if (returnedError) {
-          setErrorMessage(returnedError);
-        }
+        if (applyApiValidationErrors(error, form)) return;
+        const returnedError = apiErrorMessage(error, false);
+        if (returnedError) setErrorMessage(returnedError);
       },
     });
   };

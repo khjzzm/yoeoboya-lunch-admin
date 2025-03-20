@@ -1,11 +1,11 @@
 "use client";
 
-import {Form, Input, Button, Typography} from "antd";
+import {Form, Input, Button, Typography, Alert} from "antd";
 import {useChangePassword} from "@/lib/api/useUser";
 import {useAuthStore} from "@/store/useAuthStore";
 import {ChangePasswordData} from "@/interfaces/auth";
-import {useEffect} from "react";
-import {handleApiError} from "@/lib/utils/handleApiError";
+import {useEffect, useState} from "react";
+import {apiErrorMessage, applyApiValidationErrors} from "@/lib/utils/apiErrorMessage";
 import {KeyOutlined, LockOutlined} from "@ant-design/icons";
 
 const {Title} = Typography;
@@ -14,6 +14,7 @@ export default function SecuritySettings() {
   const {user} = useAuthStore();
   const [form] = Form.useForm();
   const changePassword = useChangePassword();
+  const [errorMessage, setErrorMessage] = useState<string | null>(null); //  전체 에러 메시지 상태 추가
 
   useEffect(() => {
     if (user) {
@@ -23,8 +24,18 @@ export default function SecuritySettings() {
 
   const onFinish = (values: ChangePasswordData) => {
     changePassword.mutate(values, {
+      onSuccess: () =>{
+        setErrorMessage(null);
+      },
       onError: (error) => {
-        handleApiError(error, true, form);
+        if (applyApiValidationErrors(error, form)) {
+          setErrorMessage(null);
+          return;
+        }
+        const returnedError = apiErrorMessage(error, false);
+        if (returnedError) {
+          setErrorMessage(returnedError);
+        }
       },
     });
   };
@@ -32,6 +43,15 @@ export default function SecuritySettings() {
   return (
     <div className="w-full bg-white p-12 rounded-lg shadow-md">
       <Title level={5} className="text-gray-800 mb-6">🔐 비밀번호 및 인증</Title>
+
+      {errorMessage && (
+        <Alert
+          message={errorMessage}
+          type="error"
+          showIcon
+          className="mb-4"
+        />
+      )}
 
       <Form form={form} layout="vertical" onFinish={onFinish} className="w-full">
         <div className="grid grid-cols-2 gap-6 hidden">
