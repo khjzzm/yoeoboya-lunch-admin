@@ -16,7 +16,7 @@ export const metadata = {
     siteName: "Yeoboya Lunch Admin",
     images: [
       {
-        url: "/meta-image.png",
+        url: "https://admin.yeoboya-lunch.com/meta-image.png",
         width: 1200,
         height: 630,
         alt: "여보야 점심시간 어드민"
