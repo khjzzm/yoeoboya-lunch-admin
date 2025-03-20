@@ -10,6 +10,7 @@ const nextConfig: NextConfig = {
         hostname: "yeoboya-lunch-s3.s3.amazonaws.com",
       },
     ],
+    domains: ["yeoboya-lunch-s3.s3.amazonaws.com"],
   },
 };
 

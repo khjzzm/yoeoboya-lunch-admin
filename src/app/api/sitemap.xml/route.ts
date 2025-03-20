@@ -1,17 +1,15 @@
-import {NextResponse} from "next/server";
+import { NextResponse } from "next/server";
 
-export function GET() {
-  const baseUrl = "https://admin.yeoboya-lunch.com";
+export const dynamic = "force-dynamic"; // ✅ 정적 생성 방지 (빌드 시 문제 해결)
 
-  const sitemap = `
-    <?xml version="1.0" encoding="UTF-8"?>
+export async function GET() {
+  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
     <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
       <url>
-        <loc>${baseUrl}</loc>
+        <loc>https://admin.yeoboya-lunch.com</loc>
         <lastmod>${new Date().toISOString()}</lastmod>
       </url>
-    </urlset>
-  `;
+    </urlset>`;
 
   return new NextResponse(sitemap, {
     headers: {
