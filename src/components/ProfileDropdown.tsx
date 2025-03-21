@@ -59,7 +59,9 @@ export default function ProfileDropdown() {
       <div className="cursor-pointer flex items-center space-x-2">
         <Avatar
           size={40}
-          src={user?.profileImages?.find((img) => img.isDefault)?.imageUrl || ""}
+          src={
+            user?.profileImages?.find((img) => img.isDefault)?.imageUrl || null
+          }
           className="border-2 border-gray-300"
         />
         {/*<Text className="text-white">{user?.name || user?.loginId}</Text>*/}

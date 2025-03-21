@@ -15,7 +15,7 @@ export function useLogin() {
   return useMutation({
     mutationFn: async (loginData: { loginId: string; password: string }) => {
       const {data} = await api.post("/user/sign-in", loginData);
-      if (data?.code !== 200 || !data?.data?.accessToken || !data?.data?.refreshToken || !data?.data?.issuer) {
+      if (data?.code !== 200 || !data?.data?.accessToken || !data?.data?.refreshToken) {
         throw new Error("로그인 실패: 응답 데이터 오류");
       }
 
@@ -23,13 +23,11 @@ export function useLogin() {
         loginId: data.data.subject,
         accessToken: data.data.accessToken,
         refreshToken: data.data.refreshToken,
-        provider: data.data.issuer
       };
     },
     onSuccess: async (loginData) => {
       Cookies.set("token", loginData.accessToken, {path: "/"});
       Cookies.set("refreshToken", loginData.refreshToken, {path: "/"});
-      Cookies.set("provider", loginData.provider, {path: "/"});
 
       const {data: memberData} = await api.get(`/me`);
       if (memberData?.data) {
@@ -148,13 +146,13 @@ export function useSocialSignUp() {
       return {
         accessToken: data.data.accessToken,
         refreshToken: data.data.refreshToken,
-        provider: signUpData.provider,
       };
     },
-    onSuccess: async ({accessToken, refreshToken, provider}) => {
+    onSuccess: async ({accessToken, refreshToken}) => {
+      message.success("회원가입 성공! 자동 로그인 중...");
+
       Cookies.set("token", accessToken, {path: "/"});
       Cookies.set("refreshToken", refreshToken, {path: "/"});
-      if (provider) Cookies.set("provider", provider, {path: "/"});
 
       try {
         const {data: memberData} = await api.get("/me");
@@ -177,87 +175,7 @@ export function useSocialSignUp() {
   });
 }
 
-/** Token 재발급 Hook */
-export function useRefreshToken() {
-  const {user, setUser} = useAuthStore();
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async () => {
-      if (!user?.loginId) throw new Error("❌ 로그인 정보 없음, 다시 로그인 필요!");
-      const oldRefreshToken = Cookies.get("refreshToken");
-
-      // Access Token 재발급 API 요청
-      const {data} = await api.post("/user/reissue", {
-        loginId: user.loginId,
-        refreshToken: oldRefreshToken, // 기존 Refresh Token 사용
-        provider: user.provider,
-      });
-
-      if (!data?.data?.accessToken || !data?.data?.refreshToken) {
-        throw new Error("토큰 갱신 실패: 응답 데이터 오류");
-      }
-
-      return {
-        accessToken: data.data.accessToken,
-        refreshToken: data.data.refreshToken,
-      };
-    },
-    onSuccess: async ({accessToken, refreshToken}) => {
-      Cookies.set("token", accessToken, {path: "/", secure: true, sameSite: "Strict"});
-      Cookies.set("refreshToken", refreshToken, {path: "/", secure: true, sameSite: "Strict"});
-
-      // 사용자 정보 업데이트
-      const loginId = user?.loginId;
-      if (loginId) {
-        const {data: memberData} = await api.get(`/me`);
-        if (memberData?.data) {
-          setUser({
-            ...user,
-            ...memberData.data
-          });
-        }
-      }
-
-      // React Query 캐시 무효화
-      queryClient.invalidateQueries({queryKey: ["fetchMemberSummary", loginId]});
-      console.log("✅ Access & Refresh Token 갱신 완료:", accessToken, refreshToken);
-    },
-    onError: () => {
-      message.error("세션이 만료되었습니다. 다시 로그인하세요.");
-      Cookies.remove("token");
-      Cookies.remove("refreshToken");
-      useAuthStore.getState().logout();
-      window.location.href = "/user/login";
-    },
-  });
-}
-
-/** 단독 Refresh AccessToken 요청 함수 */
-export async function refreshAccessTokenFn() {
-  const refreshToken = Cookies.get("refreshToken");
-  const provider = Cookies.get("provider");
-
-  console.log(refreshToken, provider)
-
-  if (!refreshToken || !provider) {
-    throw new Error("❌ 토큰 갱신 조건이 부족합니다");
-  }
-
-  const {data} = await api.post("/user/reissue", {refreshToken: refreshToken, provider: provider});
-
-  if (!data?.data?.accessToken || !data?.data?.refreshToken) {
-    throw new Error("❌ 갱신된 토큰 데이터가 없습니다");
-  }
-
-  Cookies.set("token", data.data.accessToken, {path: "/"});
-  Cookies.set("refreshToken", data.data.refreshToken, {path: "/"});
-
-  return data.data.accessToken;
-}
-
-
-//** 비밀번호 변경 API Hook */
+/** 비밀번호 변경 API Hook */
 export function useChangePassword() {
   const logout = useAuthStore((state) => state.logout);
   const router = useRouter();
