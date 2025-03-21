@@ -56,3 +56,12 @@ export interface SignUpData {
   name: string;
   password: string;
 }
+
+// URL 파라미터 파싱용 타입은 모두 optional
+export interface SocialSignUpQueryParams {
+  loginId?: string;
+  email?: string;
+  name?: string;
+  provider?: string;
+  profileImageUrl?: string;
+}

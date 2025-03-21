@@ -4,7 +4,7 @@ import {useState} from "react";
 import {Avatar, Button, Dropdown, Typography, Card} from "antd";
 import {LogoutOutlined, PlusCircleOutlined} from "@ant-design/icons";
 import {useAuthStore} from "@/store/useAuthStore";
-import {useLogout} from "@/lib/api/useUser";
+import {useLogout} from "@/lib/api/useLogin";
 import {useRouter} from "next/navigation";
 
 const {Text} = Typography;

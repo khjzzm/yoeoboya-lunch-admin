@@ -1,7 +1,7 @@
 "use client";
 
 import {Form, Input, Button, Typography, Alert} from "antd";
-import {useChangePassword} from "@/lib/api/useUser";
+import {useChangePassword} from "@/lib/api/useLogin";
 import {useAuthStore} from "@/store/useAuthStore";
 import {ChangePasswordData} from "@/interfaces/auth";
 import {useEffect, useState} from "react";

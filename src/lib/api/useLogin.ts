@@ -4,10 +4,10 @@ import {useRouter} from "next/navigation";
 import {useAuthStore} from "@/store/useAuthStore";
 import {message, notification} from "antd";
 import Cookies from "js-cookie";
-import {ChangePasswordData, SignUpData} from "@/interfaces/auth";
+import {ChangePasswordData, SignUpData, SocialSignUpQueryParams} from "@/interfaces/auth";
 
 /** 로그인 Hook */
-export function useUser() {
+export function useLogin() {
   const setUser = useAuthStore((state) => state.setUser);
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -15,19 +15,21 @@ export function useUser() {
   return useMutation({
     mutationFn: async (loginData: { loginId: string; password: string }) => {
       const {data} = await api.post("/user/sign-in", loginData);
-      if (data?.code !== 200 || !data?.data?.accessToken || !data?.data?.refreshToken) {
+      if (data?.code !== 200 || !data?.data?.accessToken || !data?.data?.refreshToken || !data?.data?.issuer) {
         throw new Error("로그인 실패: 응답 데이터 오류");
       }
 
       return {
         loginId: data.data.subject,
         accessToken: data.data.accessToken,
-        refreshToken: data.data.refreshToken
+        refreshToken: data.data.refreshToken,
+        provider: data.data.issuer
       };
     },
     onSuccess: async (loginData) => {
       Cookies.set("token", loginData.accessToken, {path: "/"});
       Cookies.set("refreshToken", loginData.refreshToken, {path: "/"});
+      Cookies.set("provider", loginData.provider, {path: "/"});
 
       const {data: memberData} = await api.get(`/me`);
       if (memberData?.data) {
@@ -129,6 +131,52 @@ export function useSignUp() {
   });
 }
 
+/** 소셜 회원가입 Hook */
+export function useSocialSignUp() {
+  const setUser = useAuthStore((state) => state.setUser);
+  const router = useRouter();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (signUpData: SocialSignUpQueryParams) => {
+      const {data} = await api.post("/user/social/sign-up", signUpData);
+
+      if (!data?.data?.accessToken || !data?.data?.refreshToken) {
+        throw new Error("소셜 회원가입 실패: 토큰 발급 실패");
+      }
+
+      return {
+        accessToken: data.data.accessToken,
+        refreshToken: data.data.refreshToken,
+        provider: signUpData.provider,
+      };
+    },
+    onSuccess: async ({accessToken, refreshToken, provider}) => {
+      Cookies.set("token", accessToken, {path: "/"});
+      Cookies.set("refreshToken", refreshToken, {path: "/"});
+      if (provider) Cookies.set("provider", provider, {path: "/"});
+
+      try {
+        const {data: memberData} = await api.get("/me");
+
+        if (memberData?.data) {
+          setUser(memberData.data);
+          queryClient.invalidateQueries({queryKey: ["fetchMemberSummary", memberData.data.loginId]});
+        }
+
+        message.success("로그인 완료! 🎉");
+        router.push("/");
+      } catch (err) {
+        console.error("🙅 사용자 정보 조회 실패:", err);
+        message.error("로그인 후 사용자 정보를 불러오지 못했습니다.");
+      }
+    },
+    onError: (error: unknown) => {
+      message.error("소셜 회원가입 실패: " + (error as Error).message);
+    }
+  });
+}
+
 /** Token 재발급 Hook */
 export function useRefreshToken() {
   const {user, setUser} = useAuthStore();
@@ -183,6 +231,29 @@ export function useRefreshToken() {
       window.location.href = "/user/login";
     },
   });
+}
+
+/** 단독 Refresh AccessToken 요청 함수 */
+export async function refreshAccessTokenFn() {
+  const refreshToken = Cookies.get("refreshToken");
+  const provider = Cookies.get("provider");
+
+  console.log(refreshToken, provider)
+
+  if (!refreshToken || !provider) {
+    throw new Error("❌ 토큰 갱신 조건이 부족합니다");
+  }
+
+  const {data} = await api.post("/user/reissue", {refreshToken: refreshToken, provider: provider});
+
+  if (!data?.data?.accessToken || !data?.data?.refreshToken) {
+    throw new Error("❌ 갱신된 토큰 데이터가 없습니다");
+  }
+
+  Cookies.set("token", data.data.accessToken, {path: "/"});
+  Cookies.set("refreshToken", data.data.refreshToken, {path: "/"});
+
+  return data.data.accessToken;
 }
 
 
