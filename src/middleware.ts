@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 export function middleware(req: NextRequest) {
   const token = req.cookies.get("token")?.value;
+  const refreshToken = req.cookies.get("refreshToken")?.value;
+  console.log("1", token);
+  console.log("2", refreshToken);
+
   const { pathname } = req.nextUrl;
 
   console.log(`🚀 [Middleware] 현재 경로: ${pathname}`);

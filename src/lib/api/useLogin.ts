@@ -8,39 +8,27 @@ import {ChangePasswordData, SignUpData, SocialSignUpQueryParams} from "@/interfa
 
 /** 로그인 Hook */
 export function useLogin() {
-  const setUser = useAuthStore((state) => state.setUser);
   const router = useRouter();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (loginData: { loginId: string; password: string }) => {
       const {data} = await api.post("/user/sign-in", loginData);
-      if (data?.code !== 200 || !data?.data?.accessToken || !data?.data?.refreshToken) {
-        throw new Error("로그인 실패: 응답 데이터 오류");
+      if (data?.code !== 200) {
+        throw new Error("로그인 실패: 응답 코드 오류");
       }
-
-      return {
-        loginId: data.data.subject,
-        accessToken: data.data.accessToken,
-        refreshToken: data.data.refreshToken,
-      };
+      return {loginId: loginData.loginId}; // 쿠키에 토큰이 이미 설정됨
     },
-    onSuccess: async (loginData) => {
-      Cookies.set("token", loginData.accessToken, {path: "/"});
-      Cookies.set("refreshToken", loginData.refreshToken, {path: "/"});
-
-      const {data: memberData} = await api.get(`/me`);
-      if (memberData?.data) {
-        loginData = {
-          ...memberData.data
-        };
-      }
-      setUser(loginData);
-
+    onSuccess: async () => {
       message.success("로그인 성공! 🎉");
-      queryClient.invalidateQueries({queryKey: ["fetchMemberSummary", loginData.loginId]});
+
+      queryClient.invalidateQueries({queryKey: ["refreshToken"]}); // 이거만 있으면 됨
       router.push("/");
-    }
+    },
+    onError: (error: unknown) => {
+      console.error("로그인 실패", error);
+      message.error("로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.");
+    },
   });
 }
 
@@ -51,37 +39,28 @@ export function useLogout() {
 
   return useMutation({
     mutationFn: async () => {
-      const token = Cookies.get("token");
-      const refreshToken = Cookies.get("refreshToken");
-
-      if (!token || !refreshToken) {
-        throw new Error("로그아웃 실패: 토큰이 없습니다.");
-      }
-
-      await api.post("/user/sign-out", {
-        accessToken: token,
-        refreshToken: refreshToken,
-      });
+      await api.post("/user/sign-out"); // 서버에서 토큰 가져와 삭제
     },
     onSuccess: () => {
-      Cookies.remove("token");
-      Cookies.remove("refreshToken");
-
-      logout();
+      logout(); // Zustand 초기화
       message.success("로그아웃 되었습니다.");
       router.push("/user/login");
+    },
+    onError: (err) => {
+      console.error("로그아웃 실패", err);
+      message.error("로그아웃에 실패했습니다.");
     }
   });
 }
 
 /** 회원가입 Hook  */
 export function useSignUp() {
-  const setUser = useAuthStore((state) => state.setUser);
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (signUpData: SignUpData) => {
-      const {data} = await api.post("/user/sign-up", signUpData);
+      const { data } = await api.post("/user/sign-up", signUpData);
       if (data?.code !== 201) {
         throw new Error("회원가입 실패: 응답 데이터 오류");
       }
@@ -91,33 +70,13 @@ export function useSignUp() {
       message.success("회원가입 성공! 자동 로그인 중...");
 
       try {
-        const {data} = await api.post("/user/sign-in", {
+        await api.post("/user/sign-in", {
           loginId: signUpData.loginId,
           password: signUpData.password,
         });
 
-        if (!data?.data?.accessToken || !data?.data?.refreshToken) {
-          throw new Error("자동 로그인 실패: 응답 오류");
-        }
+        queryClient.invalidateQueries({ queryKey: ["refreshToken"] }); // 자동 동기화됨
 
-        let userData = {
-          loginId: data.data.subject,
-          accessToken: data.data.accessToken,
-          refreshToken: data.data.refreshToken,
-        };
-
-        Cookies.set("token", userData.accessToken, {path: "/"});
-        Cookies.set("refreshToken", userData.refreshToken, {path: "/"});
-
-        const {data: memberData} = await api.get(`/me`);
-        if (memberData?.data) {
-          userData = {
-            ...userData,
-            ...memberData.data
-          };
-        }
-
-        setUser(userData);
 
         message.success("자동 로그인 완료! 🎉");
         router.push("/");
@@ -131,43 +90,28 @@ export function useSignUp() {
 
 /** 소셜 회원가입 Hook */
 export function useSocialSignUp() {
-  const setUser = useAuthStore((state) => state.setUser);
   const router = useRouter();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (signUpData: SocialSignUpQueryParams) => {
-      const {data} = await api.post("/user/social/sign-up", signUpData);
+      const { data } = await api.post("/user/social/sign-up", signUpData);
 
-      if (!data?.data?.accessToken || !data?.data?.refreshToken) {
-        throw new Error("소셜 회원가입 실패: 토큰 발급 실패");
+      // 서버에서 쿠키로 내려줬다고 가정
+      if (!data?.code || data.code !== 201) {
+        throw new Error("소셜 회원가입 실패: 응답 오류");
       }
 
-      return {
-        accessToken: data.data.accessToken,
-        refreshToken: data.data.refreshToken,
-      };
+      return data;
     },
-    onSuccess: async ({accessToken, refreshToken}) => {
+    onSuccess: async () => {
       message.success("회원가입 성공! 자동 로그인 중...");
 
-      Cookies.set("token", accessToken, {path: "/"});
-      Cookies.set("refreshToken", refreshToken, {path: "/"});
+      // ✅ 토큰은 쿠키에 서버가 저장했으므로, 상태만 invalidate
+      queryClient.invalidateQueries({ queryKey: ["refreshToken"] });
 
-      try {
-        const {data: memberData} = await api.get("/me");
-
-        if (memberData?.data) {
-          setUser(memberData.data);
-          queryClient.invalidateQueries({queryKey: ["fetchMemberSummary", memberData.data.loginId]});
-        }
-
-        message.success("로그인 완료! 🎉");
-        router.push("/");
-      } catch (err) {
-        console.error("🙅 사용자 정보 조회 실패:", err);
-        message.error("로그인 후 사용자 정보를 불러오지 못했습니다.");
-      }
+      message.success("로그인 완료! 🎉");
+      router.push("/");
     },
     onError: (error: unknown) => {
       message.error("소셜 회원가입 실패: " + (error as Error).message);

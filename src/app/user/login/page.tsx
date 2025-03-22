@@ -32,7 +32,6 @@ export default function LoginPage() {
       console.warn("❌ 환경변수(NEXT_PUBLIC_API_URL)가 설정되지 않았습니다.");
       return;
     }
-
     const authUrl = new URL(`/oauth2/authorization/${provider}`, backendUrl).toString();
     window.location.href = authUrl;
   };
