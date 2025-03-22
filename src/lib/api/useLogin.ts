@@ -17,18 +17,79 @@ export function useLogin() {
       if (data?.code !== 200) {
         throw new Error("로그인 실패: 응답 코드 오류");
       }
-      return {loginId: loginData.loginId}; // 쿠키에 토큰이 이미 설정됨
+      return {loginId: loginData.loginId};
     },
     onSuccess: async () => {
-      message.success("로그인 성공! 🎉");
-
-      queryClient.invalidateQueries({queryKey: ["refreshToken"]}); // 이거만 있으면 됨
+      await queryClient.refetchQueries({queryKey: ["refresh-trigger"]});
       router.push("/");
+      message.success("로그인 성공! 🎉");
     },
     onError: (error: unknown) => {
       console.error("로그인 실패", error);
       message.error("로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.");
     },
+  });
+}
+
+/** 회원가입 Hook  */
+export function useSignUp() {
+  const router = useRouter();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (signUpData: SignUpData) => {
+      const {data} = await api.post("/user/sign-up", signUpData);
+      if (data?.code !== 201) {
+        throw new Error("회원가입 실패: 응답 데이터 오류");
+      }
+      return signUpData;
+    },
+    onSuccess: async (signUpData) => {
+      message.success("회원가입 성공! 자동 로그인 중...");
+
+      try {
+        await api.post("/user/sign-in", {
+          loginId: signUpData.loginId,
+          password: signUpData.password,
+        });
+
+        queryClient.invalidateQueries({queryKey: ["refreshToken"]}).then(() => {
+          router.push("/");
+          message.success("자동 로그인 완료! 🎉");
+        });
+      } catch (error) {
+        console.error("자동 로그인 중 오류 발생:", error);
+        throw new Error("자동 로그인 실패. 다시 로그인하세요.");
+      }
+    },
+  });
+}
+
+/** 소셜 회원가입 Hook */
+export function useSocialSignUp() {
+  const router = useRouter();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (signUpData: SocialSignUpQueryParams) => {
+      const {data} = await api.post("/user/social/sign-up", signUpData);
+
+      // 서버에서 쿠키로 내려줬다고 가정
+      if (!data?.code || data.code !== 201) {
+        throw new Error("소셜 회원가입 실패: 응답 오류");
+      }
+
+      return data;
+    },
+    onSuccess: async () => {
+      message.success("회원가입 성공! 자동 로그인 중...");
+      await queryClient.refetchQueries({queryKey: ["refresh-trigger"]});
+      router.push("/");
+      message.success("로그인 성공! 🎉");
+    },
+    onError: (error: unknown) => {
+      message.error("소셜 회원가입 실패: " + (error as Error).message);
+    }
   });
 }
 
@@ -49,72 +110,6 @@ export function useLogout() {
     onError: (err) => {
       console.error("로그아웃 실패", err);
       message.error("로그아웃에 실패했습니다.");
-    }
-  });
-}
-
-/** 회원가입 Hook  */
-export function useSignUp() {
-  const router = useRouter();
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async (signUpData: SignUpData) => {
-      const { data } = await api.post("/user/sign-up", signUpData);
-      if (data?.code !== 201) {
-        throw new Error("회원가입 실패: 응답 데이터 오류");
-      }
-      return signUpData;
-    },
-    onSuccess: async (signUpData) => {
-      message.success("회원가입 성공! 자동 로그인 중...");
-
-      try {
-        await api.post("/user/sign-in", {
-          loginId: signUpData.loginId,
-          password: signUpData.password,
-        });
-
-        queryClient.invalidateQueries({ queryKey: ["refreshToken"] }); // 자동 동기화됨
-
-
-        message.success("자동 로그인 완료! 🎉");
-        router.push("/");
-      } catch (error) {
-        console.error("자동 로그인 중 오류 발생:", error);
-        throw new Error("자동 로그인 실패. 다시 로그인하세요.");
-      }
-    },
-  });
-}
-
-/** 소셜 회원가입 Hook */
-export function useSocialSignUp() {
-  const router = useRouter();
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async (signUpData: SocialSignUpQueryParams) => {
-      const { data } = await api.post("/user/social/sign-up", signUpData);
-
-      // 서버에서 쿠키로 내려줬다고 가정
-      if (!data?.code || data.code !== 201) {
-        throw new Error("소셜 회원가입 실패: 응답 오류");
-      }
-
-      return data;
-    },
-    onSuccess: async () => {
-      message.success("회원가입 성공! 자동 로그인 중...");
-
-      // ✅ 토큰은 쿠키에 서버가 저장했으므로, 상태만 invalidate
-      queryClient.invalidateQueries({ queryKey: ["refreshToken"] });
-
-      message.success("로그인 완료! 🎉");
-      router.push("/");
-    },
-    onError: (error: unknown) => {
-      message.error("소셜 회원가입 실패: " + (error as Error).message);
     }
   });
 }

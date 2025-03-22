@@ -1,14 +1,12 @@
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {api} from "@/lib/utils/api";
-import {message, notification} from "antd";
-import {useAuthStore} from "@/store/useAuthStore";
+import {notification} from "antd";
 import {AxiosError} from "axios";
-
+import {refetchMyInfo} from "@/lib/hook/useFetchMyInfo";
 
 /** 내 정보 수정 Hook */
 export function useUpdateMyInfo() {
   const queryClient = useQueryClient();
-  const {user, setUser} = useAuthStore();
 
   return useMutation({
     mutationFn: async (updateData: { bio?: string; nickName?: string; phoneNumber?: string }) => {
@@ -16,18 +14,7 @@ export function useUpdateMyInfo() {
       return data;
     },
     onSuccess: async () => {
-      message.success("내 정보가 수정되었습니다!");
-      try {
-        const {data: memberData} = await api.get("/me");
-        if (memberData?.data) {
-          setUser({
-            ...user,
-            ...memberData.data,
-          });
-        }
-      } catch (error) {
-        console.error("사용자 정보 업데이트 실패", error);
-      }
+      refetchMyInfo("내 정보가 수정되었습니다!");
       queryClient.invalidateQueries({queryKey: ["fetchMyInfo"]});
     },
   });
@@ -36,26 +23,14 @@ export function useUpdateMyInfo() {
 /** 계좌 등록 Hook */
 export function useRegisterAccount() {
   const queryClient = useQueryClient();
-  const {user, setUser} = useAuthStore();
 
   return useMutation({
     mutationFn: async (accountData: { bankName: string; accountNumber: string }) => {
       const {data} = await api.post("/account", accountData);
       return data;
     },
-    onSuccess: async () => {
-      message.success("계좌가 등록되었습니다!");
-      try {
-        const {data: memberData} = await api.get("/me");
-        if (memberData?.data) {
-          setUser({
-            ...user,
-            ...memberData.data,
-          });
-        }
-      } catch (error) {
-        console.error("사용자 정보 업데이트 실패", error);
-      }
+    onSuccess: () => {
+      refetchMyInfo("계좌가 등록되었습니다");
       queryClient.invalidateQueries({queryKey: ["fetchAccount"]});
     },
   });
@@ -64,7 +39,6 @@ export function useRegisterAccount() {
 /** 계좌 수정 Hook */
 export function useUpdateAccount() {
   const queryClient = useQueryClient();
-  const {user, setUser} = useAuthStore();
 
   return useMutation({
     mutationFn: async (updateData: { bankName: string; accountNumber: string }) => {
@@ -72,18 +46,7 @@ export function useUpdateAccount() {
       return data;
     },
     onSuccess: async () => {
-      message.success("계좌 정보가 수정되었습니다!");
-      try {
-        const {data: memberData} = await api.get("/me");
-        if (memberData?.data) {
-          setUser({
-            ...user,
-            ...memberData.data,
-          });
-        }
-      } catch (error) {
-        console.error("사용자 정보 업데이트 실패", error);
-      }
+      refetchMyInfo("계좌 정보가 수정되었습니다");
       queryClient.invalidateQueries({queryKey: ["fetchAccount"]});
     },
   });
@@ -92,7 +55,6 @@ export function useUpdateAccount() {
 /** 대표 프로필 이미지 등록 Hook */
 export function useSetDefaultProfileImage() {
   const queryClient = useQueryClient();
-  const {user, setUser} = useAuthStore(); // 사용자 정보 업데이트
 
   return useMutation({
     mutationFn: async (imageNo: number) => {
@@ -100,18 +62,7 @@ export function useSetDefaultProfileImage() {
       return data;
     },
     onSuccess: async () => {
-      message.success("대표 사진이 수정되었습니다!");
-      try {
-        const {data: memberData} = await api.get("/me");
-        if (memberData?.data) {
-          setUser({
-            ...user,
-            ...memberData.data,
-          });
-        }
-      } catch (error) {
-        console.error("사용자 정보 업데이트 실패", error);
-      }
+      refetchMyInfo("대표 사진이 수정되었습니다");
       queryClient.invalidateQueries({queryKey: ["fetchProfileImages"]});
     },
   });
@@ -120,19 +71,13 @@ export function useSetDefaultProfileImage() {
 /** 프로필 이미지 업로드 Hook */
 export function useUploadProfileImage() {
   const queryClient = useQueryClient();
-  const {user, setUser} = useAuthStore(); // 사용자 정보 업데이트
 
   return useMutation({
     mutationFn: async (file: File) => {
       const formData = new FormData();
       formData.append("file", file);
 
-      const {data} = await api.post("/profile-image", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
+      const {data} = await api.post("/profile-image", formData, {headers: {"Content-Type": "multipart/form-data"},});
       return data;
     },
     onSuccess: async () => {
@@ -141,19 +86,7 @@ export function useUploadProfileImage() {
         description: "새로운 프로필 사진이 업로드되었습니다.",
       });
 
-      // 최신 사용자 정보 가져와서 `user` 업데이트
-      try {
-        const {data: memberData} = await api.get("/me");
-        if (memberData?.data) {
-          setUser({
-            ...user,
-            ...memberData.data,
-          });
-        }
-      } catch (error) {
-        console.error("사용자 정보 업데이트 실패", error);
-      }
-
+      refetchMyInfo();
       queryClient.invalidateQueries({queryKey: ["fetchProfileImages"]});
     },
     onError: (error: AxiosError<{ message?: string; detail?: string }>) => {
@@ -171,7 +104,6 @@ export function useUploadProfileImage() {
 /** 프로필 이미지 삭제 Hook */
 export function useDeleteProfileImage() {
   const queryClient = useQueryClient();
-  const {user, setUser} = useAuthStore(); // 사용자 정보 업데이트
 
   return useMutation({
     mutationFn: async (imageNo: number) => {
@@ -181,20 +113,7 @@ export function useDeleteProfileImage() {
       return data;
     },
     onSuccess: async () => {
-      message.success("프로필 이미지가 삭제되었습니다.");
-      // 최신 사용자 정보 가져와서 `user` 업데이트
-      try {
-        const {data: memberData} = await api.get("/me");
-        if (memberData?.data) {
-          setUser({
-            ...user,
-            ...memberData.data,
-          });
-        }
-      } catch (error) {
-        console.error("사용자 정보 업데이트 실패", error);
-      }
-
+      refetchMyInfo("프로필 이미지가 삭제되었습니다");
       queryClient.invalidateQueries({queryKey: ["fetchProfileImages"]});
     },
     onError: (error: AxiosError<{ message?: string; detail?: string }>) => {
