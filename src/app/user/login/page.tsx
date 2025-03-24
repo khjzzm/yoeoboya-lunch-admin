@@ -3,14 +3,10 @@
 import {useState} from "react";
 import {useLogin} from "@/lib/api/useLogin";
 import {useRouter} from "next/navigation";
-import {Form, Input, Button, Card, Typography, Alert, Tooltip} from "antd";
-import {
-  FacebookFilled,
-  GithubOutlined,
-  GoogleOutlined,
-  WindowsOutlined
-} from "@ant-design/icons";
+import {Alert, Button, Card, Form, Input, Tooltip, Typography} from "antd";
+import {FacebookFilled, GithubOutlined, GoogleOutlined, WindowsOutlined} from "@ant-design/icons";
 import {apiErrorMessage, applyApiValidationErrors} from "@/lib/utils/apiErrorMessage";
+import {SocialProvider} from "@/interfaces/auth";
 
 const {Title, Text} = Typography;
 
@@ -31,20 +27,13 @@ export default function LoginPage() {
   };
 
   /** 소셜 로그인 핸들러 (Spring Boot에서 OAuth 처리) */
-  const handleSocialLogin = (provider: "google" | "kakao" | "naver" | "github" | "microsoft" | "facebook") => {
+  const handleSocialLogin = (provider: SocialProvider) => {
     const API_URL = typeof window !== "undefined" ? window.__ENV?.NEXT_PUBLIC_API_URL : process.env.NEXT_PUBLIC_API_URL;
-    console.log(API_URL);
     if (!API_URL) {
       console.warn("❌ 환경변수(NEXT_PUBLIC_API_URL)가 설정되지 않았습니다.");
       return;
     }
-    const authUrl = new URL(`/oauth2/authorization/${provider}`, API_URL).toString();
-    console.log(authUrl);
-
-    // ✅ 1초 지연 후 리디렉션 (console 로그 확인 가능)
-    setTimeout(() => {
-      window.location.href = authUrl;
-    }, 5000);
+    window.location.href = new URL(`/oauth2/authorization/${provider}`, API_URL).toString();
   };
 
   return (
@@ -127,8 +116,7 @@ export default function LoginPage() {
 
             <Button
               size="large"
-              disabled
-              className="flex items-center justify-center h-12 w-full opacity-50 cursor-not-allowed"
+              className="flex items-center justify-center h-12 w-full"
               style={{background: "#1877F2", color: "#fff"}}
               onClick={() => handleSocialLogin("facebook")}
             >

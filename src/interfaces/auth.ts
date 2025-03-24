@@ -60,10 +60,11 @@ export interface SignUpData {
 }
 
 // URL 파라미터 파싱용 타입은 모두 optional
+export type SocialProvider = "google" | "kakao" | "naver" | "github" | "microsoft" | "facebook";
 export interface SocialSignUpQueryParams {
   loginId?: string;
   email?: string;
   name?: string;
-  provider?: string;
+  provider?: string | SocialProvider;
   profileImageUrl?: string;
 }
