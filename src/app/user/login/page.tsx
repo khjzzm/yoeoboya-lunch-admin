@@ -32,12 +32,12 @@ export default function LoginPage() {
 
   /** 소셜 로그인 핸들러 (Spring Boot에서 OAuth 처리) */
   const handleSocialLogin = (provider: "google" | "kakao" | "naver" | "github" | "microsoft" | "facebook") => {
-    const backendUrl = process.env.NEXT_PUBLIC_API_URL;
-    if (!backendUrl) {
+    const API_URL = typeof window !== "undefined" ? window.__ENV?.NEXT_PUBLIC_API_URL : process.env.NEXT_PUBLIC_API_URL;
+    if (!API_URL) {
       console.warn("❌ 환경변수(NEXT_PUBLIC_API_URL)가 설정되지 않았습니다.");
       return;
     }
-    const authUrl = new URL(`/oauth2/authorization/${provider}`, backendUrl).toString();
+    const authUrl = new URL(`/oauth2/authorization/${provider}`, API_URL).toString();
     window.location.href = authUrl;
   };
 
