@@ -8,8 +8,6 @@ import {
   FacebookFilled,
   GithubOutlined,
   GoogleOutlined,
-  SmileOutlined,
-  UserOutlined,
   WindowsOutlined
 } from "@ant-design/icons";
 import {apiErrorMessage, applyApiValidationErrors} from "@/lib/utils/apiErrorMessage";
