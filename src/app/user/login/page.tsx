@@ -102,7 +102,7 @@ export default function LoginPage() {
               style={{backgroundColor: "#03C75A", color: "#fff"}}
               onClick={() => handleSocialLogin("naver")}
             >
-              <img src="/btnG_icon_circle.png" alt="Naver" className="w-9 h-9"/>
+              <img src="/social/naver.png" alt="Naver" className="w-9 h-9"/>
             </Button>
 
             <Button
@@ -111,7 +111,7 @@ export default function LoginPage() {
               style={{background: "#FEE500", color: "#000"}}
               onClick={() => handleSocialLogin("kakao")}
             >
-              <img src="/logo_login-kakao.png" alt="Kakao" className="w-8 h-8"/>
+              <img src="/social/kakao.png" alt="Kakao" className="w-8 h-8"/>
             </Button>
 
             <Button
