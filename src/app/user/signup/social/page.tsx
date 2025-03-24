@@ -42,11 +42,11 @@ export default function SocialSignUpPage() {
   return (
     <div className="flex flex-col h-screen items-center justify-center bg-gray-100">
       <Card className="w-full max-w-md shadow-lg p-8 rounded-lg bg-white">
-        {errorMessage && <Alert message={errorMessage} type="error" showIcon className="mb-4" />}
+        {errorMessage && <Alert message={errorMessage} type="error" showIcon className="mb-4"/>}
 
         <div className="flex flex-col items-center mb-4">
           {params.profileImageUrl ? (
-            <Avatar size={80} src={params.profileImageUrl} />
+            <Avatar size={80} src={params.profileImageUrl}/>
           ) : (
             <Avatar size={80}>{params.name ? params.name.charAt(0) : "?"}</Avatar>
           )}
@@ -56,23 +56,31 @@ export default function SocialSignUpPage() {
 
         <Form form={form} layout="vertical" onFinish={handleSocialSignUp}>
           <Form.Item label="아이디" name="loginId">
-            <Input placeholder="아이디 입력" disabled value={params.loginId} />
+            <Input placeholder="아이디 입력" disabled value={params.loginId}/>
           </Form.Item>
 
-          <Form.Item label="이메일" name="email">
-            <Input placeholder="이메일 입력" disabled value={params.email} />
+          <Form.Item
+            label="이메일"
+            name="email"
+            rules={!params.email ? [{required: true, message: "이메일을 입력해주세요!"}] : []}
+          >
+            <Input
+              placeholder="이메일 입력"
+              disabled={!!params.email}
+              defaultValue={params.email || ""}
+            />
           </Form.Item>
 
           <Form.Item label="이름" name="name">
-            <Input placeholder="이름 입력" disabled value={params.name} />
+            <Input placeholder="이름 입력" disabled value={params.name}/>
           </Form.Item>
 
           <Form.Item name="provider" hidden>
-            <Input type="hidden" />
+            <Input type="hidden"/>
           </Form.Item>
 
           <Form.Item name="profileImageUrl" hidden>
-            <Input type="hidden" />
+            <Input type="hidden"/>
           </Form.Item>
 
           <Button type="primary" htmlType="submit" className="w-full mt-4" loading={signUpMutation.isPending}>

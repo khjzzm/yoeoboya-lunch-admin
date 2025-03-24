@@ -3,7 +3,6 @@ import {api} from "@/lib/utils/api";
 import {useRouter} from "next/navigation";
 import {useAuthStore} from "@/store/useAuthStore";
 import {message, notification} from "antd";
-import Cookies from "js-cookie";
 import {ChangePasswordData, SignUpData, SocialSignUpQueryParams} from "@/interfaces/auth";
 
 /** 로그인 Hook */
@@ -17,6 +16,7 @@ export function useLogin() {
       if (data?.code !== 200) {
         throw new Error("로그인 실패: 응답 코드 오류");
       }
+      console.log(data)
       return {loginId: loginData.loginId};
     },
     onSuccess: async () => {
@@ -73,12 +73,9 @@ export function useSocialSignUp() {
   return useMutation({
     mutationFn: async (signUpData: SocialSignUpQueryParams) => {
       const {data} = await api.post("/user/social/sign-up", signUpData);
-
-      // 서버에서 쿠키로 내려줬다고 가정
       if (!data?.code || data.code !== 201) {
         throw new Error("소셜 회원가입 실패: 응답 오류");
       }
-
       return data;
     },
     onSuccess: async () => {
@@ -137,8 +134,6 @@ export function useChangePassword() {
 
       //  2. 3초 후 로그아웃 및 페이지 이동
       setTimeout(() => {
-        Cookies.remove("token");
-        Cookies.remove("refreshToken");
         logout();
         router.push("/user/login");
       }, 3000);

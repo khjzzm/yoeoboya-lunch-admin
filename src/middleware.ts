@@ -2,7 +2,6 @@ import {NextRequest, NextResponse} from "next/server";
 
 export function middleware(req: NextRequest) {
   const token = req.cookies.get("token")?.value;
-
   const {pathname} = req.nextUrl;
 
   console.log(`🚀 [Middleware] 현재 경로: ${pathname}`);

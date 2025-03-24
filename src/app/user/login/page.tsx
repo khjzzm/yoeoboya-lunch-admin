@@ -3,7 +3,7 @@
 import {useState} from "react";
 import {useLogin} from "@/lib/api/useLogin";
 import {useRouter} from "next/navigation";
-import {Form, Input, Button, Card, Typography, Alert} from "antd";
+import {Form, Input, Button, Card, Typography, Alert, Tooltip} from "antd";
 import {
   FacebookFilled,
   GithubOutlined,
@@ -91,6 +91,28 @@ export default function LoginPage() {
               <GithubOutlined className="text-xl"/>
             </Button>
 
+            <Tooltip title="준비 중입니다">
+              <Button
+                size="large"
+                disabled
+                className="flex items-center justify-center h-12 w-full opacity-50 cursor-not-allowed"
+                style={{background: "#2F2F2F", color: "#fff"}}
+                onClick={() => handleSocialLogin("microsoft")}
+              >
+                <WindowsOutlined className="text-xl"/>
+              </Button>
+            </Tooltip>
+
+            <Button
+              size="large"
+              disabled
+              className="flex items-center justify-center h-12 w-full opacity-50 cursor-not-allowed"
+              style={{backgroundColor: "#03C75A", color: "#fff"}}
+              onClick={() => handleSocialLogin("naver")}
+            >
+              <img src="/btnG_icon_circle.png" alt="Naver" className="w-9 h-9"/>
+            </Button>
+
             <Button
               size="large"
               className="flex items-center justify-center h-12 w-full"
@@ -102,25 +124,8 @@ export default function LoginPage() {
 
             <Button
               size="large"
-              className="flex items-center justify-center h-12 w-full"
-              style={{backgroundColor: "#03C75A", color: "#fff"}}
-              onClick={() => handleSocialLogin("naver")}
-            >
-              <img src="/btnG_icon_circle.png" alt="Naver" className="w-9 h-9"/>
-            </Button>
-
-            <Button
-              size="large"
-              className="flex items-center justify-center h-12 w-full"
-              style={{background: "#2F2F2F", color: "#fff"}}
-              onClick={() => handleSocialLogin("microsoft")}
-            >
-              <WindowsOutlined className="text-xl"/>
-            </Button>
-
-            <Button
-              size="large"
-              className="flex items-center justify-center h-12 w-full"
+              disabled
+              className="flex items-center justify-center h-12 w-full opacity-50 cursor-not-allowed"
               style={{background: "#1877F2", color: "#fff"}}
               onClick={() => handleSocialLogin("facebook")}
             >
