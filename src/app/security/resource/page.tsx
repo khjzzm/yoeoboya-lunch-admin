@@ -1,10 +1,10 @@
 "use client";
 
-import {useState} from "react";
-import {useResources, useAddResourceRole} from "@/lib/api/useResources";
-import {Table, Tooltip, Select, Tag} from "antd";
-import type {ColumnsType} from "antd/es/table";
-import {apiErrorMessage} from "@/lib/utils/apiErrorMessage";
+import { useState } from "react";
+import { useResources, useAddResourceRole } from "@/lib/api/useResources";
+import { Table, Tooltip, Select, Tag } from "antd";
+import type { ColumnsType } from "antd/es/table";
+import { apiErrorMessage } from "@/lib/utils/apiErrorMessage";
 
 interface Resource {
   resourceId: number;
@@ -17,47 +17,46 @@ interface Resource {
 }
 
 const roleOptions = [
-  {label: "어드민", value: "ROLE_ADMIN"},
-  {label: "매니저", value: "ROLE_MANAGER"},
-  {label: "유저", value: "ROLE_USER"},
-  {label: "게스트", value: "ROLE_GUEST"},
-  {label: "차단", value: "ROLE_BLOCK"},
+  { label: "어드민", value: "ROLE_ADMIN" },
+  { label: "매니저", value: "ROLE_MANAGER" },
+  { label: "유저", value: "ROLE_USER" },
+  { label: "게스트", value: "ROLE_GUEST" },
+  { label: "차단", value: "ROLE_BLOCK" },
 ];
 
 export default function ResourcesPage() {
-  const {data, isLoading, error} = useResources();
+  const { data, isLoading, error } = useResources();
   const resources: Resource[] = Array.isArray(data) ? data : [];
   const [pageSize, setPageSize] = useState(20);
-  const addResourceRole = useAddResourceRole(); // 리소스 역할 추가 훅
+  const addResourceRole = useAddResourceRole();
 
-  // 선택된 역할 값을 저장하는 상태 (원래 값 복구용)
   const [selectedRoles, setSelectedRoles] = useState<Record<number, string>>({});
 
   const handleRoleChange = (resourceId: number, newRole: string) => {
     const prevRole = selectedRoles[resourceId] || data?.find((item: Resource) => item.resourceId === resourceId)?.roleDesc;
-    setSelectedRoles((prev) => ({...prev, [resourceId]: newRole}));
+    setSelectedRoles((prev) => ({ ...prev, [resourceId]: newRole }));
 
-    addResourceRole.mutate({resourceId, role: newRole}, {
-        onError: (error) => {
-          apiErrorMessage(error);
-          setSelectedRoles((prev) => ({...prev, [resourceId]: prevRole}));
-        },
-      }
-    );
+    addResourceRole.mutate({ resourceId, role: newRole }, {
+      onError: (error) => {
+        apiErrorMessage(error);
+        setSelectedRoles((prev) => ({ ...prev, [resourceId]: prevRole }));
+      },
+    });
   };
 
-  // 테이블 컬럼 정의
   const columns: ColumnsType<Resource> = [
     {
-      title: <div style={{textAlign: "center"}}>ID</div>,
+      title: <div style={{ textAlign: "center" }}>ID</div>,
       dataIndex: "resourceId",
       key: "resourceId",
+      width: 80,
       sorter: (a, b) => a.resourceId - b.resourceId,
     },
     {
-      title: <div style={{textAlign: "center"}}>리소스 이름</div>,
+      title: <div style={{ textAlign: "center" }}>리소스 이름</div>,
       dataIndex: "resourceName",
       key: "resourceName",
+      width: 200,
       sorter: (a, b) => a.resourceName.localeCompare(b.resourceName),
       defaultSortOrder: "ascend",
       render: (text, record) => (
@@ -67,9 +66,10 @@ export default function ResourcesPage() {
       ),
     },
     {
-      title: <div style={{textAlign: "center"}}>HTTP 메서드</div>,
+      title: <div style={{ textAlign: "center" }}>HTTP 메서드</div>,
       dataIndex: "httpMethod",
       key: "httpMethod",
+      width: 120,
       render: (text) => {
         let color = "black";
         if (text === "GET") color = "blue";
@@ -82,25 +82,28 @@ export default function ResourcesPage() {
       sorter: (a, b) => (a.httpMethod || "").localeCompare(b.httpMethod || ""),
     },
     {
-      title: <div style={{textAlign: "center"}}>순서</div>,
+      title: <div style={{ textAlign: "center" }}>순서</div>,
       dataIndex: "orderNum",
       key: "orderNum",
+      width: 100,
       sorter: (a, b) => a.orderNum - b.orderNum,
     },
     {
-      title: <div style={{textAlign: "center"}}>리소스 타입</div>,
+      title: <div style={{ textAlign: "center" }}>리소스 타입</div>,
       dataIndex: "resourceType",
       key: "resourceType",
+      width: 150,
       sorter: (a, b) => a.resourceType.localeCompare(b.resourceType),
     },
     {
-      title: <div style={{textAlign: "center"}}>권한</div>,
+      title: <div style={{ textAlign: "center" }}>권한</div>,
       dataIndex: "roleDesc",
       key: "roleDesc",
+      width: 180,
       render: (text, record) => (
         <Select
           value={selectedRoles[record.resourceId] ?? text ?? ""}
-          style={{width: 150}}
+          style={{ width: 150 }}
           options={roleOptions}
           onChange={(value) => handleRoleChange(record.resourceId, value)}
           disabled={record.resourceType === "ROLE"}
@@ -111,24 +114,28 @@ export default function ResourcesPage() {
   ];
 
   if (error) return <p>데이터를 불러오는 중 오류 발생 🚨</p>;
+
   return (
     <div>
       <h1 className="text-2xl font-bold text-gray-800 border-b pb-2 mb-4">📌 리소스 관리</h1>
-      <Table
-        dataSource={resources}
-        columns={columns}
-        rowKey="resourceId"
-        loading={isLoading}
-        pagination={{
-          pageSize: pageSize,
-          showSizeChanger: true,
-          pageSizeOptions: [10, 20, 50, 100], //  올바른 숫자 배열로 설정
-          showTotal: (total, range) => `${range[0]}-${range[1]} / 총 ${total}개`,
-          onChange: (page, pageSize) => {
-            setPageSize(pageSize); // 선택한 페이지 크기로 상태 업데이트
-          },
-        }}
-      />
+
+      {/* ✅ 반응형 처리 */}
+      <div className="overflow-x-auto">
+        <Table
+          dataSource={resources}
+          columns={columns}
+          rowKey="resourceId"
+          loading={isLoading}
+          scroll={{ x: "max-content" }}
+          pagination={{
+            pageSize: pageSize,
+            showSizeChanger: true,
+            pageSizeOptions: [10, 20, 50, 100],
+            showTotal: (total, range) => `${range[0]}-${range[1]} / 총 ${total}개`,
+            onChange: (_, pageSize) => setPageSize(pageSize),
+          }}
+        />
+      </div>
     </div>
   );
 }

@@ -1,35 +1,29 @@
 "use client";
 
-import {useSocialSignUp} from "@/lib/api/useLogin";
-import {Form, Input, Button, Card, Typography, Alert, Avatar} from "antd";
+import {useSignUp} from "@/lib/api/useLogin";
+import {Form, Input, Button, Card, Typography, Alert} from "antd";
 import {apiErrorMessage, applyApiValidationErrors} from "@/lib/utils/apiErrorMessage";
 import {useState, useEffect} from "react";
-import {SocialSignUpQueryParams} from "@/interfaces/auth";
+import {SignUpData} from "@/interfaces/auth";
 
-const {Title, Text} = Typography;
+const {Title} = Typography;
 
-export default function SocialSignUpPage() {
+export default function SignUpPage() {
   const [form] = Form.useForm();
-  const signUpMutation = useSocialSignUp();
+  const signUpMutation = useSignUp();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [params, setParams] = useState<SocialSignUpQueryParams>({});
+  const [email, setEmail] = useState<string>("");
 
   useEffect(() => {
-    const query = new URLSearchParams(window.location.search);
-
-    const parsed: SocialSignUpQueryParams = {
-      loginId: query.get("loginId") || undefined,
-      email: query.get("email") || undefined,
-      name: query.get("name") || undefined,
-      provider: query.get("provider") || undefined,
-      profileImageUrl: query.get("picture") ? decodeURIComponent(query.get("picture")!) : undefined,
-    };
-
-    setParams(parsed);
-    form.setFieldsValue(parsed);
+    const params = new URLSearchParams(window.location.search);
+    const emailParam = params.get("email");
+    if (emailParam) {
+      setEmail(emailParam);
+      form.setFieldsValue({email: emailParam});
+    }
   }, []);
 
-  const handleSocialSignUp = (values: SocialSignUpQueryParams) => {
+  const handleSignUp = (values: SignUpData) => {
     signUpMutation.mutate(values, {
       onError: (error) => {
         if (applyApiValidationErrors(error, form)) return;
@@ -40,50 +34,58 @@ export default function SocialSignUpPage() {
   };
 
   return (
-    <div className="flex flex-col h-screen items-center justify-center bg-gray-100">
-      <Card className="w-full max-w-md shadow-lg p-8 rounded-lg bg-white">
+    <div className="flex items-center justify-center min-h-dvh bg-gray-100 px-4 sm:px-6">
+      <Card className="w-full max-w-sm sm:max-w-md md:max-w-lg p-6 sm:p-8 shadow-xl rounded-xl bg-white">
         {errorMessage && <Alert message={errorMessage} type="error" showIcon className="mb-4"/>}
 
-        <div className="flex flex-col items-center mb-4">
-          {params.profileImageUrl ? (
-            <Avatar size={80} src={params.profileImageUrl}/>
-          ) : (
-            <Avatar size={80}>{params.name ? params.name.charAt(0) : "?"}</Avatar>
-          )}
-          <Title level={4} className="mt-2">소셜 회원가입</Title>
-          {params.provider && <Text type="secondary">({params.provider.toUpperCase()} 로그인)</Text>}
-        </div>
+        <Title level={4} className="text-center mb-6">회원가입</Title>
 
-        <Form form={form} layout="vertical" onFinish={handleSocialSignUp}>
-          <Form.Item label="아이디" name="loginId">
-            <Input placeholder="아이디 입력" disabled value={params.loginId}/>
+        <Form form={form} layout="vertical" onFinish={handleSignUp} className="space-y-4">
+          <Form.Item
+            label="아이디"
+            name="loginId"
+            rules={[{required: true, message: "아이디를 입력하세요!"}]}
+          >
+            <Input placeholder="아이디 입력" size="large"/>
+          </Form.Item>
+
+          {email ? (
+            <Form.Item label="이메일" name="email">
+              <Input placeholder="이메일 입력" disabled value={email} size="large"/>
+            </Form.Item>
+          ) : (
+            <Form.Item
+              label="이메일"
+              name="email"
+              rules={[{required: true, message: "이메일을 입력하세요!"}]}
+            >
+              <Input placeholder="이메일 입력" size="large"/>
+            </Form.Item>
+          )}
+
+          <Form.Item
+            label="이름"
+            name="name"
+            rules={[{required: true, message: "이름을 입력하세요!"}]}
+          >
+            <Input placeholder="이름 입력" size="large"/>
           </Form.Item>
 
           <Form.Item
-            label="이메일"
-            name="email"
-            rules={!params.email ? [{required: true, message: "이메일을 입력해주세요!"}] : []}
+            label="비밀번호"
+            name="password"
+            rules={[{required: true, message: "비밀번호를 입력하세요!"}]}
           >
-            <Input
-              placeholder="이메일 입력"
-              disabled={!!params.email}
-              defaultValue={params.email || ""}
-            />
+            <Input.Password placeholder="비밀번호 입력" size="large"/>
           </Form.Item>
 
-          <Form.Item label="이름" name="name">
-            <Input placeholder="이름 입력" disabled value={params.name}/>
-          </Form.Item>
-
-          <Form.Item name="provider" hidden>
-            <Input type="hidden"/>
-          </Form.Item>
-
-          <Form.Item name="profileImageUrl" hidden>
-            <Input type="hidden"/>
-          </Form.Item>
-
-          <Button type="primary" htmlType="submit" className="w-full mt-4" loading={signUpMutation.isPending}>
+          <Button
+            type="primary"
+            htmlType="submit"
+            className="w-full mt-2"
+            size="large"
+            loading={signUpMutation.isPending}
+          >
             {signUpMutation.isPending ? "회원가입 중..." : "회원가입"}
           </Button>
         </Form>
