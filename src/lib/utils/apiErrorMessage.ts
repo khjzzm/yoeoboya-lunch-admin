@@ -1,5 +1,5 @@
 import {FormInstance, message} from "antd";
-import {ApiResponse} from "@/interfaces/response";
+import {ApiResponse} from "@/types/response";
 
 /**
  * API 요청 에러를 처리하는 함수

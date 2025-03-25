@@ -3,7 +3,7 @@ import {api} from "@/lib/utils/api";
 import {useRouter} from "next/navigation";
 import {useAuthStore} from "@/store/useAuthStore";
 import {message, notification} from "antd";
-import {ChangePasswordData, SignUpData, SocialSignUpQueryParams} from "@/interfaces/auth";
+import {ChangePasswordData, SignUpData, SocialSignUpQueryParams} from "@/types/auth";
 
 /** 로그인 Hook */
 export function useLogin() {

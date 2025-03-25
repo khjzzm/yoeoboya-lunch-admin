@@ -19,7 +19,7 @@ import {
   WindowsOutlined
 } from "@ant-design/icons";
 import {apiErrorMessage, applyApiValidationErrors} from "@/lib/utils/apiErrorMessage";
-import {SocialProvider} from "@/interfaces/auth";
+import {SocialProvider} from "@/types/auth";
 
 const {Title, Text} = Typography;
 

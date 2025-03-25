@@ -4,7 +4,7 @@ import {useSignUp} from "@/lib/api/useLogin";
 import {Form, Input, Button, Card, Typography, Alert} from "antd";
 import {apiErrorMessage, applyApiValidationErrors} from "@/lib/utils/apiErrorMessage";
 import {useState, useEffect} from "react";
-import {SignUpData} from "@/interfaces/auth";
+import {SignUpData} from "@/types/auth";
 
 const {Title} = Typography;
 

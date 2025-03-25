@@ -3,7 +3,7 @@
 import {Form, Input, Button, Typography, Alert} from "antd";
 import {useChangePassword} from "@/lib/api/useLogin";
 import {useAuthStore} from "@/store/useAuthStore";
-import {ChangePasswordData} from "@/interfaces/auth";
+import {ChangePasswordData} from "@/types/auth";
 import {useEffect, useState} from "react";
 import {apiErrorMessage, applyApiValidationErrors} from "@/lib/utils/apiErrorMessage";
 import {KeyOutlined, LockOutlined} from "@ant-design/icons";
