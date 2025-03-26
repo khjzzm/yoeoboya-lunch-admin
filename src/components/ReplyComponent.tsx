@@ -1,11 +1,12 @@
 "use client";
 
 import {useEffect, useState} from "react";
-import {useCreateReply, useNoticeReplies} from "@/lib/api/useSupport";
+import {useCreateReply, useDeleteReply, useNoticeReplies} from "@/lib/api/useSupport";
 import {Reply} from "@/types/reply";
 import {useAuthStore} from "@/store/useAuthStore";
 import {Typography, Button, Input, Spin, Popconfirm} from "antd";
 import {DeleteOutlined} from "@ant-design/icons";
+import {Pagination} from "@/types/pagination";
 
 const {Text, Title} = Typography;
 
@@ -23,18 +24,21 @@ export default function ReplyComponent({noticeId}: ReplyComponentProps) {
   const [comment, setComment] = useState("");
 
   const {data, isLoading} = useNoticeReplies(noticeId);
-
+  const {mutate: deleteReply} = useDeleteReply(noticeId);
   const {mutate: createReply} = useCreateReply();
-
   const [replies, setReplies] = useState<EnhancedReply[]>([]);
+  const [pagination, setPagination] = useState<Pagination>();
 
   // 부모/자식 댓글 정리
   useEffect(() => {
     if (!data?.data?.list) return;
+    if (!data?.data?.pagination) return;
 
     const allReplies: Reply[] = data.data.list;
+    const pagination: Pagination = data.data.pagination;
 
-    const parents = allReplies
+    const rootReplies
+      = allReplies
       .filter(r => !r.parentId)
       .map(p => {
         return {
@@ -44,10 +48,9 @@ export default function ReplyComponent({noticeId}: ReplyComponentProps) {
         };
       });
 
-    console.log("🧾 전체 replies:", allReplies);
-    console.log("🧷 부모 replies:", parents);
-
-    setReplies(parents);
+    console.log(rootReplies);
+    setPagination(pagination)
+    setReplies(rootReplies);
   }, [data]);
 
   const handleCommentSubmit = (content: string, parentReplyId?: number | null) => {
@@ -70,7 +73,7 @@ export default function ReplyComponent({noticeId}: ReplyComponentProps) {
 
   return (
     <div className="mt-10">
-      <Title level={4}>댓글</Title>
+      <Title level={4}>댓글 {pagination?.totalPages}</Title>
 
       {isLoading ? (
         <Spin/>
@@ -86,41 +89,51 @@ export default function ReplyComponent({noticeId}: ReplyComponentProps) {
               >
                 <div className="flex justify-between items-center">
                   <Text strong>{parent.writer}</Text>
-                  <Popconfirm
-                    title="댓글을 삭제하시겠습니까?"
-                    // onConfirm={() => handleDeleteReply(parent.replyId)}
-                    okText="삭제"
-                    cancelText="취소"
-                  >
-                    <Button size="small" type="text" danger icon={<DeleteOutlined/>}/>
-                  </Popconfirm>
+                  {parent.mine && !parent.deleted && (
+                    <Popconfirm
+                      title="댓글을 삭제하시겠습니까?"
+                      onConfirm={() => deleteReply(parent.replyId)}
+                      okText="삭제"
+                      cancelText="취소"
+                    >
+                      <Button size="small" type="text" danger icon={<DeleteOutlined/>}/>
+                    </Popconfirm>
+                  )}
                 </div>
 
-                <div className="text-gray-700 text-sm mt-1 whitespace-pre-wrap">
-                  {parent.content}
-                </div>
+                {parent.deleted ? (
+                  <Text type="secondary">삭제된 댓글입니다.</Text>
+                ) : (
+                  <div className="text-gray-700 text-sm mt-1 whitespace-pre-wrap">
+                    {parent.content}
+                  </div>
+                )}
 
                 {/* 대댓글 리스트 */}
-                {parent.childReplies.length > 0 && (
+                {parent.childReplies.filter(child => !child.deleted).length > 0 && (
                   <div className="mt-4 space-y-3 pl-4 border-l-2 border-gray-200">
-                    {parent.childReplies.map((child) => (
-                      <div key={child.replyId} className="ml-2">
-                        <div className="flex justify-between items-center">
-                          <Text strong>{child.writer}</Text>
-                          <Popconfirm
-                            title="댓글을 삭제하시겠습니까?"
-                            // onConfirm={() => handleDeleteReply(child.replyId)}
-                            okText="삭제"
-                            cancelText="취소"
-                          >
-                            <Button size="small" type="text" danger icon={<DeleteOutlined/>}/>
-                          </Popconfirm>
+                    {parent.childReplies
+                      .filter(child => !child.deleted) // ✅ 삭제된 대댓글 제외
+                      .map((child) => (
+                        <div key={child.replyId} className="ml-2">
+                          <div className="flex justify-between items-center">
+                            <Text strong>{child.writer}</Text>
+                            {child.mine && (
+                              <Popconfirm
+                                title="댓글을 삭제하시겠습니까?"
+                                onConfirm={() => deleteReply(child.replyId)}
+                                okText="삭제"
+                                cancelText="취소"
+                              >
+                                <Button size="small" type="text" danger icon={<DeleteOutlined/>}/>
+                              </Popconfirm>
+                            )}
+                          </div>
+                          <div className="text-gray-600 text-sm mt-1 whitespace-pre-wrap">
+                            {child.content}
+                          </div>
                         </div>
-                        <div className="text-gray-600 text-sm mt-1 whitespace-pre-wrap">
-                          {child.content}
-                        </div>
-                      </div>
-                    ))}
+                      ))}
                   </div>
                 )}
 

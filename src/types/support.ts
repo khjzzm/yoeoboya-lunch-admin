@@ -27,7 +27,7 @@ export interface NoticeFormValues {
   status: NoticeStatus;
 }
 
-export interface NoticeResponse {
+export interface NoticeDetailResponse {
   id: number;
   title: string;
   content: string;

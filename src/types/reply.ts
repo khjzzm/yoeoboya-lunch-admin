@@ -5,5 +5,7 @@ export interface Reply {
   writer: string;
   content: string;
   date: string;
+  mine: boolean;
+  deleted: boolean;
   childReplies: Reply[]; // 대댓글 목록
 }

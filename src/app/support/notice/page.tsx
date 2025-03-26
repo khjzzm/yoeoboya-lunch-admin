@@ -6,7 +6,7 @@ import { useNotices } from "@/lib/api/useSupport";
 import dayjs from "dayjs";
 import { useState } from "react";
 import SearchFilters from "@/lib/utils/searchFilters";
-import type { NoticeResponse } from "@/types/support";
+import type { NoticeDetailResponse } from "@/types/support";
 
 export default function NoticeListPage() {
   const router = useRouter();
@@ -73,7 +73,7 @@ export default function NoticeListPage() {
       </div>
 
       {/* 리스트 */}
-      <List<NoticeResponse>
+      <List<NoticeDetailResponse>
         loading={isLoading}
         dataSource={list}
         renderItem={(item) => (

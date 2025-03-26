@@ -2,7 +2,7 @@ import {useQuery, useMutation, useQueryClient} from "@tanstack/react-query";
 import {api} from "@/lib/utils/api";
 import {message} from "antd";
 import {apiErrorMessage} from "@/lib/utils/apiErrorMessage";
-import {NoticeRequest, NoticeResponse} from "@/types/support";
+import {NoticeRequest, NoticeDetailResponse} from "@/types/support";
 import stringify from "fast-json-stable-stringify";
 import {useRouter} from "next/navigation";
 import ApiResponse from "@/types/response";
@@ -93,13 +93,13 @@ export function useMarkNoticeAsRead() {
 
 /** 공지사항 상세 조회 */
 export function useNoticeDetail(noticeId: number | null) {
-  return useQuery<ApiResponse<NoticeResponse>>({
+  return useQuery<ApiResponse<NoticeDetailResponse>>({
     queryKey: ["noticeDetail", noticeId],
     queryFn: async () => {
       const {data} = await api.get(`/support/notice/detail`, {
         params: {noticeId},
       });
-      return data.data;
+      return data;
     },
     enabled: !!noticeId && noticeId > 0,
   });
@@ -173,6 +173,28 @@ export function useCreateReply() {
     },
   });
 }
+
+/** 댓글 삭제 Hook */
+export function useDeleteReply(noticeId: number) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (replyId: number) => {
+      const {data} = await api.delete(`/support/notice/reply`, {
+        params: {replyId},
+      });
+      return data;
+    },
+    onSuccess: () => {
+      message.success("댓글이 삭제되었습니다.");
+      queryClient.invalidateQueries({ queryKey: ["noticeReplies", noticeId] });
+    },
+    onError: (error) => {
+      apiErrorMessage(error);
+    },
+  });
+};
+
 
 /** 댓글 조회 Hook */
 export function useNoticeReplies(noticeId: number) {

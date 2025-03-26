@@ -6,7 +6,7 @@ import { useNoticeDetail, useLikeNotice, useUnlikeNotice, useDeleteNotice, } fro
 import { Card, Typography, Tag, Button, Spin, } from "antd";
 import { LikeOutlined, LikeFilled, DeleteOutlined, EditOutlined, } from "@ant-design/icons";
 import parse from "html-react-parser";
-import ReplyComponent from "@/components/Reply";
+import ReplyComponent from "@/components/ReplyComponent";
 
 const {Title, Text} = Typography;
 

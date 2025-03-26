@@ -30,15 +30,24 @@ export default function NoticeWritePage() {
   const updateNotice = useUpdateNotice(Number(noticeId));
 
   useEffect(() => {
-    if (editMode && noticeDetail) {
+    if (editMode && noticeDetail?.data) {
+      const data = noticeDetail.data;
+
       form.setFieldsValue({
-        ...noticeDetail,
-        startDate: noticeDetail.data.startDate ? dayjs(noticeDetail.data.startDate) : null,
-        endDate: noticeDetail.data.endDate ? dayjs(noticeDetail.data.endDate) : null,
+        title: data.title,
+        category: data.category,
+        author: data.author,
+        priority: data.priority,
+        status: data.status,
+        startDate: data.startDate ? dayjs(data.startDate) : null,
+        endDate: data.endDate ? dayjs(data.endDate) : null,
       });
-      setContent(noticeDetail.data.content);
+
+      setContent(data.content);
     }
   }, [editMode, form, noticeDetail]);
+
+  
 
   const handleSubmit = (values: NoticeFormValues) => {
     const payload: NoticeRequest = {
