@@ -1,5 +1,5 @@
 import {FormInstance, message} from "antd";
-import {ApiResponse} from "@/types/response";
+import ApiResponse, {ValidationError} from "@/types/response";
 
 /**
  * API 요청 에러를 처리하는 함수
@@ -12,7 +12,7 @@ export const apiErrorMessage = (
   showMessage: boolean = true,
 ): string | undefined => {
   if (typeof error === "object" && error !== null && "response" in error) {
-    const axiosError = error as { response?: { data?: ApiResponse } };
+    const axiosError = error as { response?: { data?: ApiResponse<ValidationError> } };
     const errorMessage = axiosError.response?.data?.message || "오류 발생. 다시 시도하세요.";
     if (showMessage) {
       message.error(errorMessage);
@@ -36,8 +36,8 @@ export const applyApiValidationErrors = (
   form: FormInstance,
 ): boolean => {
   if (typeof error === "object" && error !== null && "response" in error) {
-    const axiosError = error as { response?: { data?: ApiResponse } };
-    const validationErrors = axiosError.response?.data?.validation;
+    const axiosError = error as { response?: { data?: ApiResponse<ValidationError[]>} };
+    const validationErrors = axiosError.response?.data?.data;
 
     if (validationErrors && validationErrors.length > 0) {
       const errors = validationErrors.map((err) => {

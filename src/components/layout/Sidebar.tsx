@@ -35,7 +35,7 @@ export default function Sidebar() {
       icon: <NotificationOutlined/>,
       label: "고객지원",
       children: [
-        {key: "/support/notice/", label: "공지사항", onClick: () => router.push("/support/notice")},
+        {key: "/support/notice", label: "공지사항", onClick: () => router.push("/support/notice")},
         {key: "/support/faq", label: "자주 묻는 질문", onClick: () => router.push("/support/faq")},
       ],
     },

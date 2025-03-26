@@ -1,4 +1,4 @@
-export type NoticeStatus = "ACTIVE" | "INACTIVE" | "DELETED";
+export type NoticeStatus = "ACTIVE" | "INACTIVE";
 export type NoticePriority = "LOW" | "MEDIUM" | "HIGH";
 
 export interface NoticeRequest {
@@ -10,10 +10,22 @@ export interface NoticeRequest {
   startDate?: string | null;
   endDate?: string | null;
   attachmentUrl?: string | null;
-  tags?: string | null;
   status: NoticeStatus;
 }
 
+import type { Dayjs } from "dayjs";
+
+export interface NoticeFormValues {
+  title: string;
+  content: string;
+  category: string;
+  author: string;
+  priority: NoticePriority;
+  startDate?: Dayjs | null;
+  endDate?: Dayjs | null;
+  attachmentUrl?: string | null;
+  status: NoticeStatus;
+}
 
 export interface NoticeResponse {
   id: number;
@@ -24,12 +36,13 @@ export interface NoticeResponse {
   priority: number; // 0 = 낮음, 1 = 보통, 2 = 높음
   startDate: string | null;
   endDate: string | null;
+  createDate : string | null;
   attachmentUrl: string | null;
   viewCount: number;
-  tags: string | null;
   status: NoticeStatus;
   isRead: boolean;
+  likeCount: number;
+  replyCount: number;
+  hasLiked: boolean;
 }
-
-
 

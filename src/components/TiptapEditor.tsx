@@ -23,7 +23,7 @@ export default function TiptapEditor({ content, setContent }: Props) {
     if (editor && content !== editor.getHTML()) {
       editor.commands.setContent(content);
     }
-  }, [editor]);
+  }, [content, editor]);
 
   return (
     <div className="border p-3 rounded-md">

@@ -1,10 +1,12 @@
-interface ValidationError {
-  field: string;
-  message: string;
-}
-
-export interface ApiResponse {
+export default interface ApiResponse<T> {
   code: number;
   message: string;
-  validation?: ValidationError[];
+  data: T;
+}
+
+
+// 벨리데이션 정보
+export interface ValidationError {
+  field: string;
+  message: string;
 }

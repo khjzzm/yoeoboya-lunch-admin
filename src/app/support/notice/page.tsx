@@ -1,113 +1,117 @@
 "use client";
 
-import { useNotices, useDeleteNotice } from "@/lib/api/useSupport";
 import { useRouter } from "next/navigation";
-import { Table, Button, Popconfirm, Tag } from "antd";
-import { DeleteOutlined, EditOutlined  } from "@ant-design/icons";
-import type { NoticeResponse } from "@/types/support";
+import { List, Tag, Pagination, Button } from "antd";
+import { useNotices } from "@/lib/api/useSupport";
 import dayjs from "dayjs";
+import { useState } from "react";
+import SearchFilters from "@/lib/utils/searchFilters";
+import type { NoticeResponse } from "@/types/support";
 
 export default function NoticeListPage() {
   const router = useRouter();
-  const { data, isLoading } = useNotices();
-  const deleteNotice = useDeleteNotice();
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(10);
+  const [filters, setFilters] = useState<Record<string, string | string[]>>({});
 
-  const handleEdit = (id: number) => {
-    router.push(`/support/notice/write?noticeId=${id}`);
+  const { data, isLoading } = useNotices(page, pageSize, filters);
+
+  const handleSearch = (searchFilters: Record<string, string | string[]>) => {
+    const keys = Object.keys(searchFilters);
+    const key = keys[0]; // ex: "title_content"
+    const value = searchFilters[key];
+
+    if (typeof value === "string") {
+      setFilters({
+        searchType: key,
+        keyword: value,
+      });
+    } else {
+      setFilters({}); // 비어있으면 전체 조회
+    }
+
+    setPage(1); // 검색 시 1페이지로 초기화
   };
 
-  const handleDelete = (id: number) => {
-    deleteNotice.mutate(id);
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
   };
 
-  const columns = [
-    {
-      title: "제목",
-      dataIndex: "title",
-      key: "title",
-      render: (text: string, record: NoticeResponse) => (
-        <Button type="link" onClick={() => router.push(`/support/notice/view/${record.id}`)}>
-          {text}
-        </Button>
-      ),
-    },
-    {
-      title: "카테고리",
-      dataIndex: "category",
-      key: "category",
-    },
-    {
-      title: "작성자",
-      dataIndex: "author",
-      key: "author",
-    },
-    {
-      title: "조회수",
-      dataIndex: "viewCount",
-      key: "viewCount",
-    },
-    {
-      title: "우선순위",
-      dataIndex: "priority",
-      key: "priority",
-      render: (priority: number) => {
-        const label = ["낮음", "보통", "높음"][priority];
-        const color = ["default", "blue", "red"][priority];
-        return <Tag color={color}>{label}</Tag>;
-      },
-    },
-    {
-      title: "상태",
-      dataIndex: "status",
-      key: "status",
-      render: (status: string) => {
-        const label = {
-          ACTIVE: "활성",
-          INACTIVE: "비활성",
-          DELETED: "삭제됨",
-        }[status];
-        return <Tag>{label}</Tag>;
-      },
-    },
-    {
-      title: "작성일",
-      dataIndex: "createdDate",
-      key: "createdDate",
-      render: (date: string) => dayjs(date).format("YYYY-MM-DD HH:mm"),
-    },
-    {
-      title: "액션",
-      key: "action",
-      render: (_: unknown, record: NoticeResponse) => (
-        <>
-          <Button icon={<EditOutlined />} onClick={() => handleEdit(record.id)} />
-          <Popconfirm
-            title="정말 삭제하시겠습니까?"
-            onConfirm={() => handleDelete(record.id)}
-            okText="네"
-            cancelText="아니요"
-          >
-            <Button icon={<DeleteOutlined />} danger className="ml-2" />
-          </Popconfirm>
-        </>
-      ),
-    },
-  ];
+  const list = data?.data.list || [];
+  const pagination = data?.data.pagination;
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">📋 공지사항 목록</h1>
-        <Button type="primary" onClick={() => router.push("/support/notice/write")}>글쓰기</Button>
+    <div className="max-w-5xl mx-auto">
+      <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">📋 공지사항 목록</h1>
+
+      {/* 🔍 검색 + 글쓰기 */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
+        <SearchFilters
+          onSearch={handleSearch}
+          filterOptions={[
+            { label: "제목+내용", value: "TITLE_CONTENT" },
+            { label: "제목", value: "TITLE" },
+            { label: "내용", value: "CONTENT" },
+            { label: "작성자", value: "AUTHOR" },
+            { label: "댓글", value: "COMMENT" },
+          ]}
+        />
+        <Button type="primary" onClick={() => router.push("/support/notice/write")}>
+          글쓰기
+        </Button>
       </div>
 
-      <Table
-        dataSource={data || []}
-        columns={columns}
-        rowKey="id"
+      {/* 헤더 */}
+      <div className="hidden md:flex py-2 font-semibold text-gray-500 border-b bg-gray-50 text-sm">
+        <div className="w-24 text-center">번호</div>
+        <div className="w-24 text-center">카테고리</div>
+        <div className="flex-1 text-center">제목</div>
+        <div className="w-32 text-center">글쓴이</div>
+        <div className="w-32 text-center">작성일자</div>
+        <div className="w-20 text-center">조회수</div>
+        <div className="w-20 text-center">추천</div>
+      </div>
+
+      {/* 리스트 */}
+      <List<NoticeResponse>
         loading={isLoading}
-        pagination={{ pageSize: 10 }}
+        dataSource={list}
+        renderItem={(item) => (
+          <List.Item
+            onClick={() => router.push(`/support/notice/view?id=${item.id}`)}
+            className="hover:bg-gray-50 px-4 py-3 cursor-pointer border-b"
+          >
+            <div className="flex flex-col md:flex-row w-full items-start md:items-center">
+              <div className="w-24 flex items-center justify-center">{item.id}</div>
+              <div className="w-24 flex items-center justify-center">
+                <Tag>{item.category}</Tag>
+              </div>
+              <div className="flex-1 font-medium text-gray-900 truncate">{item.title}({item.replyCount})</div>
+              <div className="w-32 text-sm text-gray-500 text-center truncate">{item.author}</div>
+              <div className="w-32 flex items-center justify-center text-sm text-gray-500">
+                {dayjs(item.createDate).format("YYYY.MM.DD")}
+              </div>
+              <div className="w-20 flex items-center justify-center text-sm text-gray-500">
+                {item.viewCount}
+              </div>
+              <div className="w-20 flex items-center justify-center text-sm text-gray-500">
+                {item.likeCount}
+              </div>
+            </div>
+          </List.Item>
+        )}
       />
+
+      {/* ⏬ 페이징 */}
+      <div className="flex justify-center mt-6">
+        <Pagination
+          current={pagination?.currentPage ?? 1}
+          total={pagination?.totalElements ?? 0}
+          pageSize={pageSize}
+          showSizeChanger={false}
+          onChange={handlePageChange}
+        />
+      </div>
     </div>
   );
 }

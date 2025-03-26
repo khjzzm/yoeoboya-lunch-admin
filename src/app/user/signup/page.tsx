@@ -21,7 +21,7 @@ export default function SignUpPage() {
       setEmail(emailParam);
       form.setFieldsValue({email: emailParam});
     }
-  }, []);
+  }, [form]);
 
   const handleSignUp = (values: SignUpData) => {
     signUpMutation.mutate(values, {

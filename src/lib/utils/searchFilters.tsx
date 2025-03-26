@@ -6,7 +6,6 @@ interface FilterProps {
   filterOptions: { label: string; value: string }[];
 }
 
-
 const roleOptions = [
   { label: "어드민", value: "ROLE_ADMIN" },
   { label: "매니저", value: "ROLE_MANAGER" },

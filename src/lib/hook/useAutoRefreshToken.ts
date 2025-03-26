@@ -16,6 +16,7 @@ export function useAutoRefreshToken() {
     );
   }, [pathname]);
 
+  //fixme pathName
   const {data: refreshTrigger} = useQuery<string>({
     queryKey: ["refresh-trigger", pathname],
     queryFn: refreshTokenFn,
@@ -29,7 +30,6 @@ export function useAutoRefreshToken() {
   });
 
   useEffect(() => {
-    console.log(refreshTrigger)
     if (!refreshTrigger) return;
     (async () => {
       try {
