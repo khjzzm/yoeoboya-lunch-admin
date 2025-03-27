@@ -1,14 +1,10 @@
 "use client";
 
-import {
-  useFetchTokenIgnoreUrls,
-  useUpdateTokenIgnoreUrl,
-  useDeleteTokenIgnoreUrl,
-} from "@/lib/api/useResources";
-import { Table, Button, Input, Switch, Form, Modal, Space, Tooltip } from "antd";
-import { useEffect, useState } from "react";
-import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
-import { apiErrorMessage } from "@/lib/utils/apiErrorMessage";
+import {useDeleteTokenIgnoreUrl, useFetchTokenIgnoreUrls, useUpdateTokenIgnoreUrl,} from "@/lib/api/useResources";
+import {Button, Form, Input, Modal, Space, Switch, Table, Tooltip} from "antd";
+import {useEffect, useState} from "react";
+import {DeleteOutlined, EditOutlined, PlusOutlined} from "@ant-design/icons";
+import {apiErrorMessage} from "@/lib/utils/apiErrorMessage";
 
 // TokenIgnoreUrl 인터페이스
 interface TokenIgnoreUrl {

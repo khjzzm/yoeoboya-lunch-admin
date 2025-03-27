@@ -1,26 +1,26 @@
 "use client";
 
-export const dynamic = "force-dynamic";
-import {useSearchParams, useRouter} from "next/navigation";
-import { useNoticeDetail, useLikeNotice, useUnlikeNotice, useDeleteNotice, } from "@/lib/api/useSupport";
-import { Card, Typography, Tag, Button, Spin, } from "antd";
-import { LikeOutlined, LikeFilled, DeleteOutlined, EditOutlined, } from "@ant-design/icons";
+import {useRouter} from "next/navigation";
+import {useDeleteNotice, useLikeNotice, useNoticeDetail, useUnlikeNotice,} from "@/lib/api/useSupport";
+import {Button, Card, Spin, Tag, Typography,} from "antd";
+import {DeleteOutlined, EditOutlined, LikeFilled, LikeOutlined,} from "@ant-design/icons";
 import parse from "html-react-parser";
 import ReplyComponent from "@/components/ReplyComponent";
+import {useAuthStore} from "@/store/useAuthStore";
+import {useQueryParamNumber} from "@/lib/hook/useQueryParam";
+
+export const dynamic = "force-dynamic";
 
 const {Title, Text} = Typography;
 
 export default function NoticeViewPage() {
+  const {isAdmin} = useAuthStore();
   const router = useRouter();
-
-  const searchParams = useSearchParams();
-  const noticeId = Number(searchParams.get("id"));
-
+  const noticeId = useQueryParamNumber("id");
   const {data: notice, isLoading} = useNoticeDetail(noticeId);
   const {mutate: like} = useLikeNotice(noticeId);
   const {mutate: unlike} = useUnlikeNotice(noticeId);
   const {mutate: deleteNotice} = useDeleteNotice();
-
 
   if (isLoading || !notice) {
     return <Spin tip="불러오는 중..."/>;
@@ -74,11 +74,14 @@ export default function NoticeViewPage() {
           </Button>
           <Text type="secondary">댓글 {notice.data.replyCount}</Text>
         </div>
-        <div className="flex gap-2">
-          <Button icon={<EditOutlined/>}
-                  onClick={() => router.push(`/support/notice/write?noticeId=${notice.data.id}`)}>수정</Button>
-          <Button danger icon={<DeleteOutlined/>} onClick={handleDelete}>삭제</Button>
-        </div>
+
+        {isAdmin() &&
+          <div className="flex gap-2">
+            <Button icon={<EditOutlined/>}
+                    onClick={() => router.push(`/support/notice/write?noticeId=${notice.data.id}`)}>수정</Button>
+            <Button danger icon={<DeleteOutlined/>} onClick={handleDelete}>삭제</Button>
+          </div>
+        }
       </div>
 
       <ReplyComponent noticeId={noticeId}></ReplyComponent>

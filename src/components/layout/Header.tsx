@@ -1,8 +1,8 @@
 "use client";
 
-import { Layout, Typography } from "antd";
-import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import {Layout, Typography} from "antd";
+import {usePathname} from "next/navigation";
+import {useEffect, useState} from "react";
 import ProfileDropdown from "@/components/ProfileDropdown";
 
 const { Header } = Layout;

@@ -13,8 +13,7 @@ export interface NoticeRequest {
   status: NoticeStatus;
 }
 
-import type { Dayjs } from "dayjs";
-
+import type {Dayjs} from "dayjs";
 export interface NoticeFormValues {
   title: string;
   content: string;

@@ -1,20 +1,22 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { List, Tag, Pagination, Button } from "antd";
-import { useNotices } from "@/lib/api/useSupport";
+import {useRouter} from "next/navigation";
+import {Button, List, Pagination, Tag} from "antd";
+import {useNotices} from "@/lib/api/useSupport";
 import dayjs from "dayjs";
-import { useState } from "react";
+import {useState} from "react";
 import SearchFilters from "@/lib/utils/searchFilters";
-import type { NoticeDetailResponse } from "@/types/support";
+import {NoticeDetailResponse} from "@/types";
+import {useAuthStore} from "@/store/useAuthStore";
 
 export default function NoticeListPage() {
+  const {isManager} = useAuthStore();
   const router = useRouter();
   const [page, setPage] = useState(1);
   const [pageSize] = useState(10);
   const [filters, setFilters] = useState<Record<string, string | string[]>>({});
 
-  const { data, isLoading } = useNotices(page, pageSize, filters);
+  const {data, isLoading} = useNotices(page, pageSize, filters);
 
   const handleSearch = (searchFilters: Record<string, string | string[]>) => {
     const keys = Object.keys(searchFilters);
@@ -49,16 +51,18 @@ export default function NoticeListPage() {
         <SearchFilters
           onSearch={handleSearch}
           filterOptions={[
-            { label: "제목+내용", value: "TITLE_CONTENT" },
-            { label: "제목", value: "TITLE" },
-            { label: "내용", value: "CONTENT" },
-            { label: "작성자", value: "AUTHOR" },
-            { label: "댓글", value: "COMMENT" },
+            {label: "제목+내용", value: "TITLE_CONTENT"},
+            {label: "제목", value: "TITLE"},
+            {label: "내용", value: "CONTENT"},
+            {label: "작성자", value: "AUTHOR"},
+            {label: "댓글", value: "COMMENT"},
           ]}
         />
-        <Button type="primary" onClick={() => router.push("/support/notice/write")}>
-          글쓰기
-        </Button>
+        {isManager() &&
+          <Button type="primary" onClick={() => router.push("/support/notice/write")}>
+            글쓰기
+          </Button>
+        }
       </div>
 
       {/* 헤더 */}

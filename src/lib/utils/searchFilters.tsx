@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Space, Input, Button, Select, Checkbox } from "antd";
+import {useState} from "react";
+import {Button, Checkbox, Input, Select, Space} from "antd";
 
 interface FilterProps {
   onSearch: (filters: { [key: string]: string | string[] }) => void;

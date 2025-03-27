@@ -2,11 +2,11 @@
 
 import {useEffect, useState} from "react";
 import {useCreateReply, useDeleteReply, useNoticeReplies} from "@/lib/api/useSupport";
-import {Reply} from "@/types/reply";
+import {Reply} from "@/types/board/Reply";
 import {useAuthStore} from "@/store/useAuthStore";
-import {Typography, Button, Input, Spin, Popconfirm} from "antd";
+import {Button, Input, Popconfirm, Spin, Typography} from "antd";
 import {DeleteOutlined} from "@ant-design/icons";
-import {Pagination} from "@/types/pagination";
+import {Pagination} from "@/types";
 
 const {Text, Title} = Typography;
 
@@ -73,7 +73,7 @@ export default function ReplyComponent({noticeId}: ReplyComponentProps) {
 
   return (
     <div className="mt-10">
-      <Title level={4}>댓글 {pagination?.totalPages}</Title>
+      <Title level={4}>댓글 {pagination?.totalElements}</Title>
 
       {isLoading ? (
         <Spin/>
@@ -113,7 +113,7 @@ export default function ReplyComponent({noticeId}: ReplyComponentProps) {
                 {parent.childReplies.filter(child => !child.deleted).length > 0 && (
                   <div className="mt-4 space-y-3 pl-4 border-l-2 border-gray-200">
                     {parent.childReplies
-                      .filter(child => !child.deleted) // ✅ 삭제된 대댓글 제외
+                      .filter(child => !child.deleted)
                       .map((child) => (
                         <div key={child.replyId} className="ml-2">
                           <div className="flex justify-between items-center">

@@ -3,7 +3,7 @@ import {api} from "@/lib/utils/api";
 import {useRouter} from "next/navigation";
 import {useAuthStore} from "@/store/useAuthStore";
 import {message, notification} from "antd";
-import {ChangePasswordData, SignUpData, SocialSignUpQueryParams} from "@/types/auth";
+import {ChangePasswordRequest, SignUpRequest, SocialSignUpRequest} from "@/types";
 
 /** 로그인 Hook */
 export function useLogin() {
@@ -37,7 +37,7 @@ export function useSignUp() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (signUpData: SignUpData) => {
+    mutationFn: async (signUpData: SignUpRequest) => {
       const {data} = await api.post("/user/sign-up", signUpData);
       if (data?.code !== 201) {
         throw new Error("회원가입 실패: 응답 데이터 오류");
@@ -71,7 +71,7 @@ export function useSocialSignUp() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (signUpData: SocialSignUpQueryParams) => {
+    mutationFn: async (signUpData: SocialSignUpRequest) => {
       const {data} = await api.post("/user/social/sign-up", signUpData);
       if (!data?.code || data.code !== 201) {
         throw new Error("소셜 회원가입 실패: 응답 오류");
@@ -117,7 +117,7 @@ export function useChangePassword() {
   const router = useRouter();
 
   return useMutation({
-    mutationFn: async (passwordData: ChangePasswordData) => {
+    mutationFn: async (passwordData: ChangePasswordRequest) => {
       const {data} = await api.patch("/user/password", passwordData);
       if (data?.code !== 200) {
         throw new Error("비밀번호 변경 실패: 응답 데이터 오류");

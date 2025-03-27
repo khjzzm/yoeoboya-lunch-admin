@@ -1,13 +1,12 @@
-import {useQuery, useMutation, useQueryClient} from "@tanstack/react-query";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {api} from "@/lib/utils/api";
 import {message} from "antd";
 import {apiErrorMessage} from "@/lib/utils/apiErrorMessage";
-import {NoticeRequest, NoticeDetailResponse} from "@/types/support";
 import stringify from "fast-json-stable-stringify";
 import {useRouter} from "next/navigation";
-import ApiResponse from "@/types/response";
-import {Reply} from "@/types/reply";
-import {Pagination} from "@/types/pagination";
+import {Reply} from "@/types/board/Reply";
+import {NoticeDetailResponse, NoticeRequest, Pagination} from "@/types";
+import ApiResponse from "@/types/common/ApiResponse";
 
 /** 공지사항 목록 조회 (검색 시 호출용) */
 export function useNotices(

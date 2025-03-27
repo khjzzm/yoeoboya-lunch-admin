@@ -1,8 +1,8 @@
 "use client";
 
-import { useMembers } from "@/lib/api/useMembers";
-import { Table } from "antd";
-import { useState } from "react";
+import {useMembers} from "@/lib/api/useMembers";
+import {Table} from "antd";
+import {useState} from "react";
 import SearchFilters from "@/lib/utils/searchFilters";
 
 export default function MemberPage() {

@@ -1,9 +1,9 @@
-import { Suspense } from "react";
-import NoticeWritePage from "@/app/support/notice/NoticeWritePage";
+import NoticeWritePage from "@/app/support/notice/write/NoticeWritePage";
+import {Suspense} from "react";
 
 export default function Page() {
   return (
-    <Suspense fallback={<div>로딩 중...</div>}>
+    <Suspense fallback={<div style={{ padding: "2rem", fontSize: "20px" }}>불러오는 중...</div>}>
       <NoticeWritePage />
     </Suspense>
   );

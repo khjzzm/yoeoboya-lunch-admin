@@ -1,10 +1,10 @@
 "use client";
 
-import { Form, Input, Button, Typography } from "antd";
-import { useAuthStore } from "@/store/useAuthStore";
-import { useRegisterAccount, useUpdateAccount } from "@/lib/api/useMe";
-import React, { useEffect, useState } from "react";
-import { BankOutlined, CreditCardOutlined } from "@ant-design/icons";
+import {Button, Form, Input, Typography} from "antd";
+import {useAuthStore} from "@/store/useAuthStore";
+import {useRegisterAccount, useUpdateAccount} from "@/lib/api/useMe";
+import React, {useEffect, useState} from "react";
+import {BankOutlined, CreditCardOutlined} from "@ant-design/icons";
 
 const { Title } = Typography;
 

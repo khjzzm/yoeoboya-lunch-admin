@@ -3,7 +3,7 @@ import {PublicEnvScript} from "next-runtime-env";
 import React from "react";
 import Layout from "@/components/layout/Layout";
 import "./globals.css";
-import '@ant-design/v5-patch-for-react-19' ;
+import '@ant-design/v5-patch-for-react-19';
 
 export const metadata = {
   title: "여보야 점심시간 어드민",

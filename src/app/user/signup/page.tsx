@@ -1,10 +1,10 @@
 "use client";
 
 import {useSignUp} from "@/lib/api/useLogin";
-import {Form, Input, Button, Card, Typography, Alert} from "antd";
+import {Alert, Button, Card, Form, Input, Typography} from "antd";
 import {apiErrorMessage, applyApiValidationErrors} from "@/lib/utils/apiErrorMessage";
-import {useState, useEffect} from "react";
-import {SignUpData} from "@/types/auth";
+import {useEffect, useState} from "react";
+import {SignUpRequest} from "@/types";
 
 const {Title} = Typography;
 
@@ -23,7 +23,7 @@ export default function SignUpPage() {
     }
   }, [form]);
 
-  const handleSignUp = (values: SignUpData) => {
+  const handleSignUp = (values: SignUpRequest) => {
     signUpMutation.mutate(values, {
       onError: (error) => {
         if (applyApiValidationErrors(error, form)) return;

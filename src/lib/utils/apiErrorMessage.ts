@@ -1,5 +1,6 @@
 import {FormInstance, message} from "antd";
-import ApiResponse, {ValidationError} from "@/types/response";
+import ApiResponse from "@/types/common/ApiResponse";
+import {ValidationError} from "@/types";
 
 /**
  * API 요청 에러를 처리하는 함수

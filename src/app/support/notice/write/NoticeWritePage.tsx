@@ -1,22 +1,22 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import {useRouter, useSearchParams} from "next/navigation";
-import {useCreateNotice, useUpdateNotice, useNoticeDetail} from "@/lib/api/useSupport";
-import {Input, Select, DatePicker, Button, Form, Space} from "antd";
+import {useRouter} from "next/navigation";
+import {useCreateNotice, useNoticeDetail, useUpdateNotice} from "@/lib/api/useSupport";
+import {Button, DatePicker, Form, Input, Select, Space} from "antd";
 import {useEffect, useState} from "react";
 import dayjs from "dayjs";
 import {applyApiValidationErrors} from "@/lib/utils/apiErrorMessage";
 import {useAuthStore} from "@/store/useAuthStore";
-import {NoticeFormValues, NoticeRequest} from "@/types/support";
+import {NoticeFormValues, NoticeRequest} from "@/types";
+import {useQueryParamNumber} from "@/lib/hook/useQueryParam";
 
 const TiptapEditor = dynamic(() => import("@/components/TiptapEditor"), {ssr: false});
 
 export default function NoticeWritePage() {
   const {user} = useAuthStore();
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const noticeId = searchParams.get("noticeId");
+  const noticeId = useQueryParamNumber("noticeId");
   const editMode = Boolean(noticeId);
 
   const [form] = Form.useForm();
@@ -47,8 +47,6 @@ export default function NoticeWritePage() {
     }
   }, [editMode, form, noticeDetail]);
 
-  
-
   const handleSubmit = (values: NoticeFormValues) => {
     const payload: NoticeRequest = {
       ...values,
@@ -65,7 +63,6 @@ export default function NoticeWritePage() {
       },
     });
   };
-
 
   return (
     <div>

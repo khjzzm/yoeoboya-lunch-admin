@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { Table, Switch, Tooltip, Select } from "antd";
-import { ColumnsType } from "antd/es/table";
-import { useRole, useUpdateSecurityStatus, useUpdateRole } from "@/lib/api/useRole";
+import {useState} from "react";
+import {Select, Switch, Table, Tooltip} from "antd";
+import {ColumnsType} from "antd/es/table";
+import {useRole, useUpdateRole, useUpdateSecurityStatus} from "@/lib/api/useRole";
 import SearchFilters from "@/lib/utils/searchFilters";
 
 // Role 데이터 타입 정의

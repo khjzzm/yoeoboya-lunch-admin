@@ -1,8 +1,8 @@
 "use client";
 
-import {useRef, useState, useEffect, useMemo, RefObject, createRef} from "react";
+import {createRef, RefObject, useEffect, useMemo, useRef, useState} from "react";
 import {Layout, Menu, Typography} from "antd";
-import {UserOutlined, LockOutlined, BankOutlined} from "@ant-design/icons";
+import {BankOutlined, LockOutlined, UserOutlined} from "@ant-design/icons";
 import ProfileSettings from "@/components/me/settings/ProfileSettings";
 import SecuritySettings from "@/components/me/settings/SecuritySettings";
 import AccountSettings from "@/components/me/settings/AccountSettings";

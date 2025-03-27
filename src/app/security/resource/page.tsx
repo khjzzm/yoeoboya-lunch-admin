@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { useResources, useAddResourceRole } from "@/lib/api/useResources";
-import { Table, Tooltip, Select, Tag } from "antd";
-import type { ColumnsType } from "antd/es/table";
-import { apiErrorMessage } from "@/lib/utils/apiErrorMessage";
+import {useState} from "react";
+import {useAddResourceRole, useResources} from "@/lib/api/useResources";
+import {Select, Table, Tag, Tooltip} from "antd";
+import type {ColumnsType} from "antd/es/table";
+import {apiErrorMessage} from "@/lib/utils/apiErrorMessage";
 
 interface Resource {
   resourceId: number;

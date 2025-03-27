@@ -1,6 +1,6 @@
 "use client";
 
-import { Typography, Card } from "antd";
+import {Card, Typography} from "antd";
 
 export default function Home() {
   return (

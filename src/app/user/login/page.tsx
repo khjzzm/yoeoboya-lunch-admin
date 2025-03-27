@@ -3,23 +3,10 @@
 import {useState} from "react";
 import {useLogin} from "@/lib/api/useLogin";
 import {useRouter} from "next/navigation";
-import {
-  Alert,
-  Button,
-  Card,
-  Form,
-  Input,
-  Tooltip,
-  Typography
-} from "antd";
-import {
-  FacebookFilled,
-  GithubOutlined,
-  GoogleOutlined,
-  WindowsOutlined
-} from "@ant-design/icons";
+import {Alert, Button, Card, Form, Input, Tooltip, Typography} from "antd";
+import {FacebookFilled, GithubOutlined, GoogleOutlined, WindowsOutlined} from "@ant-design/icons";
 import {apiErrorMessage, applyApiValidationErrors} from "@/lib/utils/apiErrorMessage";
-import {SocialProvider} from "@/types/auth";
+import {SocialProvider} from "@/types";
 
 const {Title, Text} = Typography;
 

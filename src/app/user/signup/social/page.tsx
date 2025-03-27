@@ -1,10 +1,10 @@
 "use client";
 
 import {useSocialSignUp} from "@/lib/api/useLogin";
-import {Form, Input, Button, Card, Typography, Alert, Avatar} from "antd";
+import {Alert, Avatar, Button, Card, Form, Input, Typography} from "antd";
 import {apiErrorMessage, applyApiValidationErrors} from "@/lib/utils/apiErrorMessage";
-import {useState, useEffect} from "react";
-import {SocialSignUpQueryParams} from "@/types/auth";
+import {useEffect, useState} from "react";
+import {SocialSignUpRequest} from "@/types";
 
 const {Title, Text} = Typography;
 
@@ -12,12 +12,12 @@ export default function SocialSignUpPage() {
   const [form] = Form.useForm();
   const signUpMutation = useSocialSignUp();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [params, setParams] = useState<SocialSignUpQueryParams>({});
+  const [params, setParams] = useState<SocialSignUpRequest>({});
 
   useEffect(() => {
     const query = new URLSearchParams(window.location.search);
 
-    const parsed: SocialSignUpQueryParams = {
+    const parsed: SocialSignUpRequest = {
       loginId: query.get("loginId") || undefined,
       email: query.get("email") || undefined,
       name: query.get("name") || undefined,
@@ -29,7 +29,7 @@ export default function SocialSignUpPage() {
     form.setFieldsValue(parsed);
   }, [form]);
 
-  const handleSocialSignUp = (values: SocialSignUpQueryParams) => {
+  const handleSocialSignUp = (values: SocialSignUpRequest) => {
     signUpMutation.mutate(values, {
       onError: (error) => {
         if (applyApiValidationErrors(error, form)) return;

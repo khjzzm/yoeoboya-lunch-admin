@@ -1,10 +1,15 @@
 "use client";
 
-import {Form, Input, Button, Upload, Avatar, Typography, Modal, Popconfirm} from "antd";
-import {StarOutlined, PlusCircleOutlined, CloseOutlined} from "@ant-design/icons";
+import {Avatar, Button, Form, Input, Modal, Popconfirm, Typography, Upload} from "antd";
+import {CloseOutlined, PlusCircleOutlined, StarOutlined} from "@ant-design/icons";
 import {useAuthStore} from "@/store/useAuthStore";
 import {useEffect, useState} from "react";
-import {useSetDefaultProfileImage, useUploadProfileImage, useUpdateMyInfo, useDeleteProfileImage} from "@/lib/api/useMe";
+import {
+  useDeleteProfileImage,
+  useSetDefaultProfileImage,
+  useUpdateMyInfo,
+  useUploadProfileImage
+} from "@/lib/api/useMe";
 import Image from "next/image";
 import {applyApiValidationErrors} from "@/lib/utils/apiErrorMessage";
 
