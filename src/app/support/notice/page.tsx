@@ -109,7 +109,7 @@ export default function NoticeListPage() {
       {/* ⏬ 페이징 */}
       <div className="flex justify-center mt-6">
         <Pagination
-          current={pagination?.currentPage ?? 1}
+          current={page}
           total={pagination?.totalElements ?? 0}
           pageSize={pageSize}
           showSizeChanger={false}
