@@ -1,8 +1,7 @@
-import { useSearchParams } from "next/navigation";
+import {useSearchParams} from "next/navigation";
 
-export function useQueryParam(key: string): string | null {
-  const params = useSearchParams();
-  return params.get(key);
+export function useQueryParamString(key: string): string | null {
+  return useSearchParams().get(key);
 }
 
 export function useQueryParamNumber(key: string): number {
