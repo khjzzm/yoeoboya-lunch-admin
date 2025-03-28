@@ -1,26 +1,28 @@
 "use client";
 
-import {useRouter} from "next/navigation";
-import {Button, List, Pagination, Tag} from "antd";
-import {useNotices} from "@/lib/api/useSupport";
-import dayjs from "dayjs";
-import {useState} from "react";
+import { useRouter } from "next/navigation";
+import { Button, List, Pagination, Tag } from "antd";
+import { useNotices } from "@/lib/api/useSupport";
+import { useState } from "react";
 import SearchFilters from "@/lib/utils/searchFilters";
-import {NoticeDetailResponse} from "@/types";
-import {useAuthStore} from "@/store/useAuthStore";
+import { NoticeDetailResponse } from "@/types";
+import { useAuthStore } from "@/store/useAuthStore";
+import dayjs from "dayjs";
 
 export default function NoticeListPage() {
-  const {isManager} = useAuthStore();
+  const { isManager } = useAuthStore();
   const router = useRouter();
+
   const [page, setPage] = useState(1);
-  const [pageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(10);
+
   const [filters, setFilters] = useState<Record<string, string | string[]>>({});
 
-  const {data, isLoading} = useNotices(page, pageSize, filters);
+  const { data: notice, isLoading } = useNotices(page, pageSize, filters);
 
   const handleSearch = (searchFilters: Record<string, string | string[]>) => {
     const keys = Object.keys(searchFilters);
-    const key = keys[0]; // ex: "title_content"
+    const key = keys[0];
     const value = searchFilters[key];
 
     if (typeof value === "string") {
@@ -29,24 +31,23 @@ export default function NoticeListPage() {
         keyword: value,
       });
     } else {
-      setFilters({}); // 비어있으면 전체 조회
+      setFilters({});
     }
 
-    setPage(1); // 검색 시 1페이지로 초기화
+    setPage(1);
   };
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
   };
 
-  const list = data?.data.list || [];
-  const pagination = data?.data.pagination;
+  const list = notice?.data.list || [];
+  const pagination = notice?.data.pagination;
 
   return (
-    <div className="max-w-5xl mx-auto">
-      <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">📋 공지사항 목록</h1>
+    <div className="max-w-5xl mx-auto px-2 md:px-0">
+      <h1 className="text-xl md:text-2xl font-bold text-center text-gray-800 mb-6">📋 공지사항 목록</h1>
 
-      {/* 🔍 검색 + 글쓰기 */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
         <SearchFilters
           onSearch={handleSearch}
@@ -58,62 +59,67 @@ export default function NoticeListPage() {
             {label: "댓글", value: "COMMENT"},
           ]}
         />
-        {isManager() &&
-          <Button type="primary" onClick={() => router.push("/support/notice/write")}>
-            글쓰기
-          </Button>
-        }
+        {isManager() && (
+          <Button type="primary" onClick={() => router.push("/support/notice/write")}>글쓰기</Button>
+        )}
       </div>
 
-      {/* 헤더 */}
       <div className="hidden md:flex py-2 font-semibold text-gray-500 border-b bg-gray-50 text-sm">
-        <div className="w-24 text-center">번호</div>
-        <div className="w-24 text-center">카테고리</div>
+        <div className="w-16 text-center shrink-0">번호</div>
+        <div className="w-20 text-center shrink-0">카테고리</div>
         <div className="flex-1 text-center">제목</div>
-        <div className="w-32 text-center">글쓴이</div>
-        <div className="w-32 text-center">작성일자</div>
-        <div className="w-20 text-center">조회수</div>
-        <div className="w-20 text-center">추천</div>
+        <div className="w-24 text-center shrink-0">작성자</div>
+        <div className="w-24 text-center shrink-0">작성일자</div>
+        <div className="w-16 text-center shrink-0">조회</div>
+        <div className="w-16 text-center shrink-0">추천</div>
       </div>
 
-      {/* 리스트 */}
       <List<NoticeDetailResponse>
         loading={isLoading}
         dataSource={list}
-        renderItem={(item) => (
-          <List.Item
-            onClick={() => router.push(`/support/notice/view?id=${item.id}`)}
-            className="hover:bg-gray-50 px-4 py-3 cursor-pointer border-b"
-          >
-            <div className="flex flex-col md:flex-row w-full items-start md:items-center">
-              <div className="w-24 flex items-center justify-center">{item.id}</div>
-              <div className="w-24 flex items-center justify-center">
-                <Tag>{item.category}</Tag>
+        renderItem={(item) => {
+          const isExpired = dayjs(item.endDate).isBefore(dayjs());
+
+          return (
+            <List.Item
+              onClick={() => router.push(`/support/notice/view?id=${item.id}`)}
+              className={`hover:bg-gray-50 px-2 md:px-4 py-3 cursor-pointer border-b ${item.pinned ? "bg-yellow-50" : ""}`}
+            >
+              <div
+                className="flex flex-col md:flex-row w-full items-start md:items-center text-xs md:text-sm gap-1 md:gap-0">
+                <div className="w-16 text-center shrink-0">{item.id}</div>
+                <div className="w-20 text-center shrink-0">
+                  <Tag>{item.category}</Tag>
+                </div>
+                <div className="flex-1 truncate text-left">
+                  {item.pinned && <Tag color="gold">공지</Tag>} {item.title} ({item.replyCount})
+                  {isExpired && <Tag color="red" className="ml-2">기간 종료</Tag>}
+                </div>
+                <div className="w-24 text-center shrink-0">{item.author}</div>
+                <div className="w-24 text-center shrink-0">{dayjs(item.createDate).format("YY.MM.DD")}</div>
+                <div className="w-16 text-center shrink-0">{item.viewCount}</div>
+                <div className="w-16 text-center shrink-0">{item.likeCount}</div>
               </div>
-              <div className="flex-1 font-medium text-gray-900 truncate">{item.title}({item.replyCount})</div>
-              <div className="w-32 text-sm text-gray-500 text-center truncate">{item.author}</div>
-              <div className="w-32 flex items-center justify-center text-sm text-gray-500">
-                {dayjs(item.createDate).format("YYYY.MM.DD")}
-              </div>
-              <div className="w-20 flex items-center justify-center text-sm text-gray-500">
-                {item.viewCount}
-              </div>
-              <div className="w-20 flex items-center justify-center text-sm text-gray-500">
-                {item.likeCount}
-              </div>
-            </div>
-          </List.Item>
-        )}
+            </List.Item>
+          );
+        }}
       />
 
-      {/* ⏬ 페이징 */}
       <div className="flex justify-center mt-6">
         <Pagination
           current={page}
           total={pagination?.totalElements ?? 0}
           pageSize={pageSize}
-          showSizeChanger={false}
+          showSizeChanger={true}
+          pageSizeOptions={["10", "30", "50"]}
           onChange={handlePageChange}
+          onShowSizeChange={(_, newSize) => {
+            setPage(1);         // 페이지 초기화
+            setPageSize(newSize); // 페이지 사이즈 변경
+          }}
+          locale={{
+            items_per_page: "개",
+          }}
         />
       </div>
     </div>

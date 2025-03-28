@@ -3,13 +3,13 @@
 import dynamic from "next/dynamic";
 import {useRouter} from "next/navigation";
 import {useCreateNotice, useNoticeDetail, useUpdateNotice} from "@/lib/api/useSupport";
-import {Button, DatePicker, Form, Input, Select, Space} from "antd";
+import {Button, DatePicker, Form, Input, Select, Space, Switch} from "antd";
 import {useEffect, useState} from "react";
-import dayjs from "dayjs";
 import {applyApiValidationErrors} from "@/lib/utils/apiErrorMessage";
 import {useAuthStore} from "@/store/useAuthStore";
 import {NoticeFormValues, NoticeRequest} from "@/types";
 import {useQueryParamNumber} from "@/lib/hook/useQueryParam";
+import dayjs from "dayjs";
 
 const TiptapEditor = dynamic(() => import("@/components/TiptapEditor"), {ssr: false});
 
@@ -37,7 +37,7 @@ export default function NoticeWritePage() {
         title: data.title,
         category: data.category,
         author: data.author,
-        priority: data.priority,
+        pinned: data.pinned,
         status: data.status,
         startDate: data.startDate ? dayjs(data.startDate) : null,
         endDate: data.endDate ? dayjs(data.endDate) : null,
@@ -51,8 +51,8 @@ export default function NoticeWritePage() {
     const payload: NoticeRequest = {
       ...values,
       content,
-      startDate: values.startDate ? values.startDate.toISOString() : null,
-      endDate: values.endDate ? values.endDate.toISOString() : null,
+      startDate: values.startDate ? dayjs(values.startDate).format("YYYY-MM-DDTHH:mm:ss") : null,
+      endDate: values.endDate ? dayjs(values.endDate).format("YYYY-MM-DDTHH:mm:ss") : null,
     };
 
     const mutation = editMode ? updateNotice : createNotice;
@@ -70,7 +70,7 @@ export default function NoticeWritePage() {
 
       <Form form={form} layout="vertical" onFinish={handleSubmit} initialValues={{
         category: "일반",
-        priority: "MEDIUM",
+        pinned: false,
         status: "ACTIVE",
         author: user?.loginId,
       }}>
@@ -83,7 +83,9 @@ export default function NoticeWritePage() {
             placeholder="카테고리를 선택하세요"
             options={[
               {label: "일반", value: "일반"},
-              {label: "이벤트", value: "이벤트"},
+              {label: "점검", value: "점검"},
+              {label: "행사", value: "행사"},
+              {label: "일반", value: "일반"},
               {label: "시스템", value: "시스템"},
             ]}
           />
@@ -92,18 +94,9 @@ export default function NoticeWritePage() {
         <Form.Item name="author" label="작성자" hidden rules={[{required: true}]}>
           <Input disabled/>
         </Form.Item>
-
-        <Form.Item name="priority" label="우선순위" rules={[{required: true, message: "우선순위를 선택하세요!"}]}>
-          <Select
-            placeholder="우선순위를 선택하세요"
-            options={[
-              {label: "낮음", value: "LOW"},
-              {label: "보통", value: "MEDIUM"},
-              {label: "높음", value: "HIGH"},
-            ]}
-          />
+        <Form.Item name="pinned" label="상단 고정" valuePropName="checked">
+          <Switch checkedChildren="고정" unCheckedChildren="기본"/>
         </Form.Item>
-
         <Form.Item name="status" label="상태" rules={[{required: true, message: "상태를 선택하세요!"}]}>
           <Select
             placeholder="상태를 선택하세요"

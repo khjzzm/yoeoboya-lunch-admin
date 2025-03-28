@@ -32,7 +32,7 @@ export interface NoticeDetailResponse {
   content: string;
   category: string;
   author: string;
-  priority: number; // 0 = 낮음, 1 = 보통, 2 = 높음
+  pinned: boolean;
   startDate: string | null;
   endDate: string | null;
   createDate : string | null;

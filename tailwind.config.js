@@ -7,7 +7,11 @@ module.exports = {
     "./src/layout/**/*.{js,ts,jsx,tsx}", //  레이아웃 관련 폴더 적용
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        sans: ['"Pretendard"', 'ui-sans-serif', 'system-ui'],
+      },
+    },
   },
   plugins: [],
 };

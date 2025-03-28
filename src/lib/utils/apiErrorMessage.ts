@@ -14,6 +14,7 @@ export const apiErrorMessage = (
 ): string | undefined => {
   if (typeof error === "object" && error !== null && "response" in error) {
     const axiosError = error as { response?: { data?: ApiResponse<ValidationError> } };
+    console.log(axiosError.response?.data?.message)
     const errorMessage = axiosError.response?.data?.message || "오류 발생. 다시 시도하세요.";
     if (showMessage) {
       message.error(errorMessage);

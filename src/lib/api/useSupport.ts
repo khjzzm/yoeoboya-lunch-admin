@@ -14,7 +14,7 @@ export function useNotices(
   pageSize: number,
   filters?: Record<string, string | string[]>
 ) {
-  return useQuery({
+  return useQuery<ApiResponse<{ list: NoticeDetailResponse[]; pagination: Pagination }>>({
     queryKey: ["fetchNotices", page, pageSize, stringify(filters)],
     queryFn: async () => {
       const params = new URLSearchParams();
@@ -67,21 +67,6 @@ export function useUploadNoticeImage() {
         headers: {"Content-Type": "multipart/form-data"},
       });
 
-      return data;
-    },
-    onError: (error) => {
-      apiErrorMessage(error);
-    },
-  });
-}
-
-/** 공지사항 읽음 표시 */
-export function useMarkNoticeAsRead() {
-  return useMutation({
-    mutationFn: async ({noticeId, loginId}: { noticeId: number; loginId: string }) => {
-      const {data} = await api.post(`/support/notice/read`, null, {
-        params: {noticeId, loginId},
-      });
       return data;
     },
     onError: (error) => {

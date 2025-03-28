@@ -26,11 +26,12 @@ export default function NoticeViewPage() {
     return <Spin tip="불러오는 중..."/>;
   }
 
-  const priorityColor = ["default", "blue", "red"][notice.data.priority] ?? "default";
-  const statusLabel = {
-    ACTIVE: "활성",
-    INACTIVE: "비활성",
-  }[notice.data.status];
+  const statusMap = {
+    ACTIVE: { label: "활성", color: "green" },
+    INACTIVE: { label: "비활성", color: "red" },
+  };
+  const status = statusMap[notice.data.status] ?? { label: "알 수 없음", color: "default" };
+
 
   const handleLike = () => {
     if (notice.data.hasLiked) {
@@ -49,13 +50,12 @@ export default function NoticeViewPage() {
   return (
     <div className="max-w-4xl mx-auto">
       <Title level={2}>{notice.data.title}</Title>
-      <div className="flex items-center justify-between mb-4 text-sm text-gray-500">
-        <div>
-          <Text>작성자: {notice.data.author}</Text>
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 text-sm text-gray-500">
+        <div className="flex flex-col md:flex-row md:gap-4">
+          <Text>공지 기간: {notice.data.startDate?.slice(0, 10)} ~ {notice.data.endDate?.slice(0, 10)}</Text>
         </div>
         <div>
-          <Tag color={priorityColor}>우선순위 {"낮음 보통 높음".split(" ")[notice.data.priority]}</Tag>
-          <Tag>{statusLabel}</Tag>
+          <Tag color={status.color}>{status.label}</Tag>
         </div>
       </div>
 
@@ -72,7 +72,6 @@ export default function NoticeViewPage() {
           >
             좋아요 {notice.data.likeCount}
           </Button>
-          <Text type="secondary">댓글 {notice.data.replyCount}</Text>
         </div>
 
         {isAdmin() &&
