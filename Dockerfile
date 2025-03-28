@@ -1,9 +1,6 @@
 # Next.js 15 지원하는 공식 이미지 사용
 FROM node:20-alpine AS builder
 
-# curl 설치 (헬스체크용)
-RUN apk add --no-cache curl
-
 # 작업 디렉토리 설정
 WORKDIR /app
 
@@ -21,6 +18,9 @@ RUN npm run build
 
 # 실행 단계 (경량화된 이미지 사용)
 FROM node:20-alpine
+
+# curl 설치 (헬스체크용)
+RUN apk add --no-cache curl
 
 WORKDIR /app
 
