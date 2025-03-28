@@ -4,6 +4,9 @@ FROM node:20-alpine AS builder
 # 작업 디렉토리 설정
 WORKDIR /app
 
+# curl 설치 (헬스체크용)
+RUN apk add --no-cache curl
+
 # package.json과 lock 파일 복사 (의존성 캐싱 최적화)
 COPY package.json package-lock.json* pnpm-lock.yaml* yarn.lock* ./
 
