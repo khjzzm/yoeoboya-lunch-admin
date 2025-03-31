@@ -95,7 +95,7 @@ export default function NoticeListPage() {
                   {item.pinned && <Tag color="gold">공지</Tag>} {item.title} ({item.replyCount})
                   {isExpired && <Tag color="red" className="ml-2">기간 종료</Tag>}
                 </div>
-                <div className="w-24 text-center shrink-0">{item.author}</div>
+                <div className="w-24 text-center shrink-0 truncate">{item.author}</div>
                 <div className="w-24 text-center shrink-0">{dayjs(item.createDate).format("YY.MM.DD")}</div>
                 <div className="w-16 text-center shrink-0">{item.viewCount}</div>
                 <div className="w-16 text-center shrink-0">{item.likeCount}</div>

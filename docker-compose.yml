@@ -9,8 +9,6 @@ services:
       - yeoboya_lunch_network  # 네트워크에 연결 (다른 서비스와 통신 가능)
     env_file:
       - .env
-    ports:
-      - "3001:3001"  # 호스트와 컨테이너 포트 매핑
     healthcheck:  # 컨테이너 상태 확인 (헬스체크)
       test: [ "CMD", "curl", "-f", "http://localhost:3001/api/health" ]
       interval: 10s

@@ -100,13 +100,15 @@ export function useLogout() {
       await api.post("/user/sign-out"); // 서버에서 토큰 가져와 삭제
     },
     onSuccess: () => {
-      logout(); // Zustand 초기화
       message.success("로그아웃 되었습니다.");
-      router.push("/user/login");
     },
     onError: (err) => {
       console.error("로그아웃 실패", err);
       message.error("로그아웃에 실패했습니다.");
+    },
+    onSettled: () =>{
+      logout(); // Zustand 초기화
+      router.push("/user/login");
     }
   });
 }
