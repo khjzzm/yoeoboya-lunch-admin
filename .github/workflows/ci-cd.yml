@@ -14,9 +14,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Get Public IP   # 퍼블릭 IP 가져오기
+      - name: Get Public IP   # 퍼블릭 IP 가져오기(안정된 방식)
         id: get_ip
-        run: echo "RUNNER_IP=$(curl -s ifconfig.me)" >> $GITHUB_ENV
+        run: echo "RUNNER_IP=$(curl -s https://checkip.amazonaws.com)" >> $GITHUB_ENV
 
       - name: Authorize Runner IP in Security Group   # 보안 그룹에 런너 IP 추가
         run: |
