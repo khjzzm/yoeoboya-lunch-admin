@@ -28,8 +28,16 @@ export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
       user: null,
+      isExpired: false,
+
       setUser: (user) => set({user}),
-      logout: () => set({user: null}),
+      setExpired: (val: boolean) => set({isExpired: val}),
+
+      logout: () =>
+        set({
+          user: null,
+          isExpired: false,
+        }),
       ...getRoleUtils(get),
     }),
     {

@@ -3,8 +3,8 @@
 import {useState} from "react";
 import {Select, Switch, Table, Tooltip} from "antd";
 import {ColumnsType} from "antd/es/table";
-import {useRole, useUpdateRole, useUpdateSecurityStatus} from "@/lib/api/useRole";
-import SearchFilters from "@/lib/utils/searchFilters";
+import {useRole, useUpdateRole, useUpdateSecurityStatus} from "@/lib/queries/useRole";
+import SearchFilters from "@/components/searchFilters";
 
 // Role 데이터 타입 정의
 interface RoleData {

@@ -1,6 +1,6 @@
 "use client";
 
-import {useDeleteTokenIgnoreUrl, useFetchTokenIgnoreUrls, useUpdateTokenIgnoreUrl,} from "@/lib/api/useResources";
+import {useDeleteTokenIgnoreUrl, useFetchTokenIgnoreUrls, useUpdateTokenIgnoreUrl,} from "@/lib/queries/useResources";
 import {Button, Form, Input, Modal, Space, Switch, Table, Tooltip} from "antd";
 import {useEffect, useState} from "react";
 import {DeleteOutlined, EditOutlined, PlusOutlined} from "@ant-design/icons";

@@ -1,13 +1,13 @@
 "use client";
 
 import {useRouter} from "next/navigation";
-import {useDeleteNotice, useLikeNotice, useNoticeDetail, useUnlikeNotice,} from "@/lib/api/useSupport";
+import {useDeleteNotice, useLikeNotice, useNoticeDetail, useUnlikeNotice,} from "@/lib/queries/useSupport";
 import {Button, Card, Spin, Tag, Typography,} from "antd";
 import {DeleteOutlined, EditOutlined, LikeFilled, LikeOutlined,} from "@ant-design/icons";
 import parse from "html-react-parser";
 import ReplyComponent from "@/components/ReplyComponent";
 import {useAuthStore} from "@/store/useAuthStore";
-import {useQueryParamNumber} from "@/lib/hook/useQueryParam";
+import {useQueryParamNumber} from "@/lib/hooks/useQueryParam";
 
 export const dynamic = "force-dynamic";
 

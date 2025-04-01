@@ -2,7 +2,7 @@
 
 import {Button, Form, Input, Typography} from "antd";
 import {useAuthStore} from "@/store/useAuthStore";
-import {useRegisterAccount, useUpdateAccount} from "@/lib/api/useMe";
+import {useRegisterAccount, useUpdateAccount} from "@/lib/queries/useMe";
 import React, {useEffect, useState} from "react";
 import {BankOutlined, CreditCardOutlined} from "@ant-design/icons";
 

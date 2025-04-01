@@ -1,6 +1,6 @@
 "use client";
 
-import {useSignUp} from "@/lib/api/useLogin";
+import {useSignUp} from "@/lib/queries/useLogin";
 import {Alert, Button, Card, Form, Input, Typography} from "antd";
 import {apiErrorMessage, applyApiValidationErrors} from "@/lib/utils/apiErrorMessage";
 import {useEffect, useState} from "react";

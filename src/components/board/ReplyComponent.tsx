@@ -1,7 +1,7 @@
 "use client";
 
 import {useEffect, useState} from "react";
-import {useCreateReply, useDeleteReply, useNoticeReplies} from "@/lib/api/useSupport";
+import {useCreateReply, useDeleteReply, useNoticeReplies} from "@/lib/queries/useSupport";
 import {Reply} from "@/types/board/Reply";
 import {useAuthStore} from "@/store/useAuthStore";
 import {Button, Input, Popconfirm, Spin, Typography} from "antd";

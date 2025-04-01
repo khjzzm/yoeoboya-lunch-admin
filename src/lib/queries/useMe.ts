@@ -2,7 +2,7 @@ import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {api} from "@/lib/utils/api";
 import {notification} from "antd";
 import {AxiosError} from "axios";
-import {refetchMyInfo} from "@/lib/hook/useFetchMyInfo";
+import {refetchMyInfo} from "@/lib/hooks/useFetchMyInfo";
 
 /** 내 정보 수정 Hook */
 export function useUpdateMyInfo() {

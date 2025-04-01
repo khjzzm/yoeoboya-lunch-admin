@@ -2,9 +2,9 @@
 
 import { useRouter } from "next/navigation";
 import { Button, List, Pagination, Tag } from "antd";
-import { useNotices } from "@/lib/api/useSupport";
+import { useNotices } from "@/lib/queries/useSupport";
 import { useState } from "react";
-import SearchFilters from "@/lib/utils/searchFilters";
+import SearchFilters from "@/components/searchFilters";
 import { NoticeDetailResponse } from "@/types";
 import { useAuthStore } from "@/store/useAuthStore";
 import dayjs from "dayjs";

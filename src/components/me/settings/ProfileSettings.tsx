@@ -9,7 +9,7 @@ import {
   useSetDefaultProfileImage,
   useUpdateMyInfo,
   useUploadProfileImage
-} from "@/lib/api/useMe";
+} from "@/lib/queries/useMe";
 import Image from "next/image";
 import {applyApiValidationErrors} from "@/lib/utils/apiErrorMessage";
 

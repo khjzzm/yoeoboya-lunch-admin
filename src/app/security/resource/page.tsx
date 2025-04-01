@@ -1,7 +1,7 @@
 "use client";
 
 import {useState} from "react";
-import {useAddResourceRole, useResources} from "@/lib/api/useResources";
+import {useAddResourceRole, useResources} from "@/lib/queries/useResources";
 import {Select, Table, Tag, Tooltip} from "antd";
 import type {ColumnsType} from "antd/es/table";
 import {apiErrorMessage} from "@/lib/utils/apiErrorMessage";

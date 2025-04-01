@@ -1,13 +1,13 @@
 "use client";
 
 import {useEffect, useState} from "react";
-import {useLogin} from "@/lib/api/useLogin";
+import {useLogin} from "@/lib/queries/useLogin";
 import {useRouter} from "next/navigation";
 import {Alert, Button, Card, Form, Input, Tooltip, Typography} from "antd";
 import {FacebookFilled, GithubOutlined, GoogleOutlined, WindowsOutlined} from "@ant-design/icons";
 import {apiErrorMessage, applyApiValidationErrors} from "@/lib/utils/apiErrorMessage";
 import {SocialProvider} from "@/types";
-import {useQueryParamString} from "@/lib/hook/useQueryParam";
+import {useQueryParamString} from "@/lib/hooks/useQueryParam";
 
 const {Title, Text} = Typography;
 

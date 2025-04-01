@@ -2,13 +2,13 @@
 
 import dynamic from "next/dynamic";
 import {useRouter} from "next/navigation";
-import {useCreateNotice, useNoticeDetail, useUpdateNotice} from "@/lib/api/useSupport";
+import {useCreateNotice, useNoticeDetail, useUpdateNotice} from "@/lib/queries/useSupport";
 import {Button, DatePicker, Form, Input, Select, Space, Switch} from "antd";
 import {useEffect, useState} from "react";
 import {applyApiValidationErrors} from "@/lib/utils/apiErrorMessage";
 import {useAuthStore} from "@/store/useAuthStore";
 import {NoticeFormValues, NoticeRequest} from "@/types";
-import {useQueryParamNumber} from "@/lib/hook/useQueryParam";
+import {useQueryParamNumber} from "@/lib/hooks/useQueryParam";
 import dayjs from "dayjs";
 
 const TiptapEditor = dynamic(() => import("@/components/TiptapEditor"), {ssr: false});
