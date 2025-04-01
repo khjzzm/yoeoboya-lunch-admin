@@ -3,7 +3,7 @@
 import {Layout, Typography} from "antd";
 import {usePathname} from "next/navigation";
 import {useEffect, useState} from "react";
-import ProfileDropdown from "@/components/ProfileDropdown";
+import ProfileDropdown from "@/components/me/ProfileDropdown";
 
 const { Header } = Layout;
 const { Text } = Typography;

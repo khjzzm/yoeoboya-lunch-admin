@@ -1,13 +1,20 @@
 "use client";
 
 import {useRouter} from "next/navigation";
-import {useDeleteNotice, useLikeNotice, useNoticeDetail, useUnlikeNotice,} from "@/lib/queries/useSupport";
+import {
+  useDeleteNotice,
+  useLikeNotice, useNoticeCreateReply, useNoticeDeleteReply,
+  useNoticeDetail,
+  useNoticeReplies,
+  useUnlikeNotice,
+} from "@/lib/queries/useSupport";
 import {Button, Card, Spin, Tag, Typography,} from "antd";
-import {DeleteOutlined, EditOutlined, LikeFilled, LikeOutlined,} from "@ant-design/icons";
+import {DeleteOutlined, EditOutlined} from "@ant-design/icons";
 import parse from "html-react-parser";
-import ReplyComponent from "@/components/ReplyComponent";
+import ReplyComponent from "@/components/board/ReplyComponent";
 import {useAuthStore} from "@/store/useAuthStore";
 import {useQueryParamNumber} from "@/lib/hooks/useQueryParam";
+import {LikeButton} from "@/components/board/LikeButton";
 
 export const dynamic = "force-dynamic";
 
@@ -17,29 +24,34 @@ export default function NoticeViewPage() {
   const {isAdmin} = useAuthStore();
   const router = useRouter();
   const noticeId = useQueryParamNumber("id");
+
+  //공지사항
   const {data: notice, isLoading} = useNoticeDetail(noticeId);
-  const {mutate: like} = useLikeNotice(noticeId);
-  const {mutate: unlike} = useUnlikeNotice(noticeId);
   const {mutate: deleteNotice} = useDeleteNotice();
+
+  //좋아요
+  const noticeLikeService = {
+    useLike: useLikeNotice,
+    useUnlike: useUnlikeNotice,
+  };
+
+  //댓글
+  const noticeReplyService = {
+    useReplies: useNoticeReplies,
+    useCreateReply: useNoticeCreateReply,
+    useDeleteReply: useNoticeDeleteReply,
+  };
 
   if (isLoading || !notice) {
     return <Spin tip="불러오는 중..."/>;
   }
 
   const statusMap = {
-    ACTIVE: { label: "활성", color: "green" },
-    INACTIVE: { label: "비활성", color: "red" },
+    ACTIVE: {label: "활성", color: "green"},
+    INACTIVE: {label: "비활성", color: "red"},
   };
-  const status = statusMap[notice.data.status] ?? { label: "알 수 없음", color: "default" };
+  const status = statusMap[notice.data.status] ?? {label: "알 수 없음", color: "default"};
 
-
-  const handleLike = () => {
-    if (notice.data.hasLiked) {
-      unlike()
-    } else {
-      like();
-    }
-  };
 
   const handleDelete = () => {
     if (confirm("정말 삭제하시겠습니까?")) {
@@ -65,25 +77,18 @@ export default function NoticeViewPage() {
 
       <div className="mt-6 flex justify-between items-center">
         <div className="flex items-center gap-4">
-          <Button
-            type={notice.data.hasLiked ? "primary" : "default"}
-            icon={notice.data.hasLiked ? <LikeFilled/> : <LikeOutlined/>}
-            onClick={handleLike}
-          >
-            좋아요 {notice.data.likeCount}
-          </Button>
+          <LikeButton boardId={noticeId} hasLiked={notice.data.hasLiked} service={noticeLikeService}/>
         </div>
 
         {isAdmin() &&
           <div className="flex gap-2">
-            <Button icon={<EditOutlined/>}
-                    onClick={() => router.push(`/support/notice/write?noticeId=${notice.data.id}`)}>수정</Button>
+            <Button icon={<EditOutlined/>} onClick={() => router.push(`/support/notice/write?noticeId=${notice.data.id}`)}>수정</Button>
             <Button danger icon={<DeleteOutlined/>} onClick={handleDelete}>삭제</Button>
           </div>
         }
       </div>
 
-      <ReplyComponent noticeId={noticeId}></ReplyComponent>
+      <ReplyComponent boardId={noticeId} service={noticeReplyService}/>
     </div>
   );
 }

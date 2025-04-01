@@ -111,7 +111,6 @@ export function useUpdateNotice(noticeId: number) {
   });
 }
 
-
 /** 공지사항 삭제 Hook */
 export function useDeleteNotice() {
   const queryClient = useQueryClient();
@@ -135,7 +134,7 @@ export function useDeleteNotice() {
 }
 
 /** 댓글 작성 Hook */
-export function useCreateReply() {
+export function useNoticeCreateReply() {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -159,7 +158,7 @@ export function useCreateReply() {
 }
 
 /** 댓글 삭제 Hook */
-export function useDeleteReply(noticeId: number) {
+export function useNoticeDeleteReply(noticeId: number) {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -177,8 +176,7 @@ export function useDeleteReply(noticeId: number) {
       apiErrorMessage(error);
     },
   });
-};
-
+}
 
 /** 댓글 조회 Hook */
 export function useNoticeReplies(noticeId: number) {
@@ -232,4 +230,21 @@ export function useUnlikeNotice(noticeId: number) {
       apiErrorMessage(error);
     },
   });
+}
+
+export async function uploadToS3(file: File): Promise<string | null> {
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const { data } = await api.post("/support/notice/image", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return data.data.imageUrl; // ✅ S3 URL 반환
+  } catch (err) {
+    console.error("❌ 이미지 업로드 실패:", err);
+    return null;
+  }
 }

@@ -9,3 +9,11 @@ export interface Reply {
   deleted: boolean;
   childReplies: Reply[]; // 대댓글 목록
 }
+
+
+export interface ReplyCreateRequest {
+  boardId: number;
+  loginId?: string;
+  content: string;
+  parentReplyId?: number | null;
+}

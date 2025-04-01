@@ -1,71 +1,78 @@
 "use client";
 
-import {useEffect, useState} from "react";
-import {useCreateReply, useDeleteReply, useNoticeReplies} from "@/lib/queries/useSupport";
-import {Reply} from "@/types/board/Reply";
-import {useAuthStore} from "@/store/useAuthStore";
-import {Button, Input, Popconfirm, Spin, Typography} from "antd";
-import {DeleteOutlined} from "@ant-design/icons";
-import {Pagination} from "@/types";
+import { useEffect, useState } from "react";
+import { Button, Input, Popconfirm, Spin, Typography } from "antd";
+import { DeleteOutlined } from "@ant-design/icons";
+import { useAuthStore } from "@/store/useAuthStore";
+import { Reply, ReplyCreateRequest } from "@/types/board/Reply";
+import { Pagination } from "@/types";
+import { UseMutationResult, UseQueryResult } from "@tanstack/react-query";
+import ApiResponse from "@/types/common/ApiResponse";
 
-const {Text, Title} = Typography;
+const { Text, Title } = Typography;
 
+/** 컴포넌트 내부 전용 확장 타입 */
 interface EnhancedReply extends Reply {
   replyInput: string;
   childReplies: Reply[];
 }
 
-interface ReplyComponentProps {
-  noticeId: number;
+/** 외부에서 주입받는 댓글 서비스 인터페이스 */
+interface ReplyService {
+  useReplies: (boardId: number) => UseQueryResult<ApiResponse<{ list: Reply[]; pagination: Pagination }>, Error>;
+  useCreateReply: () => UseMutationResult<void, Error, ReplyCreateRequest>;
+  useDeleteReply: (boardId: number) => UseMutationResult<void, Error, number>;
 }
 
-export default function ReplyComponent({noticeId}: ReplyComponentProps) {
-  const {user} = useAuthStore();
-  const [comment, setComment] = useState("");
+interface ReplyComponentProps {
+  boardId: number;
+  service: ReplyService;
+}
 
-  const {data, isLoading} = useNoticeReplies(noticeId);
-  const {mutate: deleteReply} = useDeleteReply(noticeId);
-  const {mutate: createReply} = useCreateReply();
+export default function ReplyComponent({ boardId, service }: ReplyComponentProps) {
+  const { user } = useAuthStore();
+  const [comment, setComment] = useState("");
   const [replies, setReplies] = useState<EnhancedReply[]>([]);
   const [pagination, setPagination] = useState<Pagination>();
 
-  // 부모/자식 댓글 정리
+  const { useReplies, useCreateReply, useDeleteReply } = service;
+  const { data, isLoading } = useReplies(boardId);
+  const { mutate: createReply } = useCreateReply();
+  const { mutate: deleteReply } = useDeleteReply(boardId);
+
+  // 댓글 + 대댓글 정리
   useEffect(() => {
-    if (!data?.data?.list) return;
-    if (!data?.data?.pagination) return;
+    if (!data?.data?.list || !data?.data?.pagination) return;
 
-    const allReplies: Reply[] = data.data.list;
-    const pagination: Pagination = data.data.pagination;
+    const allReplies = data.data.list;
+    const pagination = data.data.pagination;
 
-    const rootReplies
-      = allReplies
+    const rootReplies = allReplies
       .filter(r => !r.parentId)
-      .map(p => {
-        return {
-          ...p,
-          replyInput: "",
-          childReplies: p.childReplies ?? [],
-        };
-      });
+      .map(reply => ({
+        ...reply,
+        replyInput: "",
+        childReplies: reply.childReplies ?? [],
+      }));
 
-    console.log(rootReplies);
-    setPagination(pagination)
+    setPagination(pagination);
     setReplies(rootReplies);
   }, [data]);
 
+  // 댓글 or 대댓글 작성
   const handleCommentSubmit = (content: string, parentReplyId?: number | null) => {
     if (!content.trim() || !user?.loginId) return;
 
     createReply(
       {
-        boardId: noticeId,
+        boardId,
         loginId: user.loginId,
         content,
         parentReplyId,
       },
       {
         onSuccess: () => {
-          setComment("");
+          setComment(""); // 최상위 댓글 초기화만
         },
       }
     );
@@ -76,17 +83,15 @@ export default function ReplyComponent({noticeId}: ReplyComponentProps) {
       <Title level={4}>댓글 {pagination?.totalElements}</Title>
 
       {isLoading ? (
-        <Spin/>
+        <Spin />
       ) : (
         <div className="space-y-6 mt-4">
           {replies.length === 0 ? (
             <Text type="secondary">등록된 댓글이 없습니다.</Text>
           ) : (
-            replies.map((parent) => (
-              <div
-                key={parent.replyId}
-                className="p-4 border rounded-lg shadow-sm bg-white"
-              >
+            replies.map(parent => (
+              <div key={parent.replyId} className="p-4 border rounded-lg shadow-sm bg-white">
+                {/* 부모 댓글 */}
                 <div className="flex justify-between items-center">
                   <Text strong>{parent.writer}</Text>
                   {parent.mine && !parent.deleted && (
@@ -96,7 +101,7 @@ export default function ReplyComponent({noticeId}: ReplyComponentProps) {
                       okText="삭제"
                       cancelText="취소"
                     >
-                      <Button size="small" type="text" danger icon={<DeleteOutlined/>}/>
+                      <Button size="small" type="text" danger icon={<DeleteOutlined />} />
                     </Popconfirm>
                   )}
                 </div>
@@ -104,17 +109,15 @@ export default function ReplyComponent({noticeId}: ReplyComponentProps) {
                 {parent.deleted ? (
                   <Text type="secondary">삭제된 댓글입니다.</Text>
                 ) : (
-                  <div className="text-gray-700 text-sm mt-1 whitespace-pre-wrap">
-                    {parent.content}
-                  </div>
+                  <div className="text-gray-700 text-sm mt-1 whitespace-pre-wrap">{parent.content}</div>
                 )}
 
-                {/* 대댓글 리스트 */}
+                {/* 대댓글 목록 */}
                 {parent.childReplies.filter(child => !child.deleted).length > 0 && (
                   <div className="mt-4 space-y-3 pl-4 border-l-2 border-gray-200">
                     {parent.childReplies
                       .filter(child => !child.deleted)
-                      .map((child) => (
+                      .map(child => (
                         <div key={child.replyId} className="ml-2">
                           <div className="flex justify-between items-center">
                             <Text strong>{child.writer}</Text>
@@ -125,32 +128,29 @@ export default function ReplyComponent({noticeId}: ReplyComponentProps) {
                                 okText="삭제"
                                 cancelText="취소"
                               >
-                                <Button size="small" type="text" danger icon={<DeleteOutlined/>}/>
+                                <Button size="small" type="text" danger icon={<DeleteOutlined />} />
                               </Popconfirm>
                             )}
                           </div>
-                          <div className="text-gray-600 text-sm mt-1 whitespace-pre-wrap">
-                            {child.content}
-                          </div>
+                          <div className="text-gray-600 text-sm mt-1 whitespace-pre-wrap">{child.content}</div>
                         </div>
                       ))}
                   </div>
                 )}
 
-                {/* 대댓글 입력 */}
+                {/* 대댓글 입력창 */}
                 <div className="mt-4 pl-4">
                   <Input.TextArea
                     rows={2}
                     placeholder="답글을 작성하세요..."
                     value={parent.replyInput}
-                    onChange={(e) => {
-                      const updated = replies.map((r) =>
-                        r.replyId === parent.replyId
-                          ? {...r, replyInput: e.target.value}
-                          : r
-                      );
-                      setReplies(updated);
-                    }}
+                    onChange={(e) =>
+                      setReplies(prev =>
+                        prev.map(r =>
+                          r.replyId === parent.replyId ? { ...r, replyInput: e.target.value } : r
+                        )
+                      )
+                    }
                   />
                   <div className="flex justify-end mt-2">
                     <Button

@@ -7,3 +7,14 @@
 body {
     font-family: 'Pretendard', sans-serif;
 }
+
+.tiptap {
+    width: 100%;
+    min-height: 600px;
+}
+
+.tiptap-link {
+    color: #3b82f6;
+    text-decoration: underline;
+    cursor: pointer;
+}

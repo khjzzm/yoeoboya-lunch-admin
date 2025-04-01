@@ -1,6 +1,5 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import {useRouter} from "next/navigation";
 import {useCreateNotice, useNoticeDetail, useUpdateNotice} from "@/lib/queries/useSupport";
 import {Button, DatePicker, Form, Input, Select, Space, Switch} from "antd";
@@ -10,8 +9,7 @@ import {useAuthStore} from "@/store/useAuthStore";
 import {NoticeFormValues, NoticeRequest} from "@/types";
 import {useQueryParamNumber} from "@/lib/hooks/useQueryParam";
 import dayjs from "dayjs";
-
-const TiptapEditor = dynamic(() => import("@/components/TiptapEditor"), {ssr: false});
+import TiptapEditor from "@/components/board/TiptapEditor"
 
 export default function NoticeWritePage() {
   const {user} = useAuthStore();
@@ -118,8 +116,8 @@ export default function NoticeWritePage() {
           </Space>
         </Form.Item>
 
-        <Form.Item name="content" label="본문">
-          <TiptapEditor content={content} setContent={setContent}/>
+        <Form.Item name="content" label="본문" className="!w-full" style={{ width: "100%" }} >
+          <TiptapEditor content={content} setContent={setContent} />
         </Form.Item>
 
         <Button htmlType="submit" type="primary">
