@@ -1,6 +1,6 @@
 "use client";
 
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
@@ -18,6 +18,7 @@ interface Props {
 export default function TiptapEditor({ content, setContent }: Props) {
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const dragCounter = useRef(0);
 
   const editor = useEditor({
     extensions: [
@@ -44,7 +45,7 @@ export default function TiptapEditor({ content, setContent }: Props) {
         return false;
       },
       handleDOMEvents: {
-        drop: (view, event: DragEvent) => {
+        drop: (_view, event: DragEvent) => {
           const hasFiles = event?.dataTransfer?.files?.length;
           if (!hasFiles) return false;
 
@@ -83,18 +84,23 @@ export default function TiptapEditor({ content, setContent }: Props) {
               editor.chain().focus().insertContent(insertions).run();
             }
 
-            setIsUploading(false);
+            dragCounter.current = 0;
             setIsDragging(false);
           })();
 
           return true;
         },
         dragenter: () => {
-          setIsDragging(true);
+          dragCounter.current++;
+          if (dragCounter.current === 1) setIsDragging(true);
           return false;
         },
         dragleave: () => {
-          setIsDragging(false);
+          dragCounter.current--;
+          if (dragCounter.current <= 0) {
+            dragCounter.current = 0;
+            setIsDragging(false);
+          }
           return false;
         },
       }
