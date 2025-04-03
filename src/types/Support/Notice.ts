@@ -43,5 +43,6 @@ export interface NoticeDetailResponse {
   likeCount: number;
   replyCount: number;
   hasLiked: boolean;
+  hasFile: boolean;
 }
 

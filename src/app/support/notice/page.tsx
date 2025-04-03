@@ -12,12 +12,9 @@ import dayjs from "dayjs";
 export default function NoticeListPage() {
   const { isManager } = useAuthStore();
   const router = useRouter();
-
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-
   const [filters, setFilters] = useState<Record<string, string | string[]>>({});
-
   const { data: notice, isLoading } = useNotices(page, pageSize, filters);
 
   const handleSearch = (searchFilters: Record<string, string | string[]>) => {
@@ -92,6 +89,7 @@ export default function NoticeListPage() {
                   <Tag>{item.category}</Tag>
                 </div>
                 <div className="flex-1 truncate text-left">
+                  {item.hasFile && <span className="mr-1">📷</span>}
                   {item.pinned && <Tag color="gold">공지</Tag>} {item.title} ({item.replyCount})
                   {isExpired && <Tag color="red" className="ml-2">기간 종료</Tag>}
                 </div>
