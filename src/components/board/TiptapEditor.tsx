@@ -7,15 +7,15 @@ import Link from "@tiptap/extension-link";
 import Image from "@tiptap/extension-image";
 import Placeholder from "@tiptap/extension-placeholder";
 import {Toolbar} from "./Toolbar";
-import {uploadToS3} from "@/lib/queries/useSupport";
 import {message, Spin} from "antd";
 
 interface Props {
   content: string;
   setContent: (content: string) => void;
+  uploadToS3: (file: File) => Promise<string | null>;
 }
 
-export default function TiptapEditor({content, setContent}: Props) {
+export default function TiptapEditor({content, setContent, uploadToS3}: Props) {
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const dragCounter = useRef(0);
@@ -145,7 +145,7 @@ export default function TiptapEditor({content, setContent}: Props) {
       )}
 
       {/* 툴바 */}
-      {editor && <Toolbar editor={editor}/>}
+      {editor && <Toolbar editor={editor} uploadToS3={uploadToS3}/>}
 
       {/* 에디터 */}
       <EditorContent

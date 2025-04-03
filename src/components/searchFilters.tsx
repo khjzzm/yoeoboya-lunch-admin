@@ -1,18 +1,11 @@
 import {useState} from "react";
 import {Button, Checkbox, Input, Select, Space} from "antd";
+import {roleOptions} from "@/types";
 
 interface FilterProps {
   onSearch: (filters: { [key: string]: string | string[] }) => void;
   filterOptions: { label: string; value: string }[];
 }
-
-const roleOptions = [
-  { label: "어드민", value: "ROLE_ADMIN" },
-  { label: "매니저", value: "ROLE_MANAGER" },
-  { label: "유저", value: "ROLE_USER" },
-  { label: "게스트", value: "ROLE_GUEST" },
-  { label: "차단", value: "ROLE_BLOCK" },
-];
 
 export default function SearchFilters({ onSearch, filterOptions }: FilterProps) {
   const [selectedFilter, setSelectedFilter] = useState<string>(filterOptions[0]?.value || "");

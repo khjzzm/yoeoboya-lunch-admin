@@ -1,20 +1,20 @@
 "use client";
 
-import { Editor } from "@tiptap/react";
+import {Editor} from "@tiptap/react";
 import {
   BoldOutlined,
   LinkOutlined,
   PictureOutlined,
 } from "@ant-design/icons";
 import {Button, message, Space, Tooltip} from "antd";
-import {uploadToS3} from "@/lib/queries/useSupport";
 import {useState} from "react";
 
 interface Props {
   editor: Editor;
+  uploadToS3: (file: File) => Promise<string | null>;
 }
 
-export function Toolbar({ editor }: Props) {
+export function Toolbar({editor, uploadToS3}: Props) {
   const [uploading, setUploading] = useState(false);
 
   if (!editor) return null;
@@ -23,26 +23,26 @@ export function Toolbar({ editor }: Props) {
       <Space size="small" wrap>
         <Tooltip title="굵게">
           <Button
-            icon={<BoldOutlined />}
+            icon={<BoldOutlined/>}
             onClick={() => editor.chain().focus().toggleBold().run()}
             type={editor.isActive("bold") ? "primary" : "default"}
           />
         </Tooltip>
         <Tooltip title="링크 추가">
           <Button
-            icon={<LinkOutlined />}
+            icon={<LinkOutlined/>}
             onClick={() => {
               const url = window.prompt("링크 URL을 입력하세요");
-              if (url) editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
+              if (url) editor.chain().focus().extendMarkRange("link").setLink({href: url}).run();
             }}
           />
         </Tooltip>
         <Tooltip title="이미지 삽입 (URL)">
           <Button
-            icon={<PictureOutlined />}
+            icon={<PictureOutlined/>}
             onClick={() => {
               const url = window.prompt("이미지 URL을 입력하세요");
-              if (url) editor.chain().focus().setImage({ src: url }).run();
+              if (url) editor.chain().focus().setImage({src: url}).run();
             }}
           />
         </Tooltip>
@@ -67,7 +67,7 @@ export function Toolbar({ editor }: Props) {
                     if (imageUrl) {
                       insertions.push({
                         type: "image",
-                        attrs: { src: imageUrl },
+                        attrs: {src: imageUrl},
                       });
                     } else {
                       message.error(`${file.name} 업로드 실패`);
@@ -87,7 +87,7 @@ export function Toolbar({ editor }: Props) {
               }}
             />
             <Button
-              icon={<PictureOutlined />}
+              icon={<PictureOutlined/>}
               onClick={() => {
                 document.getElementById("image-upload")?.click();
               }}

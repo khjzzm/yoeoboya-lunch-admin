@@ -5,6 +5,7 @@ import {Select, Switch, Table, Tooltip} from "antd";
 import {ColumnsType} from "antd/es/table";
 import {useRole, useUpdateRole, useUpdateSecurityStatus} from "@/lib/queries/useRole";
 import SearchFilters from "@/components/searchFilters";
+import {AuthoritiesOptions, roleOptions} from "@/types"
 
 // Role 데이터 타입 정의
 interface RoleData {
@@ -18,14 +19,6 @@ interface RoleData {
   accountNonLocked: boolean;
 }
 
-// 역할 목록 및 매핑
-const roleOptions = [
-  { label: "어드민", value: "ROLE_ADMIN" },
-  { label: "매니저", value: "ROLE_MANAGER" },
-  { label: "유저", value: "ROLE_USER" },
-  { label: "게스트", value: "ROLE_GUEST" },
-  { label: "차단", value: "ROLE_BLOCK" },
-];
 
 export default function RoleAuthoritiesPage() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -117,11 +110,7 @@ export default function RoleAuthoritiesPage() {
 
       <SearchFilters
         onSearch={handleSearch}
-        filterOptions={[
-          { label: "로그인 ID", value: "loginId" },
-          { label: "이름", value: "name" },
-          { label: "역할", value: "authority" },
-        ]}
+        filterOptions={AuthoritiesOptions}
       />
 
       <div className="overflow-x-auto">

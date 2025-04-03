@@ -2,12 +2,10 @@
 
 import {useRouter} from "next/navigation";
 import {
-  useDeleteNotice,
-  useLikeNotice, useNoticeCreateReply, useNoticeDeleteReply,
-  useNoticeDetail,
-  useNoticeReplies,
-  useUnlikeNotice,
-} from "@/lib/queries/useSupport";
+  useNoticeDetail, useDeleteNotice,
+  useLikeNotice, useUnlikeNotice,
+  useNoticeReplies, useNoticeCreateReply, useNoticeDeleteReply,
+} from "@/lib/queries/support/useNotice";
 import {Button, Card, Spin, Tag, Typography,} from "antd";
 import {DeleteOutlined, EditOutlined} from "@ant-design/icons";
 import parse from "html-react-parser";

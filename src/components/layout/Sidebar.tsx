@@ -2,6 +2,7 @@
 
 import {Button, Layout, Menu, Typography} from "antd";
 import {
+  CommentOutlined,
   HomeOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -11,7 +12,7 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import {usePathname, useRouter} from "next/navigation";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 
 const {Sider} = Layout;
 const {Title} = Typography;
@@ -40,6 +41,15 @@ export default function Sidebar() {
       children: [
         {key: "/support/notice", label: "공지사항", onClick: () => router.push("/support/notice")},
         {key: "/support/faq", label: "자주 묻는 질문", onClick: () => router.push("/support/faq")},
+      ],
+    },
+    {
+      key: "board",
+      icon: <CommentOutlined/>,
+      label: "게시판관리",
+      children: [
+        {key: "/board/free", label: "자유게시판", onClick: () => router.push("/board/free")},
+        {key: "/board/anonymous", label: "익명게시판", onClick: () => router.push("/board/anonymous")},
       ],
     },
     {
@@ -88,7 +98,7 @@ export default function Sidebar() {
       <Menu
         mode="inline"
         selectedKeys={selectedKey ? [selectedKey] : []}
-        defaultOpenKeys={["support", "authorization"]}
+        defaultOpenKeys={["support", "board", "authorization"]}
         items={menuItems}
         className="bg-white text-gray-800"
       />

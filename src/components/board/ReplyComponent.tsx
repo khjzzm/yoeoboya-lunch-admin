@@ -1,15 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Button, Input, Popconfirm, Spin, Typography } from "antd";
-import { DeleteOutlined } from "@ant-design/icons";
-import { useAuthStore } from "@/store/useAuthStore";
-import { Reply, ReplyCreateRequest } from "@/types/board/Reply";
-import { Pagination } from "@/types";
-import { UseMutationResult, UseQueryResult } from "@tanstack/react-query";
-import ApiResponse from "@/types/common/ApiResponse";
+import {useEffect, useState} from "react";
+import {Button, Input, Popconfirm, Spin, Typography} from "antd";
+import {DeleteOutlined} from "@ant-design/icons";
+import {useAuthStore} from "@/store/useAuthStore";
+import {UseMutationResult, UseQueryResult} from "@tanstack/react-query";
+import {ApiResponse, Reply, ReplyCreateRequest, Pagination} from "@/types"
 
-const { Text, Title } = Typography;
+const {Text, Title} = Typography;
 
 /** 컴포넌트 내부 전용 확장 타입 */
 interface EnhancedReply extends Reply {
@@ -29,16 +27,16 @@ interface ReplyComponentProps {
   service: ReplyService;
 }
 
-export default function ReplyComponent({ boardId, service }: ReplyComponentProps) {
-  const { user } = useAuthStore();
+export default function ReplyComponent({boardId, service}: ReplyComponentProps) {
+  const {user} = useAuthStore();
   const [comment, setComment] = useState("");
   const [replies, setReplies] = useState<EnhancedReply[]>([]);
   const [pagination, setPagination] = useState<Pagination>();
 
-  const { useReplies, useCreateReply, useDeleteReply } = service;
-  const { data, isLoading } = useReplies(boardId);
-  const { mutate: createReply } = useCreateReply();
-  const { mutate: deleteReply } = useDeleteReply(boardId);
+  const {useReplies, useCreateReply, useDeleteReply} = service;
+  const {data, isLoading} = useReplies(boardId);
+  const {mutate: createReply} = useCreateReply();
+  const {mutate: deleteReply} = useDeleteReply(boardId);
 
   // 댓글 + 대댓글 정리
   useEffect(() => {
@@ -83,7 +81,7 @@ export default function ReplyComponent({ boardId, service }: ReplyComponentProps
       <Title level={4}>댓글 {pagination?.totalElements}</Title>
 
       {isLoading ? (
-        <Spin />
+        <Spin/>
       ) : (
         <div className="space-y-6 mt-4">
           {replies.length === 0 ? (
@@ -101,7 +99,7 @@ export default function ReplyComponent({ boardId, service }: ReplyComponentProps
                       okText="삭제"
                       cancelText="취소"
                     >
-                      <Button size="small" type="text" danger icon={<DeleteOutlined />} />
+                      <Button size="small" type="text" danger icon={<DeleteOutlined/>}/>
                     </Popconfirm>
                   )}
                 </div>
@@ -128,7 +126,7 @@ export default function ReplyComponent({ boardId, service }: ReplyComponentProps
                                 okText="삭제"
                                 cancelText="취소"
                               >
-                                <Button size="small" type="text" danger icon={<DeleteOutlined />} />
+                                <Button size="small" type="text" danger icon={<DeleteOutlined/>}/>
                               </Popconfirm>
                             )}
                           </div>
@@ -147,7 +145,7 @@ export default function ReplyComponent({ boardId, service }: ReplyComponentProps
                     onChange={(e) =>
                       setReplies(prev =>
                         prev.map(r =>
-                          r.replyId === parent.replyId ? { ...r, replyInput: e.target.value } : r
+                          r.replyId === parent.replyId ? {...r, replyInput: e.target.value} : r
                         )
                       )
                     }

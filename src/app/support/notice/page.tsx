@@ -1,38 +1,34 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { Button, List, Pagination, Tag } from "antd";
-import { useNotices } from "@/lib/queries/useSupport";
-import { useState } from "react";
+import {useRouter} from "next/navigation";
+import {Button, List, Pagination, Tag} from "antd";
+import {useNotices} from "@/lib/queries/support/useNotice";
+import {useState} from "react";
 import SearchFilters from "@/components/searchFilters";
-import { NoticeDetailResponse } from "@/types";
-import { useAuthStore } from "@/store/useAuthStore";
+import {useAuthStore} from "@/store/useAuthStore";
 import dayjs from "dayjs";
+import {BoardSearchOptions, BoardSearchCondition, BoardSearchType, NoticeDetailResponse} from "@/types";
+import {isRead, markAsRead} from "@/lib/utils/readHistory";
 
 export default function NoticeListPage() {
-  const { isManager } = useAuthStore();
+  const {isManager} = useAuthStore();
   const router = useRouter();
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [filters, setFilters] = useState<Record<string, string | string[]>>({});
-  const { data: notice, isLoading } = useNotices(page, pageSize, filters);
+  const [filters, setFilters] = useState<BoardSearchCondition>({});
+  const {data: notice, isLoading} = useNotices(page, pageSize, filters);
 
   const handleSearch = (searchFilters: Record<string, string | string[]>) => {
-    const keys = Object.keys(searchFilters);
-    const key = keys[0];
-    const value = searchFilters[key];
+    const [[key, value]] = Object.entries(searchFilters);
 
-    if (typeof value === "string") {
-      setFilters({
-        searchType: key,
-        keyword: value,
-      });
-    } else {
-      setFilters({});
-    }
+    setFilters({
+      searchType: key as BoardSearchType,
+      keyword: value as string,
+    });
 
     setPage(1);
   };
+
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
@@ -43,18 +39,10 @@ export default function NoticeListPage() {
 
   return (
     <div className="max-w-5xl mx-auto px-2 md:px-0">
-      <h1 className="text-xl md:text-2xl font-bold text-center text-gray-800 mb-6">📋 공지사항 목록</h1>
-
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
         <SearchFilters
           onSearch={handleSearch}
-          filterOptions={[
-            {label: "제목+내용", value: "TITLE_CONTENT"},
-            {label: "제목", value: "TITLE"},
-            {label: "내용", value: "CONTENT"},
-            {label: "작성자", value: "AUTHOR"},
-            {label: "댓글", value: "COMMENT"},
-          ]}
+          filterOptions={BoardSearchOptions}
         />
         {isManager() && (
           <Button type="primary" onClick={() => router.push("/support/notice/write")}>글쓰기</Button>
@@ -79,24 +67,36 @@ export default function NoticeListPage() {
 
           return (
             <List.Item
-              onClick={() => router.push(`/support/notice/view?id=${item.id}`)}
+              onClick={() => {
+                router.push(`/support/notice/view?id=${item.id}`)
+                markAsRead(item.id);
+              }}
               className={`hover:bg-gray-50 px-2 md:px-4 py-3 cursor-pointer border-b ${item.pinned ? "bg-yellow-50" : ""}`}
             >
               <div
-                className="flex flex-col md:flex-row w-full items-start md:items-center text-xs md:text-sm gap-1 md:gap-0">
-                <div className="w-16 text-center shrink-0">{item.id}</div>
-                <div className="w-20 text-center shrink-0">
+                className="flex flex-col md:flex-row w-full items-start md:items-center text-xs md:text-sm gap-y-1 md:gap-0">
+                <div className="w-full md:w-16 text-left md:text-center shrink-0">{item.id}</div>
+
+                <div className="w-full md:w-20 text-left md:text-center shrink-0">
                   <Tag>{item.category}</Tag>
                 </div>
-                <div className="flex-1 truncate text-left">
-                  {item.hasFile && <span className="mr-1">📷</span>}
-                  {item.pinned && <Tag color="gold">공지</Tag>} {item.title} ({item.replyCount})
-                  {isExpired && <Tag color="red" className="ml-2">기간 종료</Tag>}
+
+                <div className="w-full md:flex-1 text-left truncate min-w-0">
+                  <div className="flex items-center gap-1">
+                    {item.hasFile && <span>📷</span>}
+                    {item.pinned && <Tag color="gold">공지</Tag>}
+                    <span className={`line-clamp-1 ${isRead(item.id) && "text-purple-500"}`}> {item.title} </span>
+                    <span className="text-gray-400">({item.replyCount})</span>
+                    {isExpired && <Tag color="red">기간 종료</Tag>}
+                  </div>
                 </div>
-                <div className="w-24 text-center shrink-0 truncate">{item.author}</div>
-                <div className="w-24 text-center shrink-0">{dayjs(item.createDate).format("YY.MM.DD")}</div>
-                <div className="w-16 text-center shrink-0">{item.viewCount}</div>
-                <div className="w-16 text-center shrink-0">{item.likeCount}</div>
+
+                <div className="w-full md:w-24 text-left md:text-center truncate">{item.author}</div>
+                <div className="w-full md:w-24 text-left md:text-center whitespace-nowrap">
+                  {dayjs(item.createDate).format("YY.MM.DD")}
+                </div>
+                <div className="w-full md:w-16 text-left md:text-center">{item.viewCount}</div>
+                <div className="w-full md:w-16 text-left md:text-center">{item.likeCount}</div>
               </div>
             </List.Item>
           );

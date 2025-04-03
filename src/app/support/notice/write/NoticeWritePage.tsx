@@ -1,7 +1,7 @@
 "use client";
 
 import {useRouter} from "next/navigation";
-import {useCreateNotice, useNoticeDetail, useUpdateNotice} from "@/lib/queries/useSupport";
+import {useCreateNotice, useNoticeDetail, useUpdateNotice, useUploadNoticeFileToS3} from "@/lib/queries/support/useNotice";
 import {Button, DatePicker, Form, Input, Select, Space, Switch} from "antd";
 import {useEffect, useState} from "react";
 import {applyApiValidationErrors} from "@/lib/utils/apiErrorMessage";
@@ -24,6 +24,7 @@ export default function NoticeWritePage() {
   }, [form, user]);
 
   const {data: noticeDetail} = useNoticeDetail(Number(noticeId));
+  const {mutateAsync: uploadToS3} = useUploadNoticeFileToS3();
   const createNotice = useCreateNotice();
   const updateNotice = useUpdateNotice(Number(noticeId));
 
@@ -116,8 +117,8 @@ export default function NoticeWritePage() {
           </Space>
         </Form.Item>
 
-        <Form.Item name="content" label="본문" className="!w-full" style={{ width: "100%" }} >
-          <TiptapEditor content={content} setContent={setContent} />
+        <Form.Item name="content" label="본문" className="!w-full" style={{width: "100%"}}>
+          <TiptapEditor content={content} setContent={setContent} uploadToS3={uploadToS3}/>
         </Form.Item>
 
         <Button htmlType="submit" type="primary">
