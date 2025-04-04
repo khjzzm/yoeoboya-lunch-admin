@@ -1,19 +1,17 @@
-import {HashTagResponse} from "@/types"
-
 export interface FreeBoardCreate {
-  title: string;              // 제목 (필수)
-  content: string;            // 내용 (필수)
-  hashTag?: string[];         // 해시태그 (옵션)
-  pin: number;                // 비밀번호 (정수, 최대 4자리)
-  secret: boolean;            // 비밀글 여부
+  title: string; // 제목 (필수)
+  content: string; // 내용 (필수)
+  hashTag?: string[]; // 해시태그 (옵션)
+  pin: number; // 비밀번호 (정수, 최대 4자리)
+  secret: boolean; // 비밀글 여부
 }
 
 export interface BoardEdit {
-  title?: string;             // 제목 (옵션)
-  content?: string;           // 내용 (옵션)
-  hashTag?: string[];         // 해시태그 (옵션)
-  pin?: number;               // 비밀번호 (옵션)
-  secret?: boolean;           // 비밀글 여부 (옵션)
+  title?: string; // 제목 (옵션)
+  content?: string; // 내용 (옵션)
+  hashTag?: string[]; // 해시태그 (옵션)
+  pin?: number; // 비밀번호 (옵션)
+  secret?: boolean; // 비밀글 여부 (옵션)
 }
 
 export interface FreeBoardResponse {
@@ -26,9 +24,25 @@ export interface FreeBoardResponse {
   loginId: string;
   name: string;
   viewCount: number;
-  replyCount: number
-  likeCount: number
+  replyCount: number;
+  likeCount: number;
   like: boolean;
-  createDate : string | null;
+  createdDate: string | null;
 }
 
+export interface FreeBoardDetailResponse {
+  boardId: number;
+  title: string;
+  content: string;
+  category: string;
+  pinned: number;
+  secret: boolean;
+  viewCount: number;
+  hashTag: HashTagResponse[];
+  hasLiked: boolean;
+  createdDate: string | null;
+}
+
+export interface HashTagResponse {
+  tag: string;
+}

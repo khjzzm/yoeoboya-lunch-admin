@@ -13,7 +13,7 @@ export interface NoticeRequest {
   status: NoticeStatus;
 }
 
-import type {Dayjs} from "dayjs";
+import type { Dayjs } from "dayjs";
 export interface NoticeFormValues {
   title: string;
   content: string;
@@ -26,23 +26,34 @@ export interface NoticeFormValues {
   status: NoticeStatus;
 }
 
-export interface NoticeDetailResponse {
+export interface NoticeResponse {
   id: number;
   title: string;
   content: string;
+  summary: string;
   category: string;
   author: string;
   pinned: boolean;
-  startDate: string | null;
-  endDate: string | null;
-  createDate : string | null;
-  attachmentUrl: string | null;
+  startDate: string;
+  endDate: string;
   viewCount: number;
   status: NoticeStatus;
-  isRead: boolean;
   likeCount: number;
   replyCount: number;
-  hasLiked: boolean;
   hasFile: boolean;
+  createDate: string; // from LocalDateTime
 }
 
+export interface NoticeDetailResponse {
+  boardId: number;
+  title: string;
+  content: string;
+  category: string;
+  viewCount: number;
+  hasLiked: boolean;
+  pinned: boolean;
+  author: string;
+  startDate: string; // ISO format (from LocalDate)
+  endDate: string;
+  status: NoticeStatus;
+}

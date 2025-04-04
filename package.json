@@ -6,8 +6,9 @@
     "dev": "next dev -H 0.0.0.0 -p 3001",
     "build": "next build",
     "start": "next start -H 0.0.0.0 -p 3001",
-    "lint": "next lint",
-    "generate:types": "node scripts/generate-types-index.mjs"
+    "lint": "eslint src --ext .ts,.tsx --fix",
+    "format": "prettier --write .",
+    "fix": "npm run lint && npm run format"
   },
   "dependencies": {
     "@ant-design/v5-patch-for-react-19": "^1.0.3",
@@ -19,6 +20,7 @@
     "@tiptap/extension-placeholder": "^2.11.7",
     "@tiptap/react": "^2.11.5",
     "@tiptap/starter-kit": "^2.11.5",
+    "@typescript-eslint/parser": "^8.29.0",
     "antd": "^5.11.3-alpha.0",
     "axios": "^1.8.1",
     "html-react-parser": "^5.2.2",
@@ -36,9 +38,13 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "autoprefixer": "^10.4.21",
-    "eslint": "^9",
+    "eslint": "^9.23.0",
     "eslint-config-next": "15.2.1",
+    "eslint-config-prettier": "^10.1.1",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-prettier": "^5.2.6",
     "postcss": "^8.5.3",
+    "prettier": "^3.5.3",
     "tailwindcss": "^3.4.17",
     "typescript": "^5"
   }

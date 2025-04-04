@@ -1,10 +1,12 @@
 "use client";
 
-import {usePathname} from "next/navigation";
-import {useQuery} from "@tanstack/react-query";
-import {api} from "@/lib/utils/api";
-import {useAuthStore} from "@/store/useAuthStore";
-import {useEffect, useMemo} from "react";
+import { useQuery } from "@tanstack/react-query";
+import { usePathname } from "next/navigation";
+import { useEffect, useMemo } from "react";
+
+import { api } from "@/lib/utils/api";
+
+import { useAuthStore } from "@/store/useAuthStore";
 
 export function useAutoRefreshToken() {
   const setUser = useAuthStore((state) => state.setUser);
@@ -12,18 +14,18 @@ export function useAutoRefreshToken() {
 
   const shouldSkip = useMemo(() => {
     return ["/user/login", "/user/signup", "/user/signup/social"].some((excluded) =>
-      pathname.startsWith(excluded)
+      pathname.startsWith(excluded),
     );
   }, [pathname]);
 
   //fixme pathName
-  const {data: refreshTrigger} = useQuery<string>({
+  const { data: refreshTrigger } = useQuery<string>({
     queryKey: ["refresh-trigger", pathname],
     queryFn: refreshTokenFn,
     enabled: !shouldSkip,
-    staleTime: 1000 * 60 * 5,           // 5분 동안 "신선한" 상태
-    refetchInterval: 1000 * 60 * 10,    // 10분마다 백그라운드 자동 갱신
-    gcTime: 1000 * 60 * 30,             // 30분 후 가비지 컬렉션
+    staleTime: 1000 * 60 * 5, // 5분 동안 "신선한" 상태
+    refetchInterval: 1000 * 60 * 10, // 10분마다 백그라운드 자동 갱신
+    gcTime: 1000 * 60 * 30, // 30분 후 가비지 컬렉션
     refetchIntervalInBackground: true,
     refetchOnWindowFocus: true,
     refetchOnReconnect: true,
@@ -33,7 +35,7 @@ export function useAutoRefreshToken() {
     if (!refreshTrigger) return;
     (async () => {
       try {
-        const {data: memberData} = await api.get("/me");
+        const { data: memberData } = await api.get("/me");
         if (memberData?.data) {
           setUser(memberData.data);
         }

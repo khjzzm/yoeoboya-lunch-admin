@@ -1,17 +1,19 @@
-import {useQuery} from "@tanstack/react-query";
-import {api} from "@/lib/utils/api";
-import {useAuthStore} from "@/store/useAuthStore";
-import {message} from "antd";
+import { useQuery } from "@tanstack/react-query";
+import { message } from "antd";
+
+import { api } from "@/lib/utils/api";
+
+import { useAuthStore } from "@/store/useAuthStore";
 
 export const MY_INFO_QUERY_KEY = ["auth", "myInfo"];
 
 export function useFetchMyInfo() {
-  const {setUser} = useAuthStore();
+  const { setUser } = useAuthStore();
 
   return useQuery({
     queryKey: MY_INFO_QUERY_KEY,
     queryFn: async () => {
-      const {data: memberData} = await api.get("/me");
+      const { data: memberData } = await api.get("/me");
       if (!memberData?.data) {
         throw new Error("사용자 정보를 불러올 수 없습니다.");
       }
@@ -30,7 +32,7 @@ export async function refetchMyInfo(successMessage?: string, errorMessage?: stri
   const setUser = useAuthStore.getState().setUser;
 
   try {
-    const {data: memberData} = await api.get("/me");
+    const { data: memberData } = await api.get("/me");
     if (memberData?.data) {
       setUser(memberData.data);
       return memberData.data;

@@ -1,17 +1,20 @@
 "use client";
 
-import {Alert, Button, Form, Input, Typography} from "antd";
-import {useChangePassword} from "@/lib/queries/useLogin";
-import {useAuthStore} from "@/store/useAuthStore";
-import {useEffect, useState} from "react";
-import {apiErrorMessage, applyApiValidationErrors} from "@/lib/utils/apiErrorMessage";
-import {KeyOutlined, LockOutlined} from "@ant-design/icons";
-import {ChangePasswordRequest} from "@/types";
+import { KeyOutlined, LockOutlined } from "@ant-design/icons";
+import { Alert, Button, Form, Input, Typography } from "antd";
+import { useEffect, useState } from "react";
 
-const {Title} = Typography;
+import { ChangePasswordRequest } from "@/types";
+
+import { useChangePassword } from "@/lib/queries/useLogin";
+import { apiErrorMessage, applyApiValidationErrors } from "@/lib/utils/apiErrorMessage";
+
+import { useAuthStore } from "@/store/useAuthStore";
+
+const { Title } = Typography;
 
 export default function SecuritySettings() {
-  const {user} = useAuthStore();
+  const { user } = useAuthStore();
   const [form] = Form.useForm();
   const changePassword = useChangePassword();
   const [errorMessage, setErrorMessage] = useState<string | null>(null); //  전체 에러 메시지 상태 추가
@@ -24,7 +27,7 @@ export default function SecuritySettings() {
 
   const onFinish = (values: ChangePasswordRequest) => {
     changePassword.mutate(values, {
-      onSuccess: () =>{
+      onSuccess: () => {
         setErrorMessage(null);
       },
       onError: (error) => {
@@ -42,42 +45,37 @@ export default function SecuritySettings() {
 
   return (
     <div className="w-full bg-white p-12 rounded-lg shadow-md">
-      <Title level={5} className="text-gray-800 mb-6">🔐 비밀번호 및 인증</Title>
+      <Title level={5} className="text-gray-800 mb-6">
+        🔐 비밀번호 및 인증
+      </Title>
 
-      {errorMessage && (
-        <Alert
-          message={errorMessage}
-          type="error"
-          showIcon
-          className="mb-4"
-        />
-      )}
+      {errorMessage && <Alert message={errorMessage} type="error" showIcon className="mb-4" />}
 
       <Form form={form} layout="vertical" onFinish={onFinish} className="w-full">
         <div className="grid grid-cols-2 gap-6 hidden">
           <Form.Item name="loginId" label="아이디" className="col-span-1">
-            <Input disabled/>
+            <Input disabled />
           </Form.Item>
 
           <Form.Item name="email" label="이메일" className="col-span-1">
-            <Input disabled/>
+            <Input disabled />
           </Form.Item>
         </div>
 
         <Form.Item
           name="oldPassword"
           label="현재 비밀번호"
-          rules={[{required: true, message: "현재 비밀번호를 입력하세요!"}]}
+          rules={[{ required: true, message: "현재 비밀번호를 입력하세요!" }]}
         >
-          <Input.Password prefix={<LockOutlined/>} placeholder="현재 비밀번호"/>
+          <Input.Password prefix={<LockOutlined />} placeholder="현재 비밀번호" />
         </Form.Item>
 
         <Form.Item
           name="newPassword"
           label="새 비밀번호"
-          rules={[{required: true, message: "새 비밀번호를 입력하세요!"}]}
+          rules={[{ required: true, message: "새 비밀번호를 입력하세요!" }]}
         >
-          <Input.Password prefix={<LockOutlined/>} placeholder="새 비밀번호"/>
+          <Input.Password prefix={<LockOutlined />} placeholder="새 비밀번호" />
         </Form.Item>
 
         <Form.Item
@@ -86,8 +84,8 @@ export default function SecuritySettings() {
           dependencies={["newPassword"]}
           validateTrigger="onBlur"
           rules={[
-            {required: true, message: "새 비밀번호를 다시 입력하세요!"},
-            ({getFieldValue}) => ({
+            { required: true, message: "새 비밀번호를 다시 입력하세요!" },
+            ({ getFieldValue }) => ({
               validator(_, value) {
                 if (!value || getFieldValue("newPassword") === value) {
                   return Promise.resolve();
@@ -97,7 +95,7 @@ export default function SecuritySettings() {
             }),
           ]}
         >
-          <Input.Password prefix={<KeyOutlined/>} placeholder="새 비밀번호 확인"/>
+          <Input.Password prefix={<KeyOutlined />} placeholder="새 비밀번호 확인" />
         </Form.Item>
 
         <Form.Item>

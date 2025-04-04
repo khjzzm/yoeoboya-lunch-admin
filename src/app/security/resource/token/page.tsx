@@ -1,10 +1,15 @@
 "use client";
 
-import {useDeleteTokenIgnoreUrl, useFetchTokenIgnoreUrls, useUpdateTokenIgnoreUrl,} from "@/lib/queries/useResources";
-import {Button, Form, Input, Modal, Space, Switch, Table, Tooltip} from "antd";
-import {useEffect, useState} from "react";
-import {DeleteOutlined, EditOutlined, PlusOutlined} from "@ant-design/icons";
-import {apiErrorMessage} from "@/lib/utils/apiErrorMessage";
+import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
+import { Button, Form, Input, Modal, Space, Switch, Table, Tooltip } from "antd";
+import { useEffect, useState } from "react";
+
+import {
+  useDeleteTokenIgnoreUrl,
+  useFetchTokenIgnoreUrls,
+  useUpdateTokenIgnoreUrl,
+} from "@/lib/queries/useResources";
+import { apiErrorMessage } from "@/lib/utils/apiErrorMessage";
 
 // TokenIgnoreUrl 인터페이스
 interface TokenIgnoreUrl {
@@ -102,7 +107,12 @@ export default function TokenIgnoreUrlsPage() {
       render: (_: unknown, record: TokenIgnoreUrl) => (
         <Space>
           <Button onClick={() => showModal(record)} type="text" icon={<EditOutlined />} />
-          <Button onClick={() => showDeleteModal(record)} type="text" icon={<DeleteOutlined />} danger />
+          <Button
+            onClick={() => showDeleteModal(record)}
+            type="text"
+            icon={<DeleteOutlined />}
+            danger
+          />
         </Space>
       ),
     },
@@ -116,7 +126,12 @@ export default function TokenIgnoreUrlsPage() {
       <div className="flex justify-between items-center border-b pb-2 mb-4">
         <h1 className="text-2xl font-bold text-gray-800">🔑 토큰 무시 URL 관리</h1>
         <Tooltip title="추가">
-          <Button type="primary" shape="circle" icon={<PlusOutlined />} onClick={() => showModal()} />
+          <Button
+            type="primary"
+            shape="circle"
+            icon={<PlusOutlined />}
+            onClick={() => showModal()}
+          />
         </Tooltip>
       </div>
 
@@ -134,9 +149,18 @@ export default function TokenIgnoreUrlsPage() {
       </div>
 
       {/* 추가 및 수정 모달 */}
-      <Modal title="🔧 토큰 무시 URL 설정" open={isModalOpen} onCancel={handleCancel} onOk={handleSave}>
+      <Modal
+        title="🔧 토큰 무시 URL 설정"
+        open={isModalOpen}
+        onCancel={handleCancel}
+        onOk={handleSave}
+      >
         <Form form={form} layout="vertical">
-          <Form.Item name="url" label="URL" rules={[{ required: true, message: "URL을 입력하세요!" }]}>
+          <Form.Item
+            name="url"
+            label="URL"
+            rules={[{ required: true, message: "URL을 입력하세요!" }]}
+          >
             <Input placeholder="/test" />
           </Form.Item>
 

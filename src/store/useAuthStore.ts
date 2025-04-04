@@ -1,6 +1,7 @@
-import {create} from "zustand";
-import {createJSONStorage, persist} from "zustand/middleware";
-import {AuthState} from "@/types";
+import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
+
+import { AuthState } from "@/types";
 
 const roleHierarchy: Record<string, string[]> = {
   ROLE_ADMIN: ["ROLE_MANAGER", "ROLE_USER", "ROLE_GUEST"],
@@ -30,8 +31,8 @@ export const useAuthStore = create<AuthState>()(
       user: null,
       isExpired: false,
 
-      setUser: (user) => set({user}),
-      setExpired: (val: boolean) => set({isExpired: val}),
+      setUser: (user) => set({ user }),
+      setExpired: (val: boolean) => set({ isExpired: val }),
 
       logout: () =>
         set({
@@ -43,6 +44,6 @@ export const useAuthStore = create<AuthState>()(
     {
       name: "auth-storage",
       storage: createJSONStorage(() => localStorage), // or sessionStorage
-    }
-  )
+    },
+  ),
 );

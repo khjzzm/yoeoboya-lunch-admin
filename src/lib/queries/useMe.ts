@@ -1,8 +1,9 @@
-import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {api} from "@/lib/utils/api";
-import {notification} from "antd";
-import {AxiosError} from "axios";
-import {refetchMyInfo} from "@/lib/hooks/useFetchMyInfo";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { notification } from "antd";
+import { AxiosError } from "axios";
+
+import { refetchMyInfo } from "@/lib/hooks/useFetchMyInfo";
+import { api } from "@/lib/utils/api";
 
 /** 내 정보 수정 Hook */
 export function useUpdateMyInfo() {
@@ -10,12 +11,12 @@ export function useUpdateMyInfo() {
 
   return useMutation({
     mutationFn: async (updateData: { bio?: string; nickName?: string; phoneNumber?: string }) => {
-      const {data} = await api.patch("/me", updateData);
+      const { data } = await api.patch("/me", updateData);
       return data;
     },
     onSuccess: async () => {
       refetchMyInfo("내 정보가 수정되었습니다!");
-      queryClient.invalidateQueries({queryKey: ["fetchMyInfo"]});
+      queryClient.invalidateQueries({ queryKey: ["fetchMyInfo"] });
     },
   });
 }
@@ -26,12 +27,12 @@ export function useRegisterAccount() {
 
   return useMutation({
     mutationFn: async (accountData: { bankName: string; accountNumber: string }) => {
-      const {data} = await api.post("/account", accountData);
+      const { data } = await api.post("/account", accountData);
       return data;
     },
     onSuccess: () => {
       refetchMyInfo("계좌가 등록되었습니다");
-      queryClient.invalidateQueries({queryKey: ["fetchAccount"]});
+      queryClient.invalidateQueries({ queryKey: ["fetchAccount"] });
     },
   });
 }
@@ -42,12 +43,12 @@ export function useUpdateAccount() {
 
   return useMutation({
     mutationFn: async (updateData: { bankName: string; accountNumber: string }) => {
-      const {data} = await api.patch("/account", updateData);
+      const { data } = await api.patch("/account", updateData);
       return data;
     },
     onSuccess: async () => {
       refetchMyInfo("계좌 정보가 수정되었습니다");
-      queryClient.invalidateQueries({queryKey: ["fetchAccount"]});
+      queryClient.invalidateQueries({ queryKey: ["fetchAccount"] });
     },
   });
 }
@@ -58,12 +59,12 @@ export function useSetDefaultProfileImage() {
 
   return useMutation({
     mutationFn: async (imageNo: number) => {
-      const {data} = await api.post(`/profile-image/default/set?imageNo=${imageNo}`);
+      const { data } = await api.post(`/profile-image/default/set?imageNo=${imageNo}`);
       return data;
     },
     onSuccess: async () => {
       refetchMyInfo("대표 사진이 수정되었습니다");
-      queryClient.invalidateQueries({queryKey: ["fetchProfileImages"]});
+      queryClient.invalidateQueries({ queryKey: ["fetchProfileImages"] });
     },
   });
 }
@@ -77,7 +78,9 @@ export function useUploadProfileImage() {
       const formData = new FormData();
       formData.append("file", file);
 
-      const {data} = await api.post("/profile-image", formData, {headers: {"Content-Type": "multipart/form-data"},});
+      const { data } = await api.post("/profile-image", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
       return data;
     },
     onSuccess: async () => {
@@ -87,11 +90,12 @@ export function useUploadProfileImage() {
       });
 
       refetchMyInfo();
-      queryClient.invalidateQueries({queryKey: ["fetchProfileImages"]});
+      queryClient.invalidateQueries({ queryKey: ["fetchProfileImages"] });
     },
     onError: (error: AxiosError<{ message?: string; detail?: string }>) => {
       const errorMessage = error.response?.data?.message || "프로필 사진 업로드 실패";
-      const errorDetail = error.response?.data?.detail || "이미지를 업로드하는 중 오류가 발생했습니다.";
+      const errorDetail =
+        error.response?.data?.detail || "이미지를 업로드하는 중 오류가 발생했습니다.";
 
       notification.error({
         message: errorMessage,
@@ -107,14 +111,14 @@ export function useDeleteProfileImage() {
 
   return useMutation({
     mutationFn: async (imageNo: number) => {
-      const {data} = await api.delete(`/profile-image`, {
-        params: {imageNo},
+      const { data } = await api.delete(`/profile-image`, {
+        params: { imageNo },
       });
       return data;
     },
     onSuccess: async () => {
       refetchMyInfo("프로필 이미지가 삭제되었습니다");
-      queryClient.invalidateQueries({queryKey: ["fetchProfileImages"]});
+      queryClient.invalidateQueries({ queryKey: ["fetchProfileImages"] });
     },
     onError: (error: AxiosError<{ message?: string; detail?: string }>) => {
       const errorDescription = error.response?.data?.message || "프로필 사진 삭제 실패";

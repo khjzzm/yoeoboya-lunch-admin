@@ -1,24 +1,24 @@
 services:
   admin:
     build:
-      context: .  # 현재 디렉토리에서 Dockerfile을 사용해 빌드
-    image: yeoboya-lunch-admin:latest  # 생성될 이미지 이름
-    container_name: admin_container  # 컨테이너 이름 지정
-    restart: unless-stopped  # 수동으로 멈출 때까지 자동 재시작
+      context: . # 현재 디렉토리에서 Dockerfile을 사용해 빌드
+    image: yeoboya-lunch-admin:latest # 생성될 이미지 이름
+    container_name: admin_container # 컨테이너 이름 지정
+    restart: unless-stopped # 수동으로 멈출 때까지 자동 재시작
     networks:
-      - yeoboya_lunch_network  # 네트워크에 연결 (다른 서비스와 통신 가능)
+      - yeoboya_lunch_network # 네트워크에 연결 (다른 서비스와 통신 가능)
     env_file:
       - .env
-    healthcheck:  # 컨테이너 상태 확인 (헬스체크)
-      test: [ "CMD", "curl", "-f", "http://localhost:3001/api/health" ]
+    healthcheck: # 컨테이너 상태 확인 (헬스체크)
+      test: ["CMD", "curl", "-f", "http://localhost:3001/api/health"]
       interval: 10s
       retries: 5
       timeout: 5s
     deploy:
       resources:
         limits:
-          cpus: "0.5"  # 최대 0.5개의 CPU 코어 사용
-          memory: "512MB"  # 최대 512MB RAM 사용
+          cpus: "0.5" # 최대 0.5개의 CPU 코어 사용
+          memory: "512MB" # 최대 512MB RAM 사용
 
 networks:
   yeoboya_lunch_network:

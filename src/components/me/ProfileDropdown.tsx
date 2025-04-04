@@ -1,11 +1,13 @@
 "use client";
 
-import {useState} from "react";
-import {Avatar, Button, Card, Dropdown, Typography} from "antd";
-import {LogoutOutlined, PlusCircleOutlined} from "@ant-design/icons";
-import {useAuthStore} from "@/store/useAuthStore";
-import {useLogout} from "@/lib/queries/useLogin";
-import {useRouter} from "next/navigation";
+import { LogoutOutlined, PlusCircleOutlined } from "@ant-design/icons";
+import { Avatar, Button, Card, Dropdown, Typography } from "antd";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+
+import { useLogout } from "@/lib/queries/useLogin";
+
+import { useAuthStore } from "@/store/useAuthStore";
 
 const { Text } = Typography;
 
@@ -36,7 +38,9 @@ export default function ProfileDropdown() {
               className="mb-2"
             />
             <Text className="text-base sm:text-lg font-semibold">{user?.name}</Text>
-            <Text type="secondary" className="text-xs sm:text-sm">{user?.email}</Text>
+            <Text type="secondary" className="text-xs sm:text-sm">
+              {user?.email}
+            </Text>
           </div>
 
           {/* 계정 관리 버튼 */}
@@ -52,12 +56,7 @@ export default function ProfileDropdown() {
 
           {/* 계정 추가 & 로그아웃 버튼 */}
           <div className="mt-4 flex justify-between">
-            <Button
-              type="text"
-              size="small"
-              icon={<PlusCircleOutlined />}
-              className="text-sm"
-            >
+            <Button type="text" size="small" icon={<PlusCircleOutlined />} className="text-sm">
               서비스 이동
             </Button>
             <Button

@@ -1,8 +1,8 @@
-import {NextRequest, NextResponse} from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export function middleware(req: NextRequest) {
   const token = req.cookies.get("token")?.value;
-  const {pathname} = req.nextUrl;
+  const { pathname } = req.nextUrl;
 
   console.log(`🚀 [Middleware] 현재 경로: ${pathname}`);
   console.log(`🔑 [Middleware] 토큰 확인: ${token ? "✅ 존재함" : "❌ 없음"}`);

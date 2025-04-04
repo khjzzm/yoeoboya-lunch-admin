@@ -1,9 +1,12 @@
-import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {api} from "@/lib/utils/api";
-import {useRouter} from "next/navigation";
-import {useAuthStore} from "@/store/useAuthStore";
-import {message, notification} from "antd";
-import {ChangePasswordRequest, SignUpRequest, SocialSignUpRequest} from "@/types";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { message, notification } from "antd";
+import { useRouter } from "next/navigation";
+
+import { ChangePasswordRequest, SignUpRequest, SocialSignUpRequest } from "@/types";
+
+import { api } from "@/lib/utils/api";
+
+import { useAuthStore } from "@/store/useAuthStore";
 
 /** 로그인 Hook */
 export function useLogin() {
@@ -12,15 +15,15 @@ export function useLogin() {
 
   return useMutation({
     mutationFn: async (loginData: { loginId: string; password: string }) => {
-      const {data} = await api.post("/user/sign-in", loginData);
+      const { data } = await api.post("/user/sign-in", loginData);
       if (data?.code !== 200) {
         throw new Error("로그인 실패: 응답 코드 오류");
       }
-      console.log(data)
-      return {loginId: loginData.loginId};
+      console.log(data);
+      return { loginId: loginData.loginId };
     },
     onSuccess: async () => {
-      await queryClient.refetchQueries({queryKey: ["refresh-trigger"]});
+      await queryClient.refetchQueries({ queryKey: ["refresh-trigger"] });
       router.push("/");
       message.success("로그인 성공! 🎉");
     },
@@ -38,7 +41,7 @@ export function useSignUp() {
 
   return useMutation({
     mutationFn: async (signUpData: SignUpRequest) => {
-      const {data} = await api.post("/user/sign-up", signUpData);
+      const { data } = await api.post("/user/sign-up", signUpData);
       if (data?.code !== 201) {
         throw new Error("회원가입 실패: 응답 데이터 오류");
       }
@@ -53,7 +56,7 @@ export function useSignUp() {
           password: signUpData.password,
         });
 
-        queryClient.invalidateQueries({queryKey: ["refreshToken"]}).then(() => {
+        queryClient.invalidateQueries({ queryKey: ["refreshToken"] }).then(() => {
           router.push("/");
           message.success("자동 로그인 완료! 🎉");
         });
@@ -72,7 +75,7 @@ export function useSocialSignUp() {
 
   return useMutation({
     mutationFn: async (signUpData: SocialSignUpRequest) => {
-      const {data} = await api.post("/user/social/sign-up", signUpData);
+      const { data } = await api.post("/user/social/sign-up", signUpData);
       if (!data?.code || data.code !== 201) {
         throw new Error("소셜 회원가입 실패: 응답 오류");
       }
@@ -80,19 +83,19 @@ export function useSocialSignUp() {
     },
     onSuccess: async () => {
       message.success("회원가입 성공! 자동 로그인 중...");
-      await queryClient.refetchQueries({queryKey: ["refresh-trigger"]});
+      await queryClient.refetchQueries({ queryKey: ["refresh-trigger"] });
       router.push("/");
       message.success("로그인 성공! 🎉");
     },
     onError: (error: unknown) => {
       message.error("소셜 회원가입 실패: " + (error as Error).message);
-    }
+    },
   });
 }
 
 /** 로그아웃 Hook */
 export function useLogout() {
-  const {logout} = useAuthStore();
+  const { logout } = useAuthStore();
   const router = useRouter();
 
   return useMutation({
@@ -106,10 +109,10 @@ export function useLogout() {
       console.error("로그아웃 실패", err);
       message.error("로그아웃에 실패했습니다.");
     },
-    onSettled: () =>{
+    onSettled: () => {
       logout(); // Zustand 초기화
       router.push("/user/login");
-    }
+    },
   });
 }
 
@@ -120,7 +123,7 @@ export function useChangePassword() {
 
   return useMutation({
     mutationFn: async (passwordData: ChangePasswordRequest) => {
-      const {data} = await api.patch("/user/password", passwordData);
+      const { data } = await api.patch("/user/password", passwordData);
       if (data?.code !== 200) {
         throw new Error("비밀번호 변경 실패: 응답 데이터 오류");
       }
@@ -139,6 +142,6 @@ export function useChangePassword() {
         logout();
         router.push("/user/login");
       }, 3000);
-    }
+    },
   });
 }

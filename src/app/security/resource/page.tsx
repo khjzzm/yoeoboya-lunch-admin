@@ -1,10 +1,11 @@
 "use client";
 
-import {useState} from "react";
-import {useAddResourceRole, useResources} from "@/lib/queries/useResources";
-import {Select, Table, Tag, Tooltip} from "antd";
-import type {ColumnsType} from "antd/es/table";
-import {apiErrorMessage} from "@/lib/utils/apiErrorMessage";
+import { Select, Table, Tag, Tooltip } from "antd";
+import type { ColumnsType } from "antd/es/table";
+import { useState } from "react";
+
+import { useAddResourceRole, useResources } from "@/lib/queries/useResources";
+import { apiErrorMessage } from "@/lib/utils/apiErrorMessage";
 
 interface Resource {
   resourceId: number;
@@ -33,15 +34,20 @@ export default function ResourcesPage() {
   const [selectedRoles, setSelectedRoles] = useState<Record<number, string>>({});
 
   const handleRoleChange = (resourceId: number, newRole: string) => {
-    const prevRole = selectedRoles[resourceId] || data?.find((item: Resource) => item.resourceId === resourceId)?.roleDesc;
+    const prevRole =
+      selectedRoles[resourceId] ||
+      data?.find((item: Resource) => item.resourceId === resourceId)?.roleDesc;
     setSelectedRoles((prev) => ({ ...prev, [resourceId]: newRole }));
 
-    addResourceRole.mutate({ resourceId, role: newRole }, {
-      onError: (error) => {
-        apiErrorMessage(error);
-        setSelectedRoles((prev) => ({ ...prev, [resourceId]: prevRole }));
+    addResourceRole.mutate(
+      { resourceId, role: newRole },
+      {
+        onError: (error) => {
+          apiErrorMessage(error);
+          setSelectedRoles((prev) => ({ ...prev, [resourceId]: prevRole }));
+        },
       },
-    });
+    );
   };
 
   const columns: ColumnsType<Resource> = [

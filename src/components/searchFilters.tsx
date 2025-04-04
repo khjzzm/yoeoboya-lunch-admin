@@ -1,6 +1,7 @@
-import {useState} from "react";
-import {Button, Checkbox, Input, Select, Space} from "antd";
-import {roleOptions} from "@/types";
+import { Button, Checkbox, Input, Select, Space } from "antd";
+import { useState } from "react";
+
+import { roleOptions } from "@/types";
 
 interface FilterProps {
   onSearch: (filters: { [key: string]: string | string[] }) => void;
@@ -53,7 +54,9 @@ export default function SearchFilters({ onSearch, filterOptions }: FilterProps) 
             style={{ flex: "1" }}
           />
         )}
-        <Button type="primary" onClick={handleSearch}>검색</Button>
+        <Button type="primary" onClick={handleSearch}>
+          검색
+        </Button>
       </Space>
     </Space>
   );

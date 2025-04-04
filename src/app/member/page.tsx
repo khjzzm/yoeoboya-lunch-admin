@@ -1,10 +1,13 @@
 "use client";
 
-import {useMembers} from "@/lib/queries/useMembers";
-import {Table} from "antd";
-import {useState} from "react";
+import { Table } from "antd";
+import { useState } from "react";
+
+import { MemberSearchOptions } from "@/types";
+
 import SearchFilters from "@/components/searchFilters";
-import {MemberSearchOptions} from "@/types";
+
+import { useMembers } from "@/lib/queries/useMembers";
 
 export default function MemberPage() {
   const [page, setPage] = useState(1);
@@ -15,48 +18,48 @@ export default function MemberPage() {
     setFilters(newFilters);
   };
 
-  const {data, error, isLoading} = useMembers(page, pageSize, filters);
+  const { data, error, isLoading } = useMembers(page, pageSize, filters);
   const members = data?.data?.list || [];
   const totalMembers = data?.data?.pagination?.totalElements || 0;
 
   const columns = [
     {
-      title: <div style={{textAlign: "center"}}>로그인 ID</div>,
+      title: <div style={{ textAlign: "center" }}>로그인 ID</div>,
       dataIndex: "loginId",
       key: "loginId",
       width: 150,
       ellipsis: true,
     },
     {
-      title: <div style={{textAlign: "center"}}>이메일</div>,
+      title: <div style={{ textAlign: "center" }}>이메일</div>,
       dataIndex: "email",
       key: "email",
       width: 200,
       ellipsis: true,
     },
     {
-      title: <div style={{textAlign: "center"}}>이름</div>,
+      title: <div style={{ textAlign: "center" }}>이름</div>,
       dataIndex: "name",
       key: "name",
       width: 100,
       ellipsis: true,
     },
     {
-      title: <div style={{textAlign: "center"}}>닉네임</div>,
+      title: <div style={{ textAlign: "center" }}>닉네임</div>,
       dataIndex: "nickName",
       key: "nickName",
       width: 120,
       ellipsis: true,
     },
     {
-      title: <div style={{textAlign: "center"}}>전화번호</div>,
+      title: <div style={{ textAlign: "center" }}>전화번호</div>,
       dataIndex: "phoneNumber",
       key: "phoneNumber",
       width: 140,
       ellipsis: true,
     },
     {
-      title: <div style={{textAlign: "center"}}>계좌 정보</div>,
+      title: <div style={{ textAlign: "center" }}>계좌 정보</div>,
       dataIndex: "account",
       key: "account",
       width: 100,
@@ -71,10 +74,7 @@ export default function MemberPage() {
     <div>
       <h1 className="text-2xl font-bold text-gray-800 border-b pb-2 mb-4">👤 사용자 목록</h1>
 
-      <SearchFilters
-        onSearch={handleSearch}
-        filterOptions={MemberSearchOptions}
-      />
+      <SearchFilters onSearch={handleSearch} filterOptions={MemberSearchOptions} />
 
       {/* ✅ 테이블 반응형 감싸기 */}
       <div className="overflow-x-auto">
@@ -83,7 +83,7 @@ export default function MemberPage() {
           columns={columns}
           rowKey="loginId"
           loading={isLoading}
-          scroll={{x: "max-content"}}
+          scroll={{ x: "max-content" }}
           pagination={{
             current: page,
             total: totalMembers,

@@ -1,13 +1,14 @@
 "use client";
 
-import {createRef, RefObject, useEffect, useMemo, useRef, useState} from "react";
-import {Layout, Menu, Typography} from "antd";
-import {BankOutlined, LockOutlined, UserOutlined} from "@ant-design/icons";
+import { BankOutlined, LockOutlined, UserOutlined } from "@ant-design/icons";
+import { Layout, Menu, Typography } from "antd";
+import { createRef, RefObject, useEffect, useMemo, useRef, useState } from "react";
+
+import AccountSettings from "@/components/me/settings/AccountSettings";
 import ProfileSettings from "@/components/me/settings/ProfileSettings";
 import SecuritySettings from "@/components/me/settings/SecuritySettings";
-import AccountSettings from "@/components/me/settings/AccountSettings";
 
-const {Content, Sider} = Layout;
+const { Content, Sider } = Layout;
 
 export default function SettingsPage() {
   const contentRef = useRef<HTMLDivElement>(null);
@@ -19,22 +20,23 @@ export default function SettingsPage() {
       {
         key: "profile",
         label: "프로필",
-        icon: <UserOutlined/>,
-        component: <ProfileSettings/>,
+        icon: <UserOutlined />,
+        component: <ProfileSettings />,
       },
       {
         key: "security",
         label: "비밀번호 및 인증",
-        icon: <LockOutlined/>,
-        component: <SecuritySettings/>,
+        icon: <LockOutlined />,
+        component: <SecuritySettings />,
       },
       {
         key: "account",
         label: "계좌등록",
-        icon: <BankOutlined/>,
-        component: <AccountSettings/>,
-      }
-    ], []
+        icon: <BankOutlined />,
+        component: <AccountSettings />,
+      },
+    ],
+    [],
   );
 
   // 동적 ref 배열: 각 섹션마다 React.createRef() 생성 (useMemo로 캐싱)
@@ -131,11 +133,7 @@ export default function SettingsPage() {
         className="flex-1 flex flex-col justify-start overflow-y-scroll px-12 py-8"
       >
         {sections.map((section) => (
-          <div
-            key={section.key}
-            ref={sectionRefs[section.key]}
-            className="w-full mb-12"
-          >
+          <div key={section.key} ref={sectionRefs[section.key]} className="w-full mb-12">
             {section.component}
           </div>
         ))}

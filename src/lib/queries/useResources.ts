@@ -1,13 +1,14 @@
-import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
-import {api} from "@/lib/utils/api";
-import {message} from "antd";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { message } from "antd";
+
+import { api } from "@/lib/utils/api";
 
 /** 토큰 무시 URL 조회 Hook */
 export function useFetchTokenIgnoreUrls() {
   return useQuery({
     queryKey: ["fetchTokenIgnoreUrls"],
     queryFn: async () => {
-      const {data} = await api.get("/resource/token-ignore-url");
+      const { data } = await api.get("/resource/token-ignore-url");
       return data?.data ?? []; // 데이터가 없을 경우 빈 배열 반환
     },
   });
@@ -19,12 +20,12 @@ export function useUpdateTokenIgnoreUrl() {
 
   return useMutation({
     mutationFn: async (updateData: { url: string; isIgnore: boolean }) => {
-      const {data} = await api.post("/resource/token-ignore-url", updateData);
+      const { data } = await api.post("/resource/token-ignore-url", updateData);
       return data;
     },
     onSuccess: () => {
       message.success("등록 완료!");
-      queryClient.invalidateQueries({queryKey: ["fetchTokenIgnoreUrls"]});
+      queryClient.invalidateQueries({ queryKey: ["fetchTokenIgnoreUrls"] });
     },
   });
 }
@@ -35,13 +36,13 @@ export function useDeleteTokenIgnoreUrl() {
 
   return useMutation({
     mutationFn: async (id: number) => {
-      const {data} = await api.delete(`/resource/token-ignore-url/${id}`);
+      const { data } = await api.delete(`/resource/token-ignore-url/${id}`);
       if (data.code !== 200) throw new Error("삭제 실패");
       return data;
     },
     onSuccess: () => {
       message.success("삭제 완료!");
-      queryClient.invalidateQueries({queryKey: ["fetchTokenIgnoreUrls"]}); // 데이터 다시 불러오기
+      queryClient.invalidateQueries({ queryKey: ["fetchTokenIgnoreUrls"] }); // 데이터 다시 불러오기
     },
   });
 }
@@ -51,7 +52,7 @@ export function useResources() {
   return useQuery({
     queryKey: ["fetchResources"],
     queryFn: async () => {
-      const {data} = await api.get("/resource");
+      const { data } = await api.get("/resource");
       return data?.data ?? [];
     },
   });

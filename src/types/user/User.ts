@@ -5,7 +5,7 @@ export interface User {
   name?: string;
   provider?: string;
   role: string;
-  roleDesc?: string
+  roleDesc?: string;
   account?: Account;
   info?: UserInfo;
   profileImages?: ProfileImage[];

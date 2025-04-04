@@ -1,7 +1,11 @@
 import axios from "axios";
-import {useAuthStore} from "@/store/useAuthStore";
 
-const API_URL = typeof window !== "undefined" ? window.__ENV?.NEXT_PUBLIC_API_URL : process.env.NEXT_PUBLIC_API_URL;
+import { useAuthStore } from "@/store/useAuthStore";
+
+const API_URL =
+  typeof window !== "undefined"
+    ? window.__ENV?.NEXT_PUBLIC_API_URL
+    : process.env.NEXT_PUBLIC_API_URL;
 
 export const api = axios.create({
   baseURL: API_URL,
@@ -16,7 +20,7 @@ api.interceptors.response.use(
       const status = error.response.status;
 
       if (status === 403) {
-        console.error("🚫 접근 권한이 없습니다.")
+        console.error("🚫 접근 권한이 없습니다.");
       } else if (status === 401) {
         console.error("🔒 인증이 만료되었습니다. 다시 로그인하세요.");
         const { setExpired, logout } = useAuthStore.getState();
@@ -25,5 +29,5 @@ api.interceptors.response.use(
       }
     }
     return Promise.reject(error);
-  }
-)
+  },
+);

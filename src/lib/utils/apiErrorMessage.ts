@@ -1,5 +1,6 @@
-import {FormInstance, message} from "antd";
-import {ApiResponse, ValidationError} from "@/types";
+import { FormInstance, message } from "antd";
+
+import { ApiResponse, ValidationError } from "@/types";
 
 /**
  * API 요청 에러를 처리하는 함수
@@ -13,7 +14,7 @@ export const apiErrorMessage = (
 ): string | undefined => {
   if (typeof error === "object" && error !== null && "response" in error) {
     const axiosError = error as { response?: { data?: ApiResponse<ValidationError> } };
-    console.log(axiosError.response?.data?.message)
+    console.log(axiosError.response?.data?.message);
     const errorMessage = axiosError.response?.data?.message || "오류 발생. 다시 시도하세요.";
     if (showMessage) {
       message.error(errorMessage);
@@ -32,12 +33,9 @@ export const apiErrorMessage = (
  * @param form `antd`의 FormInstance, 해당 폼의 필드 에러를 설정하는 데 사용됩니다.
  * @returns 에러 메시지를 반환하거나, `form` 필드에 에러를 표시합니다.
  */
-export const applyApiValidationErrors = (
-  error: unknown,
-  form: FormInstance,
-): boolean => {
+export const applyApiValidationErrors = (error: unknown, form: FormInstance): boolean => {
   if (typeof error === "object" && error !== null && "response" in error) {
-    const axiosError = error as { response?: { data?: ApiResponse<ValidationError[]>} };
+    const axiosError = error as { response?: { data?: ApiResponse<ValidationError[]> } };
     const validationErrors = axiosError.response?.data?.data;
 
     if (validationErrors && validationErrors.length > 0) {

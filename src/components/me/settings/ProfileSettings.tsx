@@ -1,22 +1,24 @@
 "use client";
 
-import {Avatar, Button, Form, Input, Modal, Popconfirm, Typography, Upload} from "antd";
-import {CloseOutlined, PlusCircleOutlined, StarOutlined} from "@ant-design/icons";
-import {useAuthStore} from "@/store/useAuthStore";
-import {useEffect, useState} from "react";
+import { CloseOutlined, PlusCircleOutlined, StarOutlined } from "@ant-design/icons";
+import { Avatar, Button, Form, Input, Modal, Popconfirm, Typography, Upload } from "antd";
+import Image from "next/image";
+import { useEffect, useState } from "react";
+
 import {
   useDeleteProfileImage,
   useSetDefaultProfileImage,
   useUpdateMyInfo,
-  useUploadProfileImage
+  useUploadProfileImage,
 } from "@/lib/queries/useMe";
-import Image from "next/image";
-import {applyApiValidationErrors} from "@/lib/utils/apiErrorMessage";
+import { applyApiValidationErrors } from "@/lib/utils/apiErrorMessage";
 
-const {Title} = Typography;
+import { useAuthStore } from "@/store/useAuthStore";
+
+const { Title } = Typography;
 
 export default function ProfileSettings() {
-  const {user} = useAuthStore();
+  const { user } = useAuthStore();
   const [form] = Form.useForm();
   const [currentProfileImage, setCurrentProfileImage] = useState<string | null>(null); // 대표 이미지 (실제 변경될 값)
   const [selectedImage, setSelectedImage] = useState<string | null>(null); // 모달에서 표시할 이미지
@@ -28,7 +30,6 @@ export default function ProfileSettings() {
   const updateMyInfo = useUpdateMyInfo();
   const deleteProfileImage = useDeleteProfileImage();
 
-
   useEffect(() => {
     if (user) {
       form.setFieldsValue(user);
@@ -37,18 +38,20 @@ export default function ProfileSettings() {
     }
   }, [user, form]);
 
-  const onFinish = ({info}: { info?: { bio?: string; nickName?: string; phoneNumber?: string } }) => {
+  const onFinish = ({
+    info,
+  }: {
+    info?: { bio?: string; nickName?: string; phoneNumber?: string };
+  }) => {
     //  기존 에러 메시지 초기화 (입력값 유지)
-    form.setFields(
-      Object.keys(info || {}).map((key) => ({name: ["info", key], errors: []}))
-    );
+    form.setFields(Object.keys(info || {}).map((key) => ({ name: ["info", key], errors: [] })));
 
     updateMyInfo.mutate(info || {}, {
       onError: (error) => applyApiValidationErrors(error, form),
     });
   };
 
-  const handleImageUpload = ({file}: { file: File }) => {
+  const handleImageUpload = ({ file }: { file: File }) => {
     uploadProfileImage.mutate(file);
   };
 
@@ -68,40 +71,37 @@ export default function ProfileSettings() {
     if (!selectedImageId) return;
 
     setDefaultProfileImage.mutate(selectedImageId, {
-        onSuccess: () => {
-          setCurrentProfileImage(selectedImage);
-          setSelectedImageId(null)
-          setIsModalOpen(false);
-        },
-      }
-    );
+      onSuccess: () => {
+        setCurrentProfileImage(selectedImage);
+        setSelectedImageId(null);
+        setIsModalOpen(false);
+      },
+    });
   };
 
   return (
     <div className="w-full bg-white p-12 rounded-lg shadow-md">
-      <Title level={5} className="text-gray-800 mb-6">👤 프로필</Title>
+      <Title level={5} className="text-gray-800 mb-6">
+        👤 프로필
+      </Title>
 
       {/* 프로필 이미지 및 업로드 버튼 */}
       <div className="relative flex items-center space-x-6 mb-6">
         {/* 현재 대표 프로필 사진 */}
         <div className="relative">
-          <Avatar
-            size={120}
-            src={currentProfileImage}
-            className="border-4 border-blue-500"
-          />
+          <Avatar size={120} src={currentProfileImage} className="border-4 border-blue-500" />
 
           {/* 프로필 이미지 변경 버튼 (우측 하단 동그라미 버튼) */}
           <Upload
             showUploadList={false}
             beforeUpload={(file) => {
-              handleImageUpload({file: file as File}); //  직접 함수 호출
+              handleImageUpload({ file: file as File }); //  직접 함수 호출
               return false; //  기본 업로드 이벤트를 막음 (중복 요청 방지)
             }}
           >
             <Button
               shape="circle"
-              icon={<PlusCircleOutlined/>}
+              icon={<PlusCircleOutlined />}
               className="absolute bottom-0 right-0 bg-white shadow-md"
             />
           </Upload>
@@ -124,9 +124,14 @@ export default function ProfileSettings() {
               />
 
               {hoveredImageId === image.profileImageNo && (
-                <Popconfirm title="프로필 이미지를 삭제하시겠습니까?" onConfirm={() => handleDeleteProfileImage(image.profileImageNo)} okText="삭제" cancelText="취소" >
-                  <button className="absolute -top-2 -right-2 w-6 h-6 flex items-center justify-center bg-white border border-gray-300 rounded-full shadow-md hover:bg-red-500" >
-                    <CloseOutlined className="text-red-500 hover:text-white text-sm"/>
+                <Popconfirm
+                  title="프로필 이미지를 삭제하시겠습니까?"
+                  onConfirm={() => handleDeleteProfileImage(image.profileImageNo)}
+                  okText="삭제"
+                  cancelText="취소"
+                >
+                  <button className="absolute -top-2 -right-2 w-6 h-6 flex items-center justify-center bg-white border border-gray-300 rounded-full shadow-md hover:bg-red-500">
+                    <CloseOutlined className="text-red-500 hover:text-white text-sm" />
                   </button>
                 </Popconfirm>
               )}
@@ -138,34 +143,34 @@ export default function ProfileSettings() {
       <Form form={form} layout="vertical" onFinish={onFinish} className="w-full">
         <div className="grid grid-cols-2 gap-6">
           <Form.Item name="loginId" label="아이디" className="col-span-1">
-            <Input disabled/>
+            <Input disabled />
           </Form.Item>
 
           <Form.Item name="email" label="이메일" className="col-span-1">
-            <Input disabled/>
+            <Input disabled />
           </Form.Item>
 
           <Form.Item name={["info", "nickName"]} label="닉네임" className="col-span-1">
-            <Input disabled/>
+            <Input disabled />
           </Form.Item>
 
           <Form.Item name={["info", "phoneNumber"]} label="전화번호" className="col-span-1">
-            <Input placeholder="010-1234-5678"/>
+            <Input placeholder="010-1234-5678" />
           </Form.Item>
         </div>
 
         <Form.Item name={["info", "bio"]} label="소개">
-          <Input.TextArea rows={3}/>
+          <Input.TextArea rows={3} />
         </Form.Item>
 
         {/* 계좌 정보 */}
         <div className="grid grid-cols-2 gap-6">
           <Form.Item name={["account", "bankName"]} label="은행명" className="col-span-1">
-            <Input disabled/>
+            <Input disabled />
           </Form.Item>
 
           <Form.Item name={["account", "accountNumber"]} label="계좌번호" className="col-span-1">
-            <Input disabled/>
+            <Input disabled />
           </Form.Item>
         </div>
 
@@ -183,7 +188,7 @@ export default function ProfileSettings() {
           <Button
             key="set-default"
             type="primary"
-            icon={<StarOutlined/>}
+            icon={<StarOutlined />}
             onClick={handleSetAsDefault}
             disabled={!selectedImageId}
           >

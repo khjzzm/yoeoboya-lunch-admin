@@ -1,4 +1,4 @@
-import {useSearchParams} from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 export function useQueryParamString(key: string): string | null {
   return useSearchParams().get(key);

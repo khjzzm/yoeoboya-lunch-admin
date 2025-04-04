@@ -1,11 +1,14 @@
 "use client";
 
-import {useState} from "react";
-import {Select, Switch, Table, Tooltip} from "antd";
-import {ColumnsType} from "antd/es/table";
-import {useRole, useUpdateRole, useUpdateSecurityStatus} from "@/lib/queries/useRole";
+import { Select, Switch, Table, Tooltip } from "antd";
+import { ColumnsType } from "antd/es/table";
+import { useState } from "react";
+
+import { AuthoritiesOptions, roleOptions } from "@/types";
+
 import SearchFilters from "@/components/searchFilters";
-import {AuthoritiesOptions, roleOptions} from "@/types"
+
+import { useRole, useUpdateRole, useUpdateSecurityStatus } from "@/lib/queries/useRole";
 
 // Role 데이터 타입 정의
 interface RoleData {
@@ -18,7 +21,6 @@ interface RoleData {
   enabled: boolean;
   accountNonLocked: boolean;
 }
-
 
 export default function RoleAuthoritiesPage() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -108,10 +110,7 @@ export default function RoleAuthoritiesPage() {
     <div>
       <h1 className="text-2xl font-bold text-gray-800 border-b pb-2 mb-4">🔐 회원 권한</h1>
 
-      <SearchFilters
-        onSearch={handleSearch}
-        filterOptions={AuthoritiesOptions}
-      />
+      <SearchFilters onSearch={handleSearch} filterOptions={AuthoritiesOptions} />
 
       <div className="overflow-x-auto">
         <Table

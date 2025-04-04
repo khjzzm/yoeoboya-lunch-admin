@@ -3,7 +3,7 @@ name: Deploy Frontend (Admin)
 on:
   push:
     branches:
-      - main  #  main 브랜치에 push하면 실행
+      - main #  main 브랜치에 push하면 실행
 
 jobs:
   build-and-deploy:
@@ -14,11 +14,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Get Public IP   # 퍼블릭 IP 가져오기(안정된 방식)
+      - name: Get Public IP # 퍼블릭 IP 가져오기(안정된 방식)
         id: get_ip
         run: echo "RUNNER_IP=$(curl -s https://checkip.amazonaws.com)" >> $GITHUB_ENV
 
-      - name: Authorize Runner IP in Security Group   # 보안 그룹에 런너 IP 추가
+      - name: Authorize Runner IP in Security Group # 보안 그룹에 런너 IP 추가
         run: |
           aws ec2 authorize-security-group-ingress \
             --group-id ${{ secrets.SECURITY_GROUP_ID }} \
@@ -28,7 +28,7 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: 'ap-northeast-2'
+          AWS_DEFAULT_REGION: "ap-northeast-2"
 
       # Node.js & npm 설치 (Next.js 빌드)
       - name: Setup Node.js
@@ -80,8 +80,8 @@ jobs:
               ${{ secrets.DOCKER_USERNAME }}/yeoboya-lunch-admin:latest
             docker image prune -f
 
-      - name: Remove Runner IP from Security Group   # 보안 그룹에서 런너 IP 제거
-        if: always()   # 이전 단계 실패 여부와 관계없이 항상 실행
+      - name: Remove Runner IP from Security Group # 보안 그룹에서 런너 IP 제거
+        if: always() # 이전 단계 실패 여부와 관계없이 항상 실행
         run: |
           aws ec2 revoke-security-group-ingress \
             --group-id ${{ secrets.SECURITY_GROUP_ID }} \
@@ -91,4 +91,4 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: 'ap-northeast-2'
+          AWS_DEFAULT_REGION: "ap-northeast-2"

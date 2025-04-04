@@ -1,13 +1,14 @@
 "use client";
 
-import {useEffect, useRef, useState} from "react";
-import {EditorContent, useEditor} from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import Link from "@tiptap/extension-link";
 import Image from "@tiptap/extension-image";
+import Link from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
-import {Toolbar} from "./Toolbar";
-import {message, Spin} from "antd";
+import { EditorContent, useEditor } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import { message, Spin } from "antd";
+import { useEffect, useRef, useState } from "react";
+
+import { Toolbar } from "./Toolbar";
 
 interface Props {
   content: string;
@@ -15,7 +16,7 @@ interface Props {
   uploadToS3: (file: File) => Promise<string | null>;
 }
 
-export default function TiptapEditor({content, setContent, uploadToS3}: Props) {
+export default function TiptapEditor({ content, setContent, uploadToS3 }: Props) {
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const dragCounter = useRef(0);
@@ -29,16 +30,16 @@ export default function TiptapEditor({content, setContent, uploadToS3}: Props) {
           class: "tiptap-link",
         },
       }),
-      Image.configure({inline: false, allowBase64: true}),
-      Placeholder.configure({placeholder: "내용을 입력하세요..."}),
+      Image.configure({ inline: false, allowBase64: true }),
+      Placeholder.configure({ placeholder: "내용을 입력하세요..." }),
     ],
     content,
-    onUpdate({editor}) {
+    onUpdate({ editor }) {
       setContent(editor.getHTML());
     },
     editorProps: {
       attributes: {
-        class: "focus:outline-none px-2 py-2 max-h-[400px] overflow-y-auto"
+        class: "focus:outline-none px-2 py-2 max-h-[400px] overflow-y-auto",
       },
       handleKeyDown(view, event) {
         if (event.key === "Tab") {
@@ -72,7 +73,7 @@ export default function TiptapEditor({content, setContent, uploadToS3}: Props) {
                 if (imageUrl) {
                   insertions.push({
                     type: "image",
-                    attrs: {src: imageUrl},
+                    attrs: { src: imageUrl },
                   });
                 } else {
                   message.error(`${file.name} 업로드 실패`);
@@ -106,7 +107,7 @@ export default function TiptapEditor({content, setContent, uploadToS3}: Props) {
           }
           return false;
         },
-      }
+      },
     },
   });
 
@@ -119,11 +120,10 @@ export default function TiptapEditor({content, setContent, uploadToS3}: Props) {
   return (
     <div className="relative border rounded-md w-full min-h-[300px]">
       {isDragging && (
-        <div
-          className="absolute inset-0 z-20 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center border-2 border-dashed border-blue-400 rounded-md pointer-events-none">
+        <div className="absolute inset-0 z-20 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center border-2 border-dashed border-blue-400 rounded-md pointer-events-none">
           {isUploading ? (
             <>
-              <Spin size="large"/>
+              <Spin size="large" />
               <p className="text-blue-500 font-medium mt-4">이미지를 업로드 중입니다...</p>
             </>
           ) : (
@@ -136,22 +136,21 @@ export default function TiptapEditor({content, setContent, uploadToS3}: Props) {
                 stroke="currentColor"
                 strokeWidth={1.5}
               >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4"/>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
               </svg>
-              <p className="text-blue-600 font-medium text-sm">텍스트 혹은 사진을 여기로 내려놓으세요</p>
+              <p className="text-blue-600 font-medium text-sm">
+                텍스트 혹은 사진을 여기로 내려놓으세요
+              </p>
             </>
           )}
         </div>
       )}
 
       {/* 툴바 */}
-      {editor && <Toolbar editor={editor} uploadToS3={uploadToS3}/>}
+      {editor && <Toolbar editor={editor} uploadToS3={uploadToS3} />}
 
       {/* 에디터 */}
-      <EditorContent
-        editor={editor}
-        className="w-full leading-relaxed [&_p]:mb-0 caret-black"
-      />
+      <EditorContent editor={editor} className="w-full leading-relaxed [&_p]:mb-0 caret-black" />
     </div>
   );
 }

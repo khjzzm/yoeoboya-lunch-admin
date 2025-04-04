@@ -1,31 +1,31 @@
-import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
-import {api} from "@/lib/utils/api";
-import {message} from "antd";
-import {apiErrorMessage} from "@/lib/utils/apiErrorMessage";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { message } from "antd";
 import stringify from "fast-json-stable-stringify";
+import { useRouter } from "next/navigation";
+
 import {
   ApiResponse,
   BoardEdit,
   FreeBoardCreate,
-  NoticeDetailResponse,
   BoardSearchCondition,
   Pagination,
-  FreeBoardResponse
+  FreeBoardResponse,
+  FreeBoardDetailResponse,
 } from "@/types";
+
 import {
   useCreateReply,
   useDeleteReply,
   useReplies,
   useLike,
-  useUnlike, useUploadFileToS3,
+  useUnlike,
+  useUploadFileToS3,
 } from "@/lib/queries/useBoardHooks";
+import { api } from "@/lib/utils/api";
+import { apiErrorMessage } from "@/lib/utils/apiErrorMessage";
 
 /** 게시글 목록 조회 (검색, 페이지네이션 포함) */
-export function useFreeBoards(
-  page: number,
-  size: number,
-  filters?: BoardSearchCondition
-) {
+export function useFreeBoards(page: number, size: number, filters?: BoardSearchCondition) {
   return useQuery<ApiResponse<{ list: FreeBoardResponse[]; pagination: Pagination }>>({
     queryKey: ["freeBoards", page, size, stringify(filters)],
     queryFn: async () => {
@@ -45,7 +45,7 @@ export function useFreeBoards(
         }
       }
 
-      const {data} = await api.get(`/board/free?${params.toString()}`);
+      const { data } = await api.get(`/board/free?${params.toString()}`);
       return data;
     },
   });
@@ -56,12 +56,12 @@ export function useCreateFreeBoard() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (payload: FreeBoardCreate) => {
-      const {data} = await api.post(`/board/free`, payload);
+      const { data } = await api.post(`/board/free`, payload);
       return data;
     },
     onSuccess: () => {
       message.success("게시글이 등록되었습니다.");
-      queryClient.invalidateQueries({queryKey: ["freeBoards"]});
+      queryClient.invalidateQueries({ queryKey: ["freeBoards"] });
     },
     onError: (error) => {
       apiErrorMessage(error);
@@ -71,11 +71,11 @@ export function useCreateFreeBoard() {
 
 /** 게시글 상세 조회 */
 export function useFreeBoardDetail(boardId: number | null) {
-  return useQuery({
+  return useQuery<ApiResponse<FreeBoardDetailResponse>>({
     queryKey: ["freeBoardDetail", boardId],
     queryFn: async () => {
-      const {data} = await api.get(`/board/free/detail`, {
-        params: {boardId},
+      const { data } = await api.get(`/board/free/detail`, {
+        params: { boardId },
       });
       return data;
     },
@@ -88,15 +88,37 @@ export function useEditFreeBoard(boardId: number) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (payload: BoardEdit) => {
-      const {data} = await api.put(`/board/free`, payload, {
-        params: {boardId},
+      const { data } = await api.put(`/board/free`, payload, {
+        params: { boardId },
       });
       return data;
     },
     onSuccess: () => {
       message.success("게시글이 수정되었습니다.");
-      queryClient.invalidateQueries({queryKey: ["freeBoards"]});
-      queryClient.invalidateQueries({queryKey: ["freeBoardDetail", boardId]});
+      queryClient.invalidateQueries({ queryKey: ["freeBoards"] });
+      queryClient.invalidateQueries({ queryKey: ["freeBoardDetail", boardId] });
+    },
+    onError: (error) => {
+      apiErrorMessage(error);
+    },
+  });
+}
+
+/** 게시글 삭제 Hook */
+export function useDeleteFreeBoard(boardId: number) {
+  const queryClient = useQueryClient();
+  const router = useRouter();
+  return useMutation({
+    mutationFn: async () => {
+      const { data } = await api.delete(`/board/free`, {
+        params: { boardId },
+      });
+      return data;
+    },
+    onSuccess: () => {
+      message.success("게시글이 삭제되었습니다.");
+      queryClient.invalidateQueries({ queryKey: ["freeBoards"] });
+      router.push("/board/free");
     },
     onError: (error) => {
       apiErrorMessage(error);
@@ -105,8 +127,11 @@ export function useEditFreeBoard(boardId: number) {
 }
 
 export const useFreeBoardCreateReply = () => useCreateReply("/board/free", "freeBoard");
-export const useFreeBoardDeleteReply = (boardId: number) => useDeleteReply("/board/free", "freeBoard", boardId);
-export const useFreeBoardReplies = (boardId: number) => useReplies("/board/free", "freeBoard", boardId);
+export const useFreeBoardDeleteReply = (boardId: number) =>
+  useDeleteReply("/board/free", "freeBoard", boardId);
+export const useFreeBoardReplies = (boardId: number) =>
+  useReplies("/board/free", "freeBoard", boardId);
 export const useLikeFreeBoard = (boardId: number) => useLike("/board/free", "freeBoard", boardId);
-export const useUnlikeFreeBoard = (boardId: number) => useUnlike("/board/free", "freeBoard", boardId);
+export const useUnlikeFreeBoard = (boardId: number) =>
+  useUnlike("/board/free", "freeBoard", boardId);
 export const useUploadNoticeFileToS3 = () => useUploadFileToS3("/board/free/image");

@@ -1,13 +1,15 @@
 "use client";
 
-import {useEffect, useState} from "react";
-import {Button, Input, Popconfirm, Spin, Typography} from "antd";
-import {DeleteOutlined} from "@ant-design/icons";
-import {useAuthStore} from "@/store/useAuthStore";
-import {UseMutationResult, UseQueryResult} from "@tanstack/react-query";
-import {ApiResponse, Reply, ReplyCreateRequest, Pagination} from "@/types"
+import { DeleteOutlined } from "@ant-design/icons";
+import { UseMutationResult, UseQueryResult } from "@tanstack/react-query";
+import { Button, Input, Popconfirm, Spin, Typography } from "antd";
+import { useEffect, useState } from "react";
 
-const {Text, Title} = Typography;
+import { ApiResponse, Reply, ReplyCreateRequest, Pagination } from "@/types";
+
+import { useAuthStore } from "@/store/useAuthStore";
+
+const { Text, Title } = Typography;
 
 /** 컴포넌트 내부 전용 확장 타입 */
 interface EnhancedReply extends Reply {
@@ -17,7 +19,9 @@ interface EnhancedReply extends Reply {
 
 /** 외부에서 주입받는 댓글 서비스 인터페이스 */
 interface ReplyService {
-  useReplies: (boardId: number) => UseQueryResult<ApiResponse<{ list: Reply[]; pagination: Pagination }>, Error>;
+  useReplies: (
+    boardId: number,
+  ) => UseQueryResult<ApiResponse<{ list: Reply[]; pagination: Pagination }>, Error>;
   useCreateReply: () => UseMutationResult<void, Error, ReplyCreateRequest>;
   useDeleteReply: (boardId: number) => UseMutationResult<void, Error, number>;
 }
@@ -27,16 +31,16 @@ interface ReplyComponentProps {
   service: ReplyService;
 }
 
-export default function ReplyComponent({boardId, service}: ReplyComponentProps) {
-  const {user} = useAuthStore();
+export default function ReplyComponent({ boardId, service }: ReplyComponentProps) {
+  const { user } = useAuthStore();
   const [comment, setComment] = useState("");
   const [replies, setReplies] = useState<EnhancedReply[]>([]);
   const [pagination, setPagination] = useState<Pagination>();
 
-  const {useReplies, useCreateReply, useDeleteReply} = service;
-  const {data, isLoading} = useReplies(boardId);
-  const {mutate: createReply} = useCreateReply();
-  const {mutate: deleteReply} = useDeleteReply(boardId);
+  const { useReplies, useCreateReply, useDeleteReply } = service;
+  const { data, isLoading } = useReplies(boardId);
+  const { mutate: createReply } = useCreateReply();
+  const { mutate: deleteReply } = useDeleteReply(boardId);
 
   // 댓글 + 대댓글 정리
   useEffect(() => {
@@ -46,8 +50,8 @@ export default function ReplyComponent({boardId, service}: ReplyComponentProps) 
     const pagination = data.data.pagination;
 
     const rootReplies = allReplies
-      .filter(r => !r.parentId)
-      .map(reply => ({
+      .filter((r) => !r.parentId)
+      .map((reply) => ({
         ...reply,
         replyInput: "",
         childReplies: reply.childReplies ?? [],
@@ -72,7 +76,7 @@ export default function ReplyComponent({boardId, service}: ReplyComponentProps) 
         onSuccess: () => {
           setComment(""); // 최상위 댓글 초기화만
         },
-      }
+      },
     );
   };
 
@@ -81,13 +85,13 @@ export default function ReplyComponent({boardId, service}: ReplyComponentProps) 
       <Title level={4}>댓글 {pagination?.totalElements}</Title>
 
       {isLoading ? (
-        <Spin/>
+        <Spin />
       ) : (
         <div className="space-y-6 mt-4">
           {replies.length === 0 ? (
             <Text type="secondary">등록된 댓글이 없습니다.</Text>
           ) : (
-            replies.map(parent => (
+            replies.map((parent) => (
               <div key={parent.replyId} className="p-4 border rounded-lg shadow-sm bg-white">
                 {/* 부모 댓글 */}
                 <div className="flex justify-between items-center">
@@ -99,7 +103,7 @@ export default function ReplyComponent({boardId, service}: ReplyComponentProps) 
                       okText="삭제"
                       cancelText="취소"
                     >
-                      <Button size="small" type="text" danger icon={<DeleteOutlined/>}/>
+                      <Button size="small" type="text" danger icon={<DeleteOutlined />} />
                     </Popconfirm>
                   )}
                 </div>
@@ -107,15 +111,17 @@ export default function ReplyComponent({boardId, service}: ReplyComponentProps) 
                 {parent.deleted ? (
                   <Text type="secondary">삭제된 댓글입니다.</Text>
                 ) : (
-                  <div className="text-gray-700 text-sm mt-1 whitespace-pre-wrap">{parent.content}</div>
+                  <div className="text-gray-700 text-sm mt-1 whitespace-pre-wrap">
+                    {parent.content}
+                  </div>
                 )}
 
                 {/* 대댓글 목록 */}
-                {parent.childReplies.filter(child => !child.deleted).length > 0 && (
+                {parent.childReplies.filter((child) => !child.deleted).length > 0 && (
                   <div className="mt-4 space-y-3 pl-4 border-l-2 border-gray-200">
                     {parent.childReplies
-                      .filter(child => !child.deleted)
-                      .map(child => (
+                      .filter((child) => !child.deleted)
+                      .map((child) => (
                         <div key={child.replyId} className="ml-2">
                           <div className="flex justify-between items-center">
                             <Text strong>{child.writer}</Text>
@@ -126,11 +132,13 @@ export default function ReplyComponent({boardId, service}: ReplyComponentProps) 
                                 okText="삭제"
                                 cancelText="취소"
                               >
-                                <Button size="small" type="text" danger icon={<DeleteOutlined/>}/>
+                                <Button size="small" type="text" danger icon={<DeleteOutlined />} />
                               </Popconfirm>
                             )}
                           </div>
-                          <div className="text-gray-600 text-sm mt-1 whitespace-pre-wrap">{child.content}</div>
+                          <div className="text-gray-600 text-sm mt-1 whitespace-pre-wrap">
+                            {child.content}
+                          </div>
                         </div>
                       ))}
                   </div>
@@ -143,10 +151,10 @@ export default function ReplyComponent({boardId, service}: ReplyComponentProps) 
                     placeholder="답글을 작성하세요..."
                     value={parent.replyInput}
                     onChange={(e) =>
-                      setReplies(prev =>
-                        prev.map(r =>
-                          r.replyId === parent.replyId ? {...r, replyInput: e.target.value} : r
-                        )
+                      setReplies((prev) =>
+                        prev.map((r) =>
+                          r.replyId === parent.replyId ? { ...r, replyInput: e.target.value } : r,
+                        ),
                       )
                     }
                   />

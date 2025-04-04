@@ -1,5 +1,6 @@
+import { Suspense } from "react";
+
 import LoginPage from "@/app/user/login/LoginPage";
-import {Suspense} from "react";
 
 export default function Page() {
   return (

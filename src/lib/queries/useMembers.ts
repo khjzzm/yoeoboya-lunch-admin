@@ -1,6 +1,6 @@
-import {useQuery} from "@tanstack/react-query";
-import {api} from "@/lib/utils/api";
+import { useQuery } from "@tanstack/react-query";
 
+import { api } from "@/lib/utils/api";
 
 /** 내정보 가져오기 */
 export function useMeInfo() {
@@ -17,7 +17,7 @@ export function useMeInfo() {
 export function useMembers(
   page: number,
   pageSize: number,
-  filters?: Record<string, string | string[]>
+  filters?: Record<string, string | string[]>,
 ) {
   return useQuery({
     queryKey: ["fetchMembers", page, pageSize, filters],
@@ -39,7 +39,7 @@ export function useFetchMemberSummary(memberLoginId: string) {
   return useQuery({
     queryKey: ["fetchMemberSummary", memberLoginId], //  캐시를 위한 키
     queryFn: async () => {
-      const {data} = await api.get(`/member/${memberLoginId}`);
+      const { data } = await api.get(`/member/${memberLoginId}`);
       return data.data;
     },
     enabled: !!memberLoginId,

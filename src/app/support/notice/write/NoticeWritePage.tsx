@@ -1,18 +1,27 @@
 "use client";
 
-import {useRouter} from "next/navigation";
-import {useCreateNotice, useNoticeDetail, useUpdateNotice, useUploadNoticeFileToS3} from "@/lib/queries/support/useNotice";
-import {Button, DatePicker, Form, Input, Select, Space, Switch} from "antd";
-import {useEffect, useState} from "react";
-import {applyApiValidationErrors} from "@/lib/utils/apiErrorMessage";
-import {useAuthStore} from "@/store/useAuthStore";
-import {NoticeFormValues, NoticeRequest} from "@/types";
-import {useQueryParamNumber} from "@/lib/hooks/useQueryParam";
+import { Button, DatePicker, Form, Input, Select, Space, Switch } from "antd";
 import dayjs from "dayjs";
-import TiptapEditor from "@/components/board/TiptapEditor"
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+
+import { NoticeFormValues, NoticeRequest } from "@/types";
+
+import TiptapEditor from "@/components/board/TiptapEditor";
+
+import { useQueryParamNumber } from "@/lib/hooks/useQueryParam";
+import {
+  useCreateNotice,
+  useNoticeDetail,
+  useUpdateNotice,
+  useUploadNoticeFileToS3,
+} from "@/lib/queries/support/useNotice";
+import { applyApiValidationErrors } from "@/lib/utils/apiErrorMessage";
+
+import { useAuthStore } from "@/store/useAuthStore";
 
 export default function NoticeWritePage() {
-  const {user} = useAuthStore();
+  const { user } = useAuthStore();
   const router = useRouter();
   const noticeId = useQueryParamNumber("noticeId");
   const editMode = Boolean(noticeId);
@@ -23,8 +32,8 @@ export default function NoticeWritePage() {
     form.setFieldValue("author", user?.loginId || "");
   }, [form, user]);
 
-  const {data: noticeDetail} = useNoticeDetail(Number(noticeId));
-  const {mutateAsync: uploadToS3} = useUploadNoticeFileToS3();
+  const { data: noticeDetail } = useNoticeDetail(Number(noticeId));
+  const { mutateAsync: uploadToS3 } = useUploadNoticeFileToS3();
   const createNotice = useCreateNotice();
   const updateNotice = useUpdateNotice(Number(noticeId));
 
@@ -65,43 +74,63 @@ export default function NoticeWritePage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6"> {editMode ? "✏️ 공지사항 수정" : "📌 공지사항 작성"}</h1>
+      <h1 className="text-2xl font-bold mb-6">
+        {" "}
+        {editMode ? "✏️ 공지사항 수정" : "📌 공지사항 작성"}
+      </h1>
 
-      <Form form={form} layout="vertical" onFinish={handleSubmit} initialValues={{
-        category: "일반",
-        pinned: false,
-        status: "ACTIVE",
-        author: user?.loginId,
-      }}>
-        <Form.Item name="title" label="제목" rules={[{required: true, message: "제목을 입력하세요!"}]}>
-          <Input placeholder="제목을 입력하세요"/>
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={handleSubmit}
+        initialValues={{
+          category: "일반",
+          pinned: false,
+          status: "ACTIVE",
+          author: user?.loginId,
+        }}
+      >
+        <Form.Item
+          name="title"
+          label="제목"
+          rules={[{ required: true, message: "제목을 입력하세요!" }]}
+        >
+          <Input placeholder="제목을 입력하세요" />
         </Form.Item>
 
-        <Form.Item name="category" label="카테고리" rules={[{required: true, message: "카테고리를 선택하세요!"}]}>
+        <Form.Item
+          name="category"
+          label="카테고리"
+          rules={[{ required: true, message: "카테고리를 선택하세요!" }]}
+        >
           <Select
             placeholder="카테고리를 선택하세요"
             options={[
-              {label: "일반", value: "일반"},
-              {label: "점검", value: "점검"},
-              {label: "행사", value: "행사"},
-              {label: "일반", value: "일반"},
-              {label: "시스템", value: "시스템"},
+              { label: "일반", value: "일반" },
+              { label: "점검", value: "점검" },
+              { label: "행사", value: "행사" },
+              { label: "일반", value: "일반" },
+              { label: "시스템", value: "시스템" },
             ]}
           />
         </Form.Item>
 
-        <Form.Item name="author" label="작성자" hidden rules={[{required: true}]}>
-          <Input disabled/>
+        <Form.Item name="author" label="작성자" hidden rules={[{ required: true }]}>
+          <Input disabled />
         </Form.Item>
         <Form.Item name="pinned" label="상단 고정" valuePropName="checked">
-          <Switch checkedChildren="고정" unCheckedChildren="기본"/>
+          <Switch checkedChildren="고정" unCheckedChildren="기본" />
         </Form.Item>
-        <Form.Item name="status" label="상태" rules={[{required: true, message: "상태를 선택하세요!"}]}>
+        <Form.Item
+          name="status"
+          label="상태"
+          rules={[{ required: true, message: "상태를 선택하세요!" }]}
+        >
           <Select
             placeholder="상태를 선택하세요"
             options={[
-              {label: "활성", value: "ACTIVE"},
-              {label: "비활성", value: "INACTIVE"},
+              { label: "활성", value: "ACTIVE" },
+              { label: "비활성", value: "INACTIVE" },
             ]}
           />
         </Form.Item>
@@ -109,16 +138,16 @@ export default function NoticeWritePage() {
         <Form.Item label="공지 기간">
           <Space size="middle">
             <Form.Item name="startDate" noStyle>
-              <DatePicker placeholder="시작일"/>
+              <DatePicker placeholder="시작일" />
             </Form.Item>
             <Form.Item name="endDate" noStyle>
-              <DatePicker placeholder="종료일"/>
+              <DatePicker placeholder="종료일" />
             </Form.Item>
           </Space>
         </Form.Item>
 
-        <Form.Item name="content" label="본문" className="!w-full" style={{width: "100%"}}>
-          <TiptapEditor content={content} setContent={setContent} uploadToS3={uploadToS3}/>
+        <Form.Item name="content" label="본문" className="!w-full" style={{ width: "100%" }}>
+          <TiptapEditor content={content} setContent={setContent} uploadToS3={uploadToS3} />
         </Form.Item>
 
         <Button htmlType="submit" type="primary">
