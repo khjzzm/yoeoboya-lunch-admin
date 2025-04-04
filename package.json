@@ -5,10 +5,10 @@
   "scripts": {
     "dev": "next dev -H 0.0.0.0 -p 3001",
     "build": "next build",
-    "start": "next start -H 0.0.0.0 -p 3001",
-    "lint": "eslint src --ext .ts,.tsx --fix",
+    "start": "npm run build && next start -H 0.0.0.0 -p 3001",
+    "fix": "npm run lint && npm run format",
     "format": "prettier --write .",
-    "fix": "npm run lint && npm run format"
+    "lint": "eslint src --ext .ts,.tsx --fix"
   },
   "dependencies": {
     "@ant-design/v5-patch-for-react-19": "^1.0.3",

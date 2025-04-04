@@ -67,7 +67,7 @@ export default function FreeBoardListPage() {
                   {item.title}
                 </div>
                 <div className="text-xs text-gray-400">
-                  {dayjs(item.createDate).format("YY.MM.DD HH:mm")}
+                  {dayjs(item.createdDate).format("YY.MM.DD HH:mm")}
                 </div>
               </div>
               <div className="text-xs text-gray-600 line-clamp-2 mb-1">{item.content}</div>
