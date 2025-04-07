@@ -24,7 +24,7 @@ export function useCreateReply(endpoint: string, queryKeyPrefix: string) {
   });
 }
 
-export function useDeleteReply(endpoint: string, queryKeyPrefix: string, boardId: number) {
+export function useDeleteReply(endpoint: string, queryKeyPrefix: string, boardNo: number) {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -36,7 +36,7 @@ export function useDeleteReply(endpoint: string, queryKeyPrefix: string, boardId
     },
     onSuccess: () => {
       message.success("댓글이 삭제되었습니다.");
-      queryClient.invalidateQueries({ queryKey: [`${queryKeyPrefix}Replies`, boardId] });
+      queryClient.invalidateQueries({ queryKey: [`${queryKeyPrefix}Replies`, boardNo] });
     },
     onError: (error) => {
       apiErrorMessage(error);
@@ -44,15 +44,15 @@ export function useDeleteReply(endpoint: string, queryKeyPrefix: string, boardId
   });
 }
 
-export function useReplies(endpoint: string, queryKeyPrefix: string, boardId: number) {
+export function useReplies(endpoint: string, queryKeyPrefix: string, boardNo: number) {
   return useQuery<ApiResponse<{ list: Reply[]; pagination: Pagination }>>({
-    queryKey: [`${queryKeyPrefix}Replies`, boardId],
+    queryKey: [`${queryKeyPrefix}Replies`, boardNo],
     queryFn: async () => {
       const { data } = await api.get(`${endpoint}/replies`, {
-        params: { boardId },
+        params: { boardNo },
       });
       return data;
     },
-    enabled: !!boardId,
+    enabled: !!boardNo,
   });
 }

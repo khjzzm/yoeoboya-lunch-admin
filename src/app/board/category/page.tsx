@@ -1,7 +1,7 @@
 "use client";
 
 import { Table, Button, Modal, Form, Input, Select, Popconfirm } from "antd";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { BoardType, CategoryResponse, CategoryCreateRequest, CategoryEditRequest } from "@/types";
 
@@ -10,18 +10,30 @@ import {
   useCreateCategory,
   useDeleteCategory,
   useUpdateCategory,
+  useBoardTypes,
 } from "@/lib/queries";
 
 export default function AdminCategoryPage() {
   const [form] = Form.useForm();
   const [modalOpen, setModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<CategoryResponse | null>(null);
-  const [boardType, setBoardType] = useState<BoardType>("FREE");
+  const [selectedBoardType, setSelectedBoardType] = useState<BoardType>("FREE");
 
-  const { data: categories = [], refetch } = useCategories(boardType);
+  const { data: boardTypeList, isLoading: boardTypeLoading } = useBoardTypes();
+  const { data: categories = [], refetch } = useCategories(selectedBoardType);
+
   const create = useCreateCategory(refetch);
   const update = useUpdateCategory(refetch);
   const remove = useDeleteCategory(refetch);
+
+  const boardTypeOptions = useMemo(
+    () =>
+      boardTypeList?.data.map((type) => ({
+        label: type.name,
+        value: type.code,
+      })) ?? [],
+    [boardTypeList],
+  );
 
   useEffect(() => {
     if (editingCategory) {
@@ -35,23 +47,22 @@ export default function AdminCategoryPage() {
     if (editingCategory) {
       update.mutate({ id: editingCategory.id, ...values } as CategoryEditRequest);
     } else {
-      create.mutate({ ...values, boardType } as CategoryCreateRequest);
+      create.mutate({ ...values, boardType: selectedBoardType } as CategoryCreateRequest);
     }
     setModalOpen(false);
   };
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
+    <div>
       <h1 className="text-xl font-bold mb-4">카테고리 관리</h1>
 
       <div className="flex justify-between mb-4">
         <Select
-          value={boardType}
-          onChange={setBoardType}
-          options={[
-            { label: "자유게시판", value: "FREE" },
-            { label: "공지사항", value: "NOTICE" },
-          ]}
+          value={selectedBoardType}
+          onChange={(value) => setSelectedBoardType(value)}
+          options={boardTypeOptions}
+          loading={boardTypeLoading}
+          style={{ minWidth: 200 }}
         />
         <Button
           type="primary"

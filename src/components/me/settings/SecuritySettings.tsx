@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 
 import { ChangePasswordRequest } from "@/types";
 
-import { useChangePassword } from "@/lib/queries/useLogin";
+import { useChangePassword } from "@/lib/queries";
 import { apiErrorMessage, applyApiValidationErrors } from "@/lib/utils/apiErrorMessage";
 
 import { useAuthStore } from "@/store/useAuthStore";

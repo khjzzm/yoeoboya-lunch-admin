@@ -8,7 +8,7 @@ import React, { useEffect, useState } from "react";
 import { SocialProvider } from "@/types";
 
 import { useQueryParamString } from "@/lib/hooks/useQueryParam";
-import { useLogin } from "@/lib/queries/useLogin";
+import { useLogin } from "@/lib/queries";
 import { apiErrorMessage, applyApiValidationErrors } from "@/lib/utils/apiErrorMessage";
 const { Title, Text } = Typography;
 export default function LoginPage() {

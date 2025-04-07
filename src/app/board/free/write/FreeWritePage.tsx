@@ -1,22 +1,12 @@
 "use client";
 
-import {
-  Button,
-  Card,
-  Form,
-  Input,
-  Select,
-  Space,
-  Typography,
-  message,
-  InputNumber,
-  Switch,
-} from "antd";
+import { Button, Form, Input, Select, Space, Typography, InputNumber, Switch } from "antd";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { BoardFormValues, FreeBoardCreate } from "@/types";
 
+import CategorySelect from "@/components/board/CategorySelect";
 import TiptapEditor from "@/components/board/TiptapEditor";
 
 import { useQueryParamNumber } from "@/lib/hooks/useQueryParam";
@@ -46,18 +36,22 @@ export default function FreeBoardWritePage() {
   const updateBoard = useUpdateFreeBoard(Number(boardNo));
 
   useEffect(() => {
-    if (editMode && boardDetail?.data) {
+    if (editMode && boardDetail?.data && categories.length > 0) {
       const data = boardDetail.data;
+      const matchedCategory = categories.find((c) => c.name === data.category);
+
+      console.log(matchedCategory);
+
       form.setFieldsValue({
         title: data.title,
-        category: data.category,
-        hashTag: data.hashTag,
+        categoryId: matchedCategory?.id ?? null,
+        hashTag: data.hashTag?.map((t) => t.tag),
         pin: data.pin,
         secret: data.secret,
       });
       setContent(data.content);
     }
-  }, [editMode, form, boardDetail]);
+  }, [editMode, form, boardDetail, categories]);
 
   const handleSubmit = (values: BoardFormValues) => {
     const payload: FreeBoardCreate = {
@@ -68,7 +62,6 @@ export default function FreeBoardWritePage() {
     const mutation = editMode ? updateBoard : createBoard;
     mutation.mutate(payload, {
       onSuccess: () => {
-        message.success(editMode ? "게시글이 수정되었습니다." : "게시글이 등록되었습니다.");
         router.push("/board/free");
       },
       onError: (error) => {
@@ -78,7 +71,7 @@ export default function FreeBoardWritePage() {
   };
 
   return (
-    <Card className="max-w-3xl mx-auto mt-6 p-6 shadow-lg rounded-xl">
+    <div>
       <Title level={3} className="text-center">
         {editMode ? "✏️ 게시글 수정" : "📝 자유게시판 글쓰기"}
       </Title>
@@ -88,7 +81,7 @@ export default function FreeBoardWritePage() {
         layout="vertical"
         onFinish={handleSubmit}
         initialValues={{
-          category: "자유",
+          categoryId: 1,
           secret: false,
         }}
       >
@@ -100,19 +93,7 @@ export default function FreeBoardWritePage() {
           <Input placeholder="제목을 입력하세요" maxLength={100} showCount allowClear />
         </Form.Item>
 
-        <Form.Item
-          name="categoryId"
-          label="카테고리"
-          rules={[{ required: true, message: "카테고리를 선택하세요!" }]}
-        >
-          <Select
-            placeholder="카테고리를 선택하세요"
-            options={categories.map((cat) => ({
-              label: cat.name,
-              value: cat.id,
-            }))}
-          />
-        </Form.Item>
+        <CategorySelect categories={categories} />
 
         <Form.Item
           name="hashTag"
@@ -155,6 +136,6 @@ export default function FreeBoardWritePage() {
           </Space>
         </div>
       </Form>
-    </Card>
+    </div>
   );
 }

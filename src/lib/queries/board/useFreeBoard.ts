@@ -40,8 +40,8 @@ export function useFreeBoards(page: number, size: number, filters?: BoardSearchC
         if (filters.keyword) {
           params.set("keyword", filters.keyword);
         }
-        if (filters.boardId !== undefined) {
-          params.set("boardId", String(filters.boardId));
+        if (filters.boardNo !== undefined) {
+          params.set("boardNo", String(filters.boardNo));
         }
       }
 
@@ -70,33 +70,33 @@ export function useCreateFreeBoard() {
 }
 
 /** 게시글 상세 조회 */
-export function useFreeBoardDetail(boardId: number | null) {
+export function useFreeBoardDetail(boardNo: number | null) {
   return useQuery<ApiResponse<FreeBoardDetailResponse>>({
-    queryKey: ["freeBoardDetail", boardId],
+    queryKey: ["freeBoardDetail", boardNo],
     queryFn: async () => {
       const { data } = await api.get(`/board/free/detail`, {
-        params: { boardId },
+        params: { boardNo },
       });
       return data;
     },
-    enabled: !!boardId && boardId > 0,
+    enabled: !!boardNo && boardNo > 0,
   });
 }
 
 /** 게시글 수정 */
-export function useUpdateFreeBoard(boardId: number) {
+export function useUpdateFreeBoard(boardNo: number) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (payload: BoardEdit) => {
       const { data } = await api.put(`/board/free`, payload, {
-        params: { boardId },
+        params: { boardNo },
       });
       return data;
     },
     onSuccess: () => {
       message.success("게시글이 수정되었습니다.");
       queryClient.invalidateQueries({ queryKey: ["freeBoards"] });
-      queryClient.invalidateQueries({ queryKey: ["freeBoardDetail", boardId] });
+      queryClient.invalidateQueries({ queryKey: ["freeBoardDetail", boardNo] });
     },
     onError: (error) => {
       apiErrorMessage(error);
@@ -105,13 +105,13 @@ export function useUpdateFreeBoard(boardId: number) {
 }
 
 /** 게시글 삭제 Hook */
-export function useDeleteFreeBoard(boardId: number) {
+export function useDeleteFreeBoard(boardNo: number) {
   const queryClient = useQueryClient();
   const router = useRouter();
   return useMutation({
     mutationFn: async () => {
       const { data } = await api.delete(`/board/free`, {
-        params: { boardId },
+        params: { boardNo },
       });
       return data;
     },
@@ -127,12 +127,12 @@ export function useDeleteFreeBoard(boardId: number) {
 }
 
 export const useFreeBoardCreateReply = () => useCreateReply("/board/free", "freeBoard");
-export const useFreeBoardDeleteReply = (boardId: number) =>
-  useDeleteReply("/board/free", "freeBoard", boardId);
-export const useFreeBoardReplies = (boardId: number) => {
-  return useReplies("/board/free", "freeBoard", boardId);
+export const useFreeBoardDeleteReply = (boardNo: number) =>
+  useDeleteReply("/board/free", "freeBoard", boardNo);
+export const useFreeBoardReplies = (boardNo: number) => {
+  return useReplies("/board/free", "freeBoard", boardNo);
 };
-export const useLikeFreeBoard = (boardId: number) => useLike("/board/free", "freeBoard", boardId);
-export const useUnlikeFreeBoard = (boardId: number) =>
-  useUnlike("/board/free", "freeBoard", boardId);
+export const useLikeFreeBoard = (boardNo: number) => useLike("/board/free", "freeBoard", boardNo);
+export const useUnlikeFreeBoard = (boardNo: number) =>
+  useUnlike("/board/free", "freeBoard", boardNo);
 export const useUploadFreeBoardFileToS3 = () => useUploadFileToS3("/board/free/image");

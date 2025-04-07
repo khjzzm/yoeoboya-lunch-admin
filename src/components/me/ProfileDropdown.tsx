@@ -5,7 +5,7 @@ import { Avatar, Button, Card, Dropdown, Typography } from "antd";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import { useLogout } from "@/lib/queries/useLogin";
+import { useLogout } from "@/lib/queries";
 
 import { useAuthStore } from "@/store/useAuthStore";
 

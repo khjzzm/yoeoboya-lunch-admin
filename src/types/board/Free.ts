@@ -23,7 +23,7 @@ export interface BoardEdit {
 }
 
 export interface FreeBoardResponse {
-  boardId: number;
+  boardNo: number;
   title: string;
   content: string;
   summary: string;
@@ -39,7 +39,7 @@ export interface FreeBoardResponse {
 }
 
 export interface FreeBoardDetailResponse {
-  boardId: number;
+  boardNo: number;
   title: string;
   content: string;
   category: string;
@@ -49,6 +49,7 @@ export interface FreeBoardDetailResponse {
   hashTag: HashTagResponse[];
   hasLiked: boolean;
   createdDate: string | null;
+  mine: boolean;
 }
 
 export interface HashTagResponse {

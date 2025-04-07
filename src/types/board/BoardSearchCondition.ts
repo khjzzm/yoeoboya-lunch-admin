@@ -1,5 +1,5 @@
 export type BoardSearchCondition = {
-  boardId?: number;
+  boardNo?: number;
   searchType?: BoardSearchType;
   keyword?: string;
 };

@@ -39,11 +39,11 @@ export interface NoticeEdit {
 }
 
 export interface NoticeResponse {
-  id: number;
+  boardNo: number;
   title: string;
   content: string;
   summary: string;
-  categoryId: string;
+  category: string;
   author: string;
   pinned: boolean;
   startDate: string;
@@ -57,7 +57,7 @@ export interface NoticeResponse {
 }
 
 export interface NoticeDetailResponse {
-  boardId: number;
+  boardNo: number;
   title: string;
   content: string;
   category: string;

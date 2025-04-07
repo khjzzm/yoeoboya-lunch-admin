@@ -40,8 +40,8 @@ export function useNotices(page: number, pageSize: number, filters?: BoardSearch
         if (filters.keyword) {
           params.set("keyword", filters.keyword);
         }
-        if (filters.boardId !== undefined) {
-          params.set("boardId", String(filters.boardId));
+        if (filters.boardNo !== undefined) {
+          params.set("boardNo", String(filters.boardNo));
         }
       }
 

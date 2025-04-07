@@ -81,7 +81,7 @@ export default function NoticeViewPage() {
           <div className="flex gap-2">
             <Button
               icon={<EditOutlined />}
-              onClick={() => router.push(`/support/notice/write?boardNo=${boardData.data.boardId}`)}
+              onClick={() => router.push(`/support/notice/write?boardNo=${boardData.data.boardNo}`)}
             >
               수정
             </Button>

@@ -70,23 +70,25 @@ export default function NoticeListPage() {
           return (
             <List.Item
               onClick={() => {
-                router.push(`/support/notice/view?boardNo=${item.id}`);
-                markAsRead(item.id);
+                router.push(`/support/notice/view?boardNo=${item.boardNo}`);
+                markAsRead(item.boardNo);
               }}
               className={`hover:bg-gray-50 px-2 md:px-4 py-3 cursor-pointer border-b ${item.pinned ? "bg-yellow-50" : ""}`}
             >
               <div className="flex flex-col md:flex-row w-full items-start md:items-center text-xs md:text-sm gap-y-1 md:gap-0">
-                <div className="w-full md:w-16 text-left md:text-center shrink-0">{item.id}</div>
+                <div className="w-full md:w-16 text-left md:text-center shrink-0">
+                  {item.boardNo}
+                </div>
 
                 <div className="w-full md:w-20 text-left md:text-center shrink-0">
-                  <Tag>{item.categoryId}</Tag>
+                  <Tag>{item.category}</Tag>
                 </div>
 
                 <div className="w-full md:flex-1 text-left truncate min-w-0">
                   <div className="flex items-center gap-1">
                     {item.hasFile && <span>📷</span>}
                     {item.pinned && <Tag color="gold">공지</Tag>}
-                    <span className={`line-clamp-1 ${isRead(item.id) && "text-purple-500"}`}>
+                    <span className={`line-clamp-1 ${isRead(item.boardNo) && "text-purple-500"}`}>
                       {" "}
                       {item.title}{" "}
                     </span>

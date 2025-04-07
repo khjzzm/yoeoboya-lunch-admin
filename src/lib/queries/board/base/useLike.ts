@@ -3,18 +3,18 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/utils/api";
 import { apiErrorMessage } from "@/lib/utils/apiErrorMessage";
 
-export function useLike(endpoint: string, queryKeyPrefix: string, boardId: number) {
+export function useLike(endpoint: string, queryKeyPrefix: string, boardNo: number) {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async () => {
       const { data } = await api.post(`${endpoint}/like`, null, {
-        params: { boardId },
+        params: { boardNo },
       });
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`${queryKeyPrefix}Detail`, boardId] });
+      queryClient.invalidateQueries({ queryKey: [`${queryKeyPrefix}Detail`, boardNo] });
     },
     onError: (error) => {
       apiErrorMessage(error);
@@ -22,18 +22,18 @@ export function useLike(endpoint: string, queryKeyPrefix: string, boardId: numbe
   });
 }
 
-export function useUnlike(endpoint: string, queryKeyPrefix: string, boardId: number) {
+export function useUnlike(endpoint: string, queryKeyPrefix: string, boardNo: number) {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async () => {
       const { data } = await api.delete(`${endpoint}/unlike`, {
-        params: { boardId },
+        params: { boardNo },
       });
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`${queryKeyPrefix}Detail`, boardId] });
+      queryClient.invalidateQueries({ queryKey: [`${queryKeyPrefix}Detail`, boardNo] });
     },
     onError: (error) => {
       apiErrorMessage(error);

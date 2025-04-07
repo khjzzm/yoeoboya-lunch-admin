@@ -54,15 +54,15 @@ export default function FreeBoardListPage() {
         renderItem={(item) => (
           <List.Item
             onClick={() => {
-              router.push(`/board/free/view?id=${item.boardId}`);
-              markAsRead(item.boardId);
+              router.push(`/board/free/view?boardNo=${item.boardNo}`);
+              markAsRead(item.boardNo);
             }}
             className="cursor-pointer hover:bg-gray-50 py-2 px-3 border-b transition-all"
           >
             <div className="w-full">
               <div className="flex justify-between items-center mb-1">
                 <div
-                  className={`font-medium text-sm truncate ${isRead(item.boardId) && "text-purple-500"}`}
+                  className={`font-medium text-sm truncate ${isRead(item.boardNo) && "text-purple-500"}`}
                 >
                   {item.title}
                 </div>

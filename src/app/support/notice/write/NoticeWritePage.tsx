@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 
 import { NoticeFormValues, NoticeCreate } from "@/types";
 
+import CategorySelect from "@/components/board/CategorySelect";
 import TiptapEditor from "@/components/board/TiptapEditor";
 
 import { useQueryParamNumber } from "@/lib/hooks/useQueryParam";
@@ -88,6 +89,7 @@ export default function NoticeWritePage() {
         layout="vertical"
         onFinish={handleSubmit}
         initialValues={{
+          categoryId: 0,
           pinned: false,
           status: "ACTIVE",
           author: user?.loginId,
@@ -101,19 +103,7 @@ export default function NoticeWritePage() {
           <Input placeholder="제목을 입력하세요" />
         </Form.Item>
 
-        <Form.Item
-          name="categoryId"
-          label="카테고리"
-          rules={[{ required: true, message: "카테고리를 선택하세요!" }]}
-        >
-          <Select
-            placeholder="카테고리를 선택하세요"
-            options={categories.map((cat) => ({
-              label: cat.name,
-              value: cat.id,
-            }))}
-          />
-        </Form.Item>
+        <CategorySelect categories={categories} />
 
         <Form.Item name="author" label="작성자" hidden rules={[{ required: true }]}>
           <Input disabled />
