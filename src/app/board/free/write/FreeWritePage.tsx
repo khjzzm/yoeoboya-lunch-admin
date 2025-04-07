@@ -21,12 +21,12 @@ import TiptapEditor from "@/components/board/TiptapEditor";
 
 import { useQueryParamNumber } from "@/lib/hooks/useQueryParam";
 import {
+  useCategories,
   useCreateFreeBoard,
   useFreeBoardDetail,
   useUpdateFreeBoard,
   useUploadFreeBoardFileToS3,
-} from "@/lib/queries/board/useFreeBoard";
-import { useCategories } from "@/lib/queries/useBoardHooks";
+} from "@/lib/queries";
 import { applyApiValidationErrors } from "@/lib/utils/apiErrorMessage";
 
 const { Title } = Typography;

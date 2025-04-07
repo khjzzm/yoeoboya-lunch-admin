@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 
 import { SocialSignUpRequest } from "@/types";
 
-import { useSocialSignUp } from "@/lib/queries/useLogin";
+import { useSocialSignUp } from "@/lib/queries";
 import { apiErrorMessage, applyApiValidationErrors } from "@/lib/utils/apiErrorMessage";
 
 const { Title, Text } = Typography;

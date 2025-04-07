@@ -7,7 +7,7 @@ import { MemberSearchOptions } from "@/types";
 
 import SearchFilters from "@/components/searchFilters";
 
-import { useMembers } from "@/lib/queries/useMembers";
+import { useMembers } from "@/lib/queries/";
 
 export default function MemberPage() {
   const [page, setPage] = useState(1);

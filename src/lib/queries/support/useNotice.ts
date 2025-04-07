@@ -20,7 +20,7 @@ import {
   useLike,
   useUnlike,
   useUploadFileToS3,
-} from "@/lib/queries/useBoardHooks";
+} from "@/lib/queries";
 import { api } from "@/lib/utils/api";
 import { apiErrorMessage } from "@/lib/utils/apiErrorMessage";
 

@@ -8,7 +8,7 @@ import { AuthoritiesOptions, roleOptions } from "@/types";
 
 import SearchFilters from "@/components/searchFilters";
 
-import { useRole, useUpdateRole, useUpdateSecurityStatus } from "@/lib/queries/useRole";
+import { useRole, useUpdateRole, useUpdateSecurityStatus } from "@/lib/queries";
 
 // Role 데이터 타입 정의
 interface RoleData {

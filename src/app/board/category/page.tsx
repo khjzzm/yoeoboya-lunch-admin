@@ -10,7 +10,7 @@ import {
   useCreateCategory,
   useDeleteCategory,
   useUpdateCategory,
-} from "@/lib/queries/useBoardHooks";
+} from "@/lib/queries";
 
 export default function AdminCategoryPage() {
   const [form] = Form.useForm();

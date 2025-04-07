@@ -14,13 +14,13 @@ import {
 } from "@/types";
 
 import {
+  useUploadFileToS3,
   useCreateReply,
   useDeleteReply,
-  useReplies,
   useLike,
+  useReplies,
   useUnlike,
-  useUploadFileToS3,
-} from "@/lib/queries/useBoardHooks";
+} from "@/lib/queries";
 import { api } from "@/lib/utils/api";
 import { apiErrorMessage } from "@/lib/utils/apiErrorMessage";
 
@@ -129,8 +129,9 @@ export function useDeleteFreeBoard(boardId: number) {
 export const useFreeBoardCreateReply = () => useCreateReply("/board/free", "freeBoard");
 export const useFreeBoardDeleteReply = (boardId: number) =>
   useDeleteReply("/board/free", "freeBoard", boardId);
-export const useFreeBoardReplies = (boardId: number) =>
-  useReplies("/board/free", "freeBoard", boardId);
+export const useFreeBoardReplies = (boardId: number) => {
+  return useReplies("/board/free", "freeBoard", boardId);
+};
 export const useLikeFreeBoard = (boardId: number) => useLike("/board/free", "freeBoard", boardId);
 export const useUnlikeFreeBoard = (boardId: number) =>
   useUnlike("/board/free", "freeBoard", boardId);

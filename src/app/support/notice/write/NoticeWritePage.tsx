@@ -15,8 +15,8 @@ import {
   useNoticeDetail,
   useUpdateNotice,
   useUploadNoticeFileToS3,
-} from "@/lib/queries/support/useNotice";
-import { useCategories } from "@/lib/queries/useBoardHooks";
+  useCategories,
+} from "@/lib/queries";
 import { applyApiValidationErrors } from "@/lib/utils/apiErrorMessage";
 
 import { useAuthStore } from "@/store/useAuthStore";

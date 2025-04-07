@@ -4,7 +4,7 @@ import { Select, Table, Tag, Tooltip } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useState } from "react";
 
-import { useAddResourceRole, useResources } from "@/lib/queries/useResources";
+import { useAddResourceRole, useResources } from "@/lib/queries";
 import { apiErrorMessage } from "@/lib/utils/apiErrorMessage";
 
 interface Resource {

@@ -17,7 +17,7 @@ import {
   useNoticeReplies,
   useNoticeCreateReply,
   useNoticeDeleteReply,
-} from "@/lib/queries/support/useNotice";
+} from "@/lib/queries";
 
 import { useAuthStore } from "@/store/useAuthStore";
 

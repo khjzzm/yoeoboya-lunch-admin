@@ -8,7 +8,7 @@ import {
   useDeleteTokenIgnoreUrl,
   useFetchTokenIgnoreUrls,
   useUpdateTokenIgnoreUrl,
-} from "@/lib/queries/useResources";
+} from "@/lib/queries";
 import { apiErrorMessage } from "@/lib/utils/apiErrorMessage";
 
 // TokenIgnoreUrl 인터페이스
