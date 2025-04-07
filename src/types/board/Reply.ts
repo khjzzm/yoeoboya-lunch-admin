@@ -11,7 +11,7 @@ export interface Reply {
 }
 
 export interface ReplyCreateRequest {
-  boardId: number;
+  boardNo: number;
   loginId?: string;
   content: string;
   parentReplyId?: number | null;

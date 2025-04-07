@@ -84,7 +84,7 @@ export function useFreeBoardDetail(boardId: number | null) {
 }
 
 /** 게시글 수정 */
-export function useEditFreeBoard(boardId: number) {
+export function useUpdateFreeBoard(boardId: number) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (payload: BoardEdit) => {
@@ -134,4 +134,4 @@ export const useFreeBoardReplies = (boardId: number) =>
 export const useLikeFreeBoard = (boardId: number) => useLike("/board/free", "freeBoard", boardId);
 export const useUnlikeFreeBoard = (boardId: number) =>
   useUnlike("/board/free", "freeBoard", boardId);
-export const useUploadNoticeFileToS3 = () => useUploadFileToS3("/board/free/image");
+export const useUploadFreeBoardFileToS3 = () => useUploadFileToS3("/board/free/image");

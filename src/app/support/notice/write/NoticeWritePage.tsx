@@ -5,7 +5,7 @@ import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { NoticeFormValues, NoticeRequest } from "@/types";
+import { NoticeFormValues, NoticeCreate } from "@/types";
 
 import TiptapEditor from "@/components/board/TiptapEditor";
 
@@ -16,6 +16,7 @@ import {
   useUpdateNotice,
   useUploadNoticeFileToS3,
 } from "@/lib/queries/support/useNotice";
+import { useCategories } from "@/lib/queries/useBoardHooks";
 import { applyApiValidationErrors } from "@/lib/utils/apiErrorMessage";
 
 import { useAuthStore } from "@/store/useAuthStore";
@@ -23,8 +24,8 @@ import { useAuthStore } from "@/store/useAuthStore";
 export default function NoticeWritePage() {
   const { user } = useAuthStore();
   const router = useRouter();
-  const noticeId = useQueryParamNumber("noticeId");
-  const editMode = Boolean(noticeId);
+  const boardNo = useQueryParamNumber("boardNo");
+  const editMode = Boolean(boardNo);
 
   const [form] = Form.useForm();
   const [content, setContent] = useState<string>("");
@@ -32,18 +33,20 @@ export default function NoticeWritePage() {
     form.setFieldValue("author", user?.loginId || "");
   }, [form, user]);
 
-  const { data: noticeDetail } = useNoticeDetail(Number(noticeId));
+  const { data: noticeDetail } = useNoticeDetail(Number(boardNo));
+  const { data: categories = [] } = useCategories("NOTICE");
   const { mutateAsync: uploadToS3 } = useUploadNoticeFileToS3();
   const createNotice = useCreateNotice();
-  const updateNotice = useUpdateNotice(Number(noticeId));
+  const updateNotice = useUpdateNotice(Number(boardNo));
 
   useEffect(() => {
-    if (editMode && noticeDetail?.data) {
+    if (editMode && noticeDetail?.data && categories.length > 0) {
       const data = noticeDetail.data;
+      const matchedCategory = categories.find((c) => c.name === data.category);
 
       form.setFieldsValue({
         title: data.title,
-        category: data.category,
+        categoryId: matchedCategory?.id,
         author: data.author,
         pinned: data.pinned,
         status: data.status,
@@ -53,12 +56,13 @@ export default function NoticeWritePage() {
 
       setContent(data.content);
     }
-  }, [editMode, form, noticeDetail]);
+  }, [editMode, form, noticeDetail, categories]);
 
   const handleSubmit = (values: NoticeFormValues) => {
-    const payload: NoticeRequest = {
+    const payload: NoticeCreate = {
       ...values,
       content,
+      categoryId: values.categoryId,
       startDate: values.startDate ? dayjs(values.startDate).format("YYYY-MM-DDTHH:mm:ss") : null,
       endDate: values.endDate ? dayjs(values.endDate).format("YYYY-MM-DDTHH:mm:ss") : null,
     };
@@ -84,7 +88,6 @@ export default function NoticeWritePage() {
         layout="vertical"
         onFinish={handleSubmit}
         initialValues={{
-          category: "일반",
           pinned: false,
           status: "ACTIVE",
           author: user?.loginId,
@@ -99,19 +102,16 @@ export default function NoticeWritePage() {
         </Form.Item>
 
         <Form.Item
-          name="category"
+          name="categoryId"
           label="카테고리"
           rules={[{ required: true, message: "카테고리를 선택하세요!" }]}
         >
           <Select
             placeholder="카테고리를 선택하세요"
-            options={[
-              { label: "일반", value: "일반" },
-              { label: "점검", value: "점검" },
-              { label: "행사", value: "행사" },
-              { label: "일반", value: "일반" },
-              { label: "시스템", value: "시스템" },
-            ]}
+            options={categories.map((cat) => ({
+              label: cat.name,
+              value: cat.id,
+            }))}
           />
         </Form.Item>
 

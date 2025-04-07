@@ -1,3 +1,11 @@
+export interface BoardFormValues {
+  title: string; // 제목 (필수)
+  content: string; // 내용 (필수)
+  hashTag?: string[]; // 해시태그 (옵션)
+  pin: number; // 비밀번호 (정수, 최대 4자리)
+  secret: boolean; // 비밀글 여부
+}
+
 export interface FreeBoardCreate {
   title: string; // 제목 (필수)
   content: string; // 내용 (필수)
@@ -35,7 +43,7 @@ export interface FreeBoardDetailResponse {
   title: string;
   content: string;
   category: string;
-  pinned: number;
+  pin: number;
   secret: boolean;
   viewCount: number;
   hashTag: HashTagResponse[];

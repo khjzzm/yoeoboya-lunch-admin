@@ -5,7 +5,7 @@ export * from "./board/Reply";
 export * from "./board/Free";
 export * from "./board/HashTag";
 export * from "./board/BoardSearchCondition";
-export * from "./board/Reply";
+export * from "./board/Category";
 export * from "./common/Pagination";
 export * from "./common/ApiResponse";
 export * from "./common/ValidationError";

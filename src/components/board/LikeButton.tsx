@@ -10,14 +10,14 @@ interface LikeService {
 }
 
 interface LikeButtonProps {
-  boardId: number;
+  boardNo: number;
   hasLiked: boolean;
   service: LikeService;
 }
 
-export function LikeButton({ boardId, hasLiked, service }: LikeButtonProps) {
-  const { mutate: like } = service.useLike(boardId);
-  const { mutate: unlike } = service.useUnlike(boardId);
+export function LikeButton({ boardNo, hasLiked, service }: LikeButtonProps) {
+  const { mutate: like } = service.useLike(boardNo);
+  const { mutate: unlike } = service.useUnlike(boardNo);
   const handleLike = () => (hasLiked ? unlike : like)();
 
   return (

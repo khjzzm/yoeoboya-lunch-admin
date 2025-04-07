@@ -7,9 +7,10 @@ import {
   ApiResponse,
   BoardSearchCondition,
   NoticeDetailResponse,
-  NoticeRequest,
+  NoticeCreate,
   NoticeResponse,
   Pagination,
+  NoticeEdit,
 } from "@/types";
 
 import {
@@ -55,7 +56,7 @@ export function useCreateNotice() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (noticeData: NoticeRequest) => {
+    mutationFn: async (noticeData: NoticeCreate) => {
       const { data } = await api.post(`/support/notice`, noticeData);
       return data;
     },
@@ -70,34 +71,34 @@ export function useCreateNotice() {
 }
 
 /** 공지사항 상세 조회 */
-export function useNoticeDetail(noticeId: number | null) {
+export function useNoticeDetail(boardNo: number | null) {
   return useQuery<ApiResponse<NoticeDetailResponse>>({
-    queryKey: ["noticeDetail", noticeId],
+    queryKey: ["noticeDetail", boardNo],
     queryFn: async () => {
       const { data } = await api.get(`/support/notice/detail`, {
-        params: { noticeId },
+        params: { boardNo },
       });
       return data;
     },
-    enabled: !!noticeId && noticeId > 0,
+    enabled: !!boardNo && boardNo > 0,
   });
 }
 
 /** 공지사항 수정 Hook */
-export function useUpdateNotice(noticeId: number) {
+export function useUpdateNotice(boardNo: number) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (updatedNotice: NoticeRequest) => {
+    mutationFn: async (updatedNotice: NoticeEdit) => {
       const { data } = await api.put(`/support/notice`, updatedNotice, {
-        params: { noticeId },
+        params: { boardNo },
       });
       return data;
     },
     onSuccess: () => {
       message.success("공지사항이 수정되었습니다.");
       queryClient.invalidateQueries({ queryKey: ["notices"] });
-      queryClient.invalidateQueries({ queryKey: ["noticeDetail", noticeId] });
+      queryClient.invalidateQueries({ queryKey: ["noticeDetail", boardNo] });
     },
     onError: (error) => {
       apiErrorMessage(error);
@@ -106,13 +107,13 @@ export function useUpdateNotice(noticeId: number) {
 }
 
 /** 공지사항 삭제 Hook */
-export function useDeleteNotice(noticeId: number) {
+export function useDeleteNotice(boardNo: number) {
   const queryClient = useQueryClient();
   const router = useRouter();
   return useMutation({
     mutationFn: async () => {
       const { data } = await api.delete(`/support/notice`, {
-        params: { noticeId },
+        params: { boardNo },
       });
       return data;
     },
@@ -128,11 +129,10 @@ export function useDeleteNotice(noticeId: number) {
 }
 
 export const useNoticeCreateReply = () => useCreateReply("/support/notice", "notice");
-export const useNoticeDeleteReply = (noticeId: number) =>
-  useDeleteReply("/support/notice", "notice", noticeId);
-export const useNoticeReplies = (noticeId: number) =>
-  useReplies("/support/notice", "notice", noticeId);
-export const useLikeNotice = (noticeId: number) => useLike("/support/notice", "notice", noticeId);
-export const useUnlikeNotice = (noticeId: number) =>
-  useUnlike("/support/notice", "notice", noticeId);
+export const useNoticeDeleteReply = (boardNo: number) =>
+  useDeleteReply("/support/notice", "notice", boardNo);
+export const useNoticeReplies = (boardNo: number) =>
+  useReplies("/support/notice", "notice", boardNo);
+export const useLikeNotice = (boardNo: number) => useLike("/support/notice", "notice", boardNo);
+export const useUnlikeNotice = (boardNo: number) => useUnlike("/support/notice", "notice", boardNo);
 export const useUploadNoticeFileToS3 = () => useUploadFileToS3("/support/notice/image");

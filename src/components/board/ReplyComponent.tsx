@@ -20,27 +20,27 @@ interface EnhancedReply extends Reply {
 /** 외부에서 주입받는 댓글 서비스 인터페이스 */
 interface ReplyService {
   useReplies: (
-    boardId: number,
+    boardNo: number,
   ) => UseQueryResult<ApiResponse<{ list: Reply[]; pagination: Pagination }>, Error>;
   useCreateReply: () => UseMutationResult<void, Error, ReplyCreateRequest>;
-  useDeleteReply: (boardId: number) => UseMutationResult<void, Error, number>;
+  useDeleteReply: (boardNo: number) => UseMutationResult<void, Error, number>;
 }
 
 interface ReplyComponentProps {
-  boardId: number;
+  boardNo: number;
   service: ReplyService;
 }
 
-export default function ReplyComponent({ boardId, service }: ReplyComponentProps) {
+export default function ReplyComponent({ boardNo, service }: ReplyComponentProps) {
   const { user } = useAuthStore();
   const [comment, setComment] = useState("");
   const [replies, setReplies] = useState<EnhancedReply[]>([]);
   const [pagination, setPagination] = useState<Pagination>();
 
   const { useReplies, useCreateReply, useDeleteReply } = service;
-  const { data, isLoading } = useReplies(boardId);
+  const { data, isLoading } = useReplies(boardNo);
   const { mutate: createReply } = useCreateReply();
-  const { mutate: deleteReply } = useDeleteReply(boardId);
+  const { mutate: deleteReply } = useDeleteReply(boardNo);
 
   // 댓글 + 대댓글 정리
   useEffect(() => {
@@ -67,7 +67,7 @@ export default function ReplyComponent({ boardId, service }: ReplyComponentProps
 
     createReply(
       {
-        boardId,
+        boardNo,
         loginId: user.loginId,
         content,
         parentReplyId,

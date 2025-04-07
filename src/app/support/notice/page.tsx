@@ -70,7 +70,7 @@ export default function NoticeListPage() {
           return (
             <List.Item
               onClick={() => {
-                router.push(`/support/notice/view?id=${item.id}`);
+                router.push(`/support/notice/view?boardNo=${item.id}`);
                 markAsRead(item.id);
               }}
               className={`hover:bg-gray-50 px-2 md:px-4 py-3 cursor-pointer border-b ${item.pinned ? "bg-yellow-50" : ""}`}
@@ -79,7 +79,7 @@ export default function NoticeListPage() {
                 <div className="w-full md:w-16 text-left md:text-center shrink-0">{item.id}</div>
 
                 <div className="w-full md:w-20 text-left md:text-center shrink-0">
-                  <Tag>{item.category}</Tag>
+                  <Tag>{item.categoryId}</Tag>
                 </div>
 
                 <div className="w-full md:flex-1 text-left truncate min-w-0">

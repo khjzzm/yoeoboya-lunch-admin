@@ -21,7 +21,7 @@ export const useClientQueryParams = () => {
   return {
     get,
     getNumber,
-    noticeId: getNumber("id"),
+    boardNo: getNumber("id"),
     page: getNumber("page") ?? 1,
     tab: get("tab"),
   };

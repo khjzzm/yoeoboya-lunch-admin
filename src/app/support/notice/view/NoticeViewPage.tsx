@@ -28,11 +28,10 @@ const { Title, Text } = Typography;
 export default function NoticeViewPage() {
   const { isAdmin } = useAuthStore();
   const router = useRouter();
-  const boardId = useQueryParamNumber("id");
+  const boardNo = useQueryParamNumber("boardNo");
 
-  const { data: boardData, isLoading } = useNoticeDetail(boardId);
-  const { mutate: deleteBoard } = useDeleteNotice(boardId);
-
+  const { data: boardData, isLoading } = useNoticeDetail(boardNo);
+  const { mutate: deleteBoard } = useDeleteNotice(boardNo);
   const likeService = {
     useLike: useLikeNotice,
     useUnlike: useUnlikeNotice,
@@ -75,14 +74,14 @@ export default function NoticeViewPage() {
 
       <div className="mt-6 flex justify-between items-center">
         <div className="flex items-center gap-4">
-          <LikeButton boardId={boardId} hasLiked={boardData.data.hasLiked} service={likeService} />
+          <LikeButton boardNo={boardNo} hasLiked={boardData.data.hasLiked} service={likeService} />
         </div>
 
         {isAdmin() && (
           <div className="flex gap-2">
             <Button
               icon={<EditOutlined />}
-              onClick={() => router.push(`/support/notice/write?boardId=${boardData.data.boardId}`)}
+              onClick={() => router.push(`/support/notice/write?boardNo=${boardData.data.boardId}`)}
             >
               수정
             </Button>
@@ -101,7 +100,7 @@ export default function NoticeViewPage() {
         )}
       </div>
 
-      <ReplyComponent boardId={boardId} service={replyService} />
+      <ReplyComponent boardNo={boardNo} service={replyService} />
     </div>
   );
 }

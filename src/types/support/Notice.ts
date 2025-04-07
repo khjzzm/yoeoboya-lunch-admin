@@ -1,10 +1,23 @@
 export type NoticeStatus = "ACTIVE" | "INACTIVE";
 export type NoticePriority = "LOW" | "MEDIUM" | "HIGH";
 
-export interface NoticeRequest {
+import type { Dayjs } from "dayjs";
+export interface NoticeFormValues {
   title: string;
   content: string;
-  category: string;
+  categoryId: string;
+  author: string;
+  priority: NoticePriority;
+  startDate?: Dayjs | null;
+  endDate?: Dayjs | null;
+  attachmentUrl?: string | null;
+  status: NoticeStatus;
+}
+
+export interface NoticeCreate {
+  title: string;
+  content: string;
+  categoryId: string;
   author: string;
   priority: NoticePriority;
   startDate?: string | null;
@@ -13,15 +26,14 @@ export interface NoticeRequest {
   status: NoticeStatus;
 }
 
-import type { Dayjs } from "dayjs";
-export interface NoticeFormValues {
+export interface NoticeEdit {
   title: string;
   content: string;
-  category: string;
+  categoryId: string;
   author: string;
   priority: NoticePriority;
-  startDate?: Dayjs | null;
-  endDate?: Dayjs | null;
+  startDate?: string | null;
+  endDate?: string | null;
   attachmentUrl?: string | null;
   status: NoticeStatus;
 }
@@ -31,7 +43,7 @@ export interface NoticeResponse {
   title: string;
   content: string;
   summary: string;
-  category: string;
+  categoryId: string;
   author: string;
   pinned: boolean;
   startDate: string;

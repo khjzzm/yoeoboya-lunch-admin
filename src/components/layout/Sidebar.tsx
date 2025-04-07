@@ -67,6 +67,11 @@ export default function Sidebar() {
           label: "익명게시판",
           onClick: () => router.push("/board/anonymous"),
         },
+        {
+          key: "/board/category",
+          label: "카테고리관리",
+          onClick: () => router.push("/board/category"),
+        },
       ],
     },
     {

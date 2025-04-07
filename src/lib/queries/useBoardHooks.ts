@@ -1,29 +1,30 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { message } from "antd";
 
-import { ApiResponse, Pagination, Reply } from "@/types";
+import {
+  ApiResponse,
+  ReplyCreateRequest,
+  Pagination,
+  Reply,
+  CategoryCreateRequest,
+  CategoryEditRequest,
+} from "@/types";
+import { Category } from "@/types/board/Category";
 
 import { api } from "@/lib/utils/api";
 import { apiErrorMessage } from "@/lib/utils/apiErrorMessage";
-
-type CreateReplyPayload = {
-  boardId: number;
-  loginId?: string;
-  content: string;
-  parentReplyId?: number | null;
-};
 
 export function useCreateReply(endpoint: string, queryKeyPrefix: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (payload: CreateReplyPayload) => {
+    mutationFn: async (payload: ReplyCreateRequest) => {
       const { data } = await api.post(`${endpoint}/reply`, payload);
       return data;
     },
     onSuccess: (_, variables) => {
       message.success("댓글이 등록되었습니다.");
-      queryClient.invalidateQueries({ queryKey: [`${queryKeyPrefix}Replies`, variables.boardId] });
+      queryClient.invalidateQueries({ queryKey: [`${queryKeyPrefix}Replies`, variables.boardNo] });
     },
     onError: (error) => {
       apiErrorMessage(error);
@@ -101,6 +102,52 @@ export function useUnlike(endpoint: string, queryKeyPrefix: string, boardId: num
     },
   });
 }
+
+export function useCategories(boardType: string) {
+  return useQuery({
+    queryKey: ["categories", boardType],
+    queryFn: async () => {
+      const { data } = await api.get<ApiResponse<Category[]>>("/board/categories", {
+        params: { boardType },
+      });
+      return data.data;
+    },
+    enabled: !!boardType,
+  });
+}
+
+export const useCreateCategory = (onSuccess?: () => void) =>
+  useMutation({
+    mutationFn: (payload: CategoryCreateRequest) => api.post("/board/categories", payload),
+    onSuccess: () => {
+      message.success("생성 완료");
+      onSuccess?.();
+    },
+  });
+
+export const useUpdateCategory = (onSuccess?: () => void) =>
+  useMutation({
+    mutationFn: (payload: CategoryEditRequest) =>
+      api.put(`/board/categories`, payload, {
+        params: { id: payload.id },
+      }),
+    onSuccess: () => {
+      message.success("수정 완료");
+      onSuccess?.();
+    },
+  });
+
+export const useDeleteCategory = (onSuccess?: () => void) =>
+  useMutation({
+    mutationFn: (id: number) =>
+      api.delete(`/board/categories`, {
+        params: { id },
+      }),
+    onSuccess: () => {
+      message.success("삭제 완료");
+      onSuccess?.();
+    },
+  });
 
 export function useUploadFileToS3(endpoint: string) {
   return useMutation({
