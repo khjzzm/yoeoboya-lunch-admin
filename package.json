@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev -H 0.0.0.0 -p 3001",
     "build": "next build",
-    "start": "npm run build && next start -H 0.0.0.0 -p 3001",
+    "start": "next start -H 0.0.0.0 -p 3001",
     "fix": "npm run lint && npm run format",
     "format": "prettier --write .",
     "lint": "eslint src --ext .ts,.tsx --fix"
