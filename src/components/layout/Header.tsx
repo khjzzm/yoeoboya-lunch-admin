@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import ProfileDropdown from "@/components/me/ProfileDropdown";
+import { menuItems, MenuItem } from "@/components/layout/menuConfig";
 
 const { Header } = Layout;
 const { Text } = Typography;
@@ -13,10 +14,22 @@ export default function AppHeader() {
   const pathname = usePathname();
   const [pageTitle, setPageTitle] = useState("");
 
-  useEffect(() => {
-    if (typeof document !== "undefined") {
-      setPageTitle(document.title);
+  // 경로 기준 label 찾기
+  const findLabelByPath = (path: string, items: MenuItem[]): string | null => {
+    for (const item of items) {
+      if (item.children) {
+        const childLabel = findLabelByPath(path, item.children);
+        if (childLabel) return childLabel;
+      }
+      if (item.key === "/" && path === "/") return item.label;
+      if (item.key !== "/" && path.startsWith(item.key)) return item.label;
     }
+    return null;
+  };
+
+  useEffect(() => {
+    const label = findLabelByPath(pathname, menuItems);
+    setPageTitle(label ?? ""); // 못 찾으면 빈 문자열
   }, [pathname]);
 
   return (

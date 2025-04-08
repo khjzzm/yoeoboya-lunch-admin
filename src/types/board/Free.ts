@@ -1,3 +1,5 @@
+import { HashTagResponse } from "@/types";
+
 export interface BoardFormValues {
   title: string; // 제목 (필수)
   content: string; // 내용 (필수)
@@ -36,6 +38,7 @@ export interface FreeBoardResponse {
   likeCount: number;
   like: boolean;
   createdDate: string | null;
+  hashTag: HashTagResponse[];
 }
 
 export interface FreeBoardDetailResponse {
@@ -50,8 +53,4 @@ export interface FreeBoardDetailResponse {
   hasLiked: boolean;
   createdDate: string | null;
   mine: boolean;
-}
-
-export interface HashTagResponse {
-  tag: string;
 }

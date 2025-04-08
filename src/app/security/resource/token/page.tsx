@@ -122,9 +122,7 @@ export default function TokenIgnoreUrlsPage() {
 
   return (
     <div>
-      {/* 제목 */}
       <div className="flex justify-between items-center border-b pb-2 mb-4">
-        <h1 className="text-2xl font-bold text-gray-800">🔑 토큰 무시 URL 관리</h1>
         <Tooltip title="추가">
           <Button
             type="primary"
@@ -135,7 +133,6 @@ export default function TokenIgnoreUrlsPage() {
         </Tooltip>
       </div>
 
-      {/* ✅ 반응형 테이블 wrapper */}
       <div className="overflow-x-auto">
         <Table
           dataSource={tokenIgnoreUrls}

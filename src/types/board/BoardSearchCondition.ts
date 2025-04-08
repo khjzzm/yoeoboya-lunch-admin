@@ -5,9 +5,11 @@ export type BoardSearchCondition = {
 };
 
 export enum BoardSearchType {
-  TITLE_CONTENT = "TITLE_CONTENT",
-  TITLE = "TITLE",
-  CONTENT = "CONTENT",
-  AUTHOR = "AUTHOR",
-  COMMENT = "COMMENT",
+  title_content = "title_content",
+  title = "title",
+  content = "content",
+  author = "author",
+  comment = "comment",
+  category = "category",
+  hashtag = "hashtag",
 }

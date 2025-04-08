@@ -1,18 +1,11 @@
 "use client";
 
-import {
-  CommentOutlined,
-  HomeOutlined,
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
-  NotificationOutlined,
-  SafetyCertificateOutlined,
-  SettingOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
+import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import { Button, Layout, Menu, Typography } from "antd";
 import { usePathname, useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+
+import { menuItems as rawMenuItems, MenuItem } from "@/components/layout/menuConfig";
 
 const { Sider } = Layout;
 const { Title } = Typography;
@@ -21,88 +14,44 @@ export default function Sidebar() {
   const router = useRouter();
   const pathname = usePathname();
   const [selectedKey, setSelectedKey] = useState<string>("");
-  const [collapsed, setCollapsed] = useState(false); //  사이드바 접기/펼치기 상태
+  const [collapsed, setCollapsed] = useState(false);
+
+  // 메뉴에 router.push 연결 (menuConfig는 onClick 없이 정의되어 있음)
+  const menuItemsWithOnClick: MenuItem[] = useMemo(() => {
+    const attachClick = (items: MenuItem[]): MenuItem[] =>
+      items.map((item) => ({
+        ...item,
+        onClick: item.key.startsWith("/") ? () => router.push(item.key) : undefined,
+        children: item.children ? attachClick(item.children) : undefined,
+      }));
+
+    return attachClick(rawMenuItems);
+  }, [router]);
+
+  // 현재 경로에 맞는 key 찾기
+  const findActiveKey = useCallback((path: string, items: MenuItem[]): string => {
+    // 경로 우선순위: 가장 긴 key부터 매칭하도록 정렬
+    const sortedItems = [...items].sort((a, b) => b.key.length - a.key.length);
+
+    for (const item of sortedItems) {
+      if (item.children) {
+        const activeKey = findActiveKey(path, item.children);
+        if (activeKey) return activeKey;
+      }
+      if (item.key === "/" && path === "/") return item.key;
+      if (item.key !== "/" && path.startsWith(item.key)) return item.key;
+    }
+    return "";
+  }, []);
 
   useEffect(() => {
-    setSelectedKey(pathname);
-  }, [pathname]);
+    const activeKey = findActiveKey(pathname, menuItemsWithOnClick);
+    setSelectedKey(activeKey);
+  }, [pathname, findActiveKey, menuItemsWithOnClick]);
 
   const toggleSidebar = () => {
     setCollapsed(!collapsed);
   };
-
-  const menuItems = [
-    { key: "/", icon: <HomeOutlined />, label: "홈", onClick: () => router.push("/") },
-    {
-      key: "/member",
-      icon: <UserOutlined />,
-      label: "회원정보",
-      onClick: () => router.push("/member"),
-    },
-    {
-      key: "support",
-      icon: <NotificationOutlined />,
-      label: "고객지원",
-      children: [
-        {
-          key: "/support/notice",
-          label: "공지사항",
-          onClick: () => router.push("/support/notice"),
-        },
-        {
-          key: "/support/faq",
-          label: "자주 묻는 질문",
-          onClick: () => router.push("/support/faq"),
-        },
-      ],
-    },
-    {
-      key: "board",
-      icon: <CommentOutlined />,
-      label: "게시판관리",
-      children: [
-        { key: "/board/free", label: "자유게시판", onClick: () => router.push("/board/free") },
-        {
-          key: "/board/anonymous",
-          label: "익명게시판",
-          onClick: () => router.push("/board/anonymous"),
-        },
-        {
-          key: "/board/category",
-          label: "카테고리관리",
-          onClick: () => router.push("/board/category"),
-        },
-      ],
-    },
-    {
-      key: "authorization",
-      icon: <SafetyCertificateOutlined />,
-      label: "보안관리",
-      children: [
-        {
-          key: "/security/role/authorities",
-          label: "회원권한",
-          onClick: () => router.push("/security/role/authorities"),
-        },
-        {
-          key: "/security/resource",
-          label: "리소스",
-          onClick: () => router.push("/security/resource"),
-        },
-        {
-          key: "/security/resource/token",
-          label: "토큰",
-          onClick: () => router.push("/security/resource/token"),
-        },
-      ],
-    },
-    {
-      key: "/me/settings",
-      icon: <SettingOutlined />,
-      label: "설정",
-      onClick: () => router.push("/me/settings"),
-    },
-  ];
 
   return (
     <Sider
@@ -111,20 +60,16 @@ export default function Sidebar() {
       onCollapse={setCollapsed}
       className="bg-white shadow-md"
       width={250}
-      trigger={null} // 기본 토글 버튼 제거 (커스텀 버튼 사용)
+      trigger={null}
     >
-      {/* 토글 버튼 */}
       <div
         className={`flex items-center p-4 border-b ${collapsed ? "justify-center" : "justify-between"}`}
       >
-        {/* 펼쳐진 상태에서는 가운데 정렬된 타이틀 */}
         {!collapsed && (
           <Title level={4} style={{ marginBottom: 0 }} className="text-gray-800 text-center w-full">
             관리자 메뉴
           </Title>
         )}
-
-        {/* 접혔을 때는 중앙에 아이콘 정렬 */}
         <Button
           type="text"
           icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
@@ -133,12 +78,11 @@ export default function Sidebar() {
         />
       </div>
 
-      {/* 메뉴 리스트 */}
       <Menu
         mode="inline"
         selectedKeys={selectedKey ? [selectedKey] : []}
         defaultOpenKeys={["support", "board", "authorization"]}
-        items={menuItems}
+        items={menuItemsWithOnClick}
         className="bg-white text-gray-800"
       />
     </Sider>

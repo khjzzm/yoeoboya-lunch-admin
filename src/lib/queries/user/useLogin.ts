@@ -11,7 +11,6 @@ import { useAuthStore } from "@/store/useAuthStore";
 /** 로그인 Hook */
 export function useLogin() {
   const router = useRouter();
-  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (loginData: { loginId: string; password: string }) => {
@@ -19,13 +18,22 @@ export function useLogin() {
       if (data?.code !== 200) {
         throw new Error("로그인 실패: 응답 코드 오류");
       }
-      console.log(data);
       return { loginId: loginData.loginId };
     },
     onSuccess: async () => {
-      await queryClient.refetchQueries({ queryKey: ["refresh-trigger"] });
-      router.push("/");
-      message.success("로그인 성공! 🎉");
+      try {
+        await api.post("/user/reissue"); // 토큰 갱신
+        const { data: memberData } = await api.get("/me"); // 유저 정보 가져오기
+
+        if (memberData?.data) {
+          useAuthStore.getState().setUser(memberData.data); // ✅ 전역 상태에 유저 정보 설정
+          message.success("로그인 성공! 🎉");
+          router.push("/");
+        }
+      } catch (error) {
+        console.error("사용자 정보 세팅 실패", error);
+        message.error("사용자 정보를 불러오지 못했습니다.");
+      }
     },
     onError: (error: unknown) => {
       console.error("로그인 실패", error);
@@ -37,7 +45,7 @@ export function useLogin() {
 /** 회원가입 Hook  */
 export function useSignUp() {
   const router = useRouter();
-  const queryClient = useQueryClient();
+  const setUser = useAuthStore((state) => state.setUser);
 
   return useMutation({
     mutationFn: async (signUpData: SignUpRequest) => {
@@ -51,18 +59,24 @@ export function useSignUp() {
       message.success("회원가입 성공! 자동 로그인 중...");
 
       try {
+        // 로그인 요청
         await api.post("/user/sign-in", {
           loginId: signUpData.loginId,
           password: signUpData.password,
         });
 
-        queryClient.invalidateQueries({ queryKey: ["refreshToken"] }).then(() => {
-          router.push("/");
-          message.success("자동 로그인 완료! 🎉");
-        });
+        // ✅ 토큰 재발급 후 사용자 정보 갱신
+        await api.post("/user/reissue");
+        const { data: memberData } = await api.get("/me");
+        if (memberData?.data) {
+          setUser(memberData.data); // Zustand 유저 정보 설정
+        }
+
+        router.push("/");
+        message.success("자동 로그인 완료! 🎉");
       } catch (error) {
         console.error("자동 로그인 중 오류 발생:", error);
-        throw new Error("자동 로그인 실패. 다시 로그인하세요.");
+        message.error("자동 로그인 실패. 다시 로그인해주세요.");
       }
     },
   });

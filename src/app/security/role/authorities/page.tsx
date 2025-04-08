@@ -6,7 +6,7 @@ import { useState } from "react";
 
 import { AuthoritiesOptions, roleOptions } from "@/types";
 
-import SearchFilters from "@/components/searchFilters";
+import SearchFilters from "@/components/filters/SearchFilters";
 
 import { useRole, useUpdateRole, useUpdateSecurityStatus } from "@/lib/queries";
 
@@ -108,10 +108,7 @@ export default function RoleAuthoritiesPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-800 border-b pb-2 mb-4">🔐 회원 권한</h1>
-
       <SearchFilters onSearch={handleSearch} filterOptions={AuthoritiesOptions} />
-
       <div className="overflow-x-auto">
         <Table
           dataSource={data?.data.list || []}

@@ -40,8 +40,6 @@ export default function FreeBoardWritePage() {
       const data = boardDetail.data;
       const matchedCategory = categories.find((c) => c.name === data.category);
 
-      console.log(matchedCategory);
-
       form.setFieldsValue({
         title: data.title,
         categoryId: matchedCategory?.id ?? null,
@@ -52,6 +50,15 @@ export default function FreeBoardWritePage() {
       setContent(data.content);
     }
   }, [editMode, form, boardDetail, categories]);
+
+  useEffect(() => {
+    if (!editMode && categories.length > 0) {
+      const currentValue = form.getFieldValue("categoryId");
+      if (!currentValue) {
+        form.setFieldValue("categoryId", categories[0].id);
+      }
+    }
+  }, [editMode, categories, form]);
 
   const handleSubmit = (values: BoardFormValues) => {
     const payload: FreeBoardCreate = {
@@ -80,8 +87,8 @@ export default function FreeBoardWritePage() {
         form={form}
         layout="vertical"
         onFinish={handleSubmit}
+        requiredMark={false}
         initialValues={{
-          categoryId: 1,
           secret: false,
         }}
       >

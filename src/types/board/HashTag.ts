@@ -1,4 +1,3 @@
-export type HashTagResponse = {
-  id: number;
-  name: string;
-};
+export interface HashTagResponse {
+  tag: string;
+}

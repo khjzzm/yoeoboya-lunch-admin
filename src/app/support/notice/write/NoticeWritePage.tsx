@@ -59,6 +59,15 @@ export default function NoticeWritePage() {
     }
   }, [editMode, form, noticeDetail, categories]);
 
+  useEffect(() => {
+    if (!editMode && categories.length > 0) {
+      const currentValue = form.getFieldValue("categoryId");
+      if (!currentValue) {
+        form.setFieldValue("categoryId", categories[0].id);
+      }
+    }
+  }, [editMode, categories, form]);
+
   const handleSubmit = (values: NoticeFormValues) => {
     const payload: NoticeCreate = {
       ...values,
@@ -88,8 +97,8 @@ export default function NoticeWritePage() {
         form={form}
         layout="vertical"
         onFinish={handleSubmit}
+        requiredMark={false}
         initialValues={{
-          categoryId: 0,
           pinned: false,
           status: "ACTIVE",
           author: user?.loginId,

@@ -5,7 +5,7 @@ import { useState } from "react";
 
 import { MemberSearchOptions } from "@/types";
 
-import SearchFilters from "@/components/searchFilters";
+import SearchFilters from "@/components/filters/SearchFilters";
 
 import { useMembers } from "@/lib/queries/";
 
@@ -72,11 +72,7 @@ export default function MemberPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-800 border-b pb-2 mb-4">👤 사용자 목록</h1>
-
       <SearchFilters onSearch={handleSearch} filterOptions={MemberSearchOptions} />
-
-      {/* ✅ 테이블 반응형 감싸기 */}
       <div className="overflow-x-auto">
         <Table
           dataSource={members}

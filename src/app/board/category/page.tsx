@@ -54,8 +54,6 @@ export default function AdminCategoryPage() {
 
   return (
     <div>
-      <h1 className="text-xl font-bold mb-4">카테고리 관리</h1>
-
       <div className="flex justify-between mb-4">
         <Select
           value={selectedBoardType}
@@ -79,10 +77,21 @@ export default function AdminCategoryPage() {
         rowKey="id"
         dataSource={categories}
         columns={[
-          { title: "이름", dataIndex: "name" },
-          { title: "설명", dataIndex: "description" },
           {
-            title: "작업",
+            title: <div style={{ textAlign: "center" }}>카테고리 이름</div>,
+            dataIndex: "name",
+            width: 180,
+            ellipsis: true, // 긴 텍스트는 ... 처리
+          },
+          {
+            title: <div style={{ textAlign: "center" }}>설명</div>,
+            dataIndex: "description",
+            width: 350,
+            ellipsis: true,
+          },
+          {
+            title: <div style={{ textAlign: "center" }}>작업</div>,
+            width: 160,
             render: (_, record) => (
               <>
                 <Button

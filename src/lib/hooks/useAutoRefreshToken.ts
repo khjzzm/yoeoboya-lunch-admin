@@ -9,6 +9,7 @@ import { api } from "@/lib/utils/api";
 import { useAuthStore } from "@/store/useAuthStore";
 
 export function useAutoRefreshToken() {
+  const user = useAuthStore((state) => state.user);
   const setUser = useAuthStore((state) => state.setUser);
   const pathname = usePathname();
 
@@ -18,11 +19,12 @@ export function useAutoRefreshToken() {
     );
   }, [pathname]);
 
-  //fixme pathName
+  const isLoggedIn = user !== null && typeof user === "object" && "loginId" in user;
+
   const { data: refreshTrigger } = useQuery<string>({
-    queryKey: ["refresh-trigger", pathname],
+    queryKey: ["refresh-trigger", user?.loginId],
     queryFn: refreshTokenFn,
-    enabled: !shouldSkip,
+    enabled: !shouldSkip && !isLoggedIn,
     staleTime: 1000 * 60 * 5, // 5분 동안 "신선한" 상태
     refetchInterval: 1000 * 60 * 10, // 10분마다 백그라운드 자동 갱신
     gcTime: 1000 * 60 * 30, // 30분 후 가비지 컬렉션

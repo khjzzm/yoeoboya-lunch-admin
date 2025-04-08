@@ -1,7 +1,7 @@
 "use client";
 
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import { Button, Skeleton, Tag, Typography, Space } from "antd";
+import { Button, Skeleton, Typography, Space } from "antd";
 import parse from "html-react-parser";
 import { useRouter } from "next/navigation";
 import React from "react";

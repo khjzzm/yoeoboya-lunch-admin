@@ -10,7 +10,7 @@ import {
   useSetDefaultProfileImage,
   useUpdateMyInfo,
   useUploadProfileImage,
-} from "@/lib/queries/useMe";
+} from "@/lib/queries/";
 import { applyApiValidationErrors } from "@/lib/utils/apiErrorMessage";
 
 import { useAuthStore } from "@/store/useAuthStore";

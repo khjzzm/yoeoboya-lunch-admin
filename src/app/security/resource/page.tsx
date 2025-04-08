@@ -4,6 +4,8 @@ import { Select, Table, Tag, Tooltip } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useState } from "react";
 
+import { roleOptions } from "@/types";
+
 import { useAddResourceRole, useResources } from "@/lib/queries";
 import { apiErrorMessage } from "@/lib/utils/apiErrorMessage";
 
@@ -16,14 +18,6 @@ interface Resource {
   resourceType: string;
   roleDesc: string | null;
 }
-
-const roleOptions = [
-  { label: "어드민", value: "ROLE_ADMIN" },
-  { label: "매니저", value: "ROLE_MANAGER" },
-  { label: "유저", value: "ROLE_USER" },
-  { label: "게스트", value: "ROLE_GUEST" },
-  { label: "차단", value: "ROLE_BLOCK" },
-];
 
 export default function ResourcesPage() {
   const { data, isLoading, error } = useResources();
@@ -123,9 +117,6 @@ export default function ResourcesPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-800 border-b pb-2 mb-4">📌 리소스 관리</h1>
-
-      {/* ✅ 반응형 처리 */}
       <div className="overflow-x-auto">
         <Table
           dataSource={resources}

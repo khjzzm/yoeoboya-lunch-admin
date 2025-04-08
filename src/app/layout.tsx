@@ -3,7 +3,7 @@ import React from "react";
 
 import Layout from "@/components/layout/Layout";
 
-import Providers from "./providers"; //  클라이언트 전용 Providers.tsx
+import Providers from "./providers";
 import "./globals.css";
 import "@ant-design/v5-patch-for-react-19";
 
