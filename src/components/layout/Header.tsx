@@ -31,7 +31,7 @@ export default function AppHeader() {
   useEffect(() => {
     const label = findLabelByPath(pathname, menuItems);
     setPageTitle(label ?? "");
-  }, [pathname, findLabelByPath, menuItems]);
+  }, [pathname, findLabelByPath]);
 
   return (
     <Header className="bg-[#0d47a1] px-6 flex justify-between items-center shadow-md">

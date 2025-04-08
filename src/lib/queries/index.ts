@@ -7,6 +7,7 @@ export * from "./board/base/useCategories";
 export * from "./board/base/useLike";
 export * from "./board/base/useReply";
 export * from "./board/base/useBoardTypes";
+export * from "./board/base/useHashtagSearch";
 export * from "./board/useFreeBoard";
 export * from "./support/useNotice";
 

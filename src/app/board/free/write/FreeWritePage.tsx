@@ -1,12 +1,13 @@
 "use client";
 
-import { Button, Form, Input, Select, Space, Typography, InputNumber, Switch } from "antd";
+import { Button, Form, Input, Space, Typography, InputNumber, Switch } from "antd";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { BoardFormValues, FreeBoardCreate } from "@/types";
 
 import CategorySelect from "@/components/board/CategorySelect";
+import HashtagSelect from "@/components/board/HashtagSelect";
 import TiptapEditor from "@/components/board/TiptapEditor";
 
 import { useQueryParamNumber } from "@/lib/hooks/useQueryParam";
@@ -102,18 +103,7 @@ export default function FreeBoardWritePage() {
 
         <CategorySelect categories={categories} />
 
-        <Form.Item
-          name="hashTag"
-          label="해시태그 (최대 10개, 콤마로 구분)"
-          tooltip="예: 일상, 개발, 여행"
-        >
-          <Select
-            mode="tags"
-            tokenSeparators={[","]}
-            placeholder="해시태그를 입력하세요"
-            maxTagCount={10}
-          />
-        </Form.Item>
+        <HashtagSelect />
 
         <Form.Item
           name="pin"

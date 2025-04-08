@@ -20,6 +20,8 @@ import {
   useLike,
   useReplies,
   useUnlike,
+  useHashtagSearch,
+  usePopularHashtags,
 } from "@/lib/queries";
 import { api } from "@/lib/utils/api";
 import { apiErrorMessage } from "@/lib/utils/apiErrorMessage";
@@ -136,3 +138,6 @@ export const useLikeFreeBoard = (boardNo: number) => useLike("/board/free", "fre
 export const useUnlikeFreeBoard = (boardNo: number) =>
   useUnlike("/board/free", "freeBoard", boardNo);
 export const useUploadFreeBoardFileToS3 = () => useUploadFileToS3("/board/free/image");
+export const useFreeBoardHashTagSearch = (keyword: string) =>
+  useHashtagSearch("/board/free", keyword);
+export const useFreeBoardPopularHashtags = () => usePopularHashtags("/board/free");
