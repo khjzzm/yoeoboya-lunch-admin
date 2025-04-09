@@ -34,7 +34,7 @@ export function useHashtagSearch(endpoint: string, keyword: string, enabled: boo
   };
 }
 
-export function usePopularHashtags(endpoint: string, limit: number = 5) {
+export function usePopularHashtags(endpoint: string, limit: number = 20) {
   const query = useQuery<ApiResponse<Hashtag[]>>({
     queryKey: ["popularHashtags", limit],
     queryFn: async () => {

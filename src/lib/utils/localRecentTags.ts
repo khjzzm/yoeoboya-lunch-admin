@@ -17,6 +17,12 @@ export function getRecentHashtags(): string[] {
   }
 }
 
+export const removeRecentHashtag = (tag: string): void => {
+  const current = getRecentHashtags();
+  const updated = current.filter((t) => t !== tag);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+};
+
 export function clearRecentHashtags() {
   localStorage.removeItem(STORAGE_KEY);
 }

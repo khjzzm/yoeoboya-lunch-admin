@@ -1,9 +1,14 @@
-import { Form, Select, Spin, Divider, Typography, message, Tooltip } from "antd";
+import { Form, Select, Spin, Divider, Typography, message, Button } from "antd";
 import { useState, useEffect } from "react";
-import { CopyOutlined } from "@ant-design/icons";
+import { CopyOutlined, DeleteOutlined, CloseOutlined } from "@ant-design/icons";
 
 import { useFreeBoardHashTagSearch, useFreeBoardPopularHashtags } from "@/lib/queries";
-import { addRecentHashtag, getRecentHashtags } from "@/lib/utils/localRecentTags";
+import {
+  addRecentHashtag,
+  getRecentHashtags,
+  removeRecentHashtag,
+  clearRecentHashtags,
+} from "@/lib/utils/localRecentTags";
 
 interface HashtagSelectProps {
   value?: string[];
@@ -14,6 +19,7 @@ interface HashtagSelectProps {
 export default function HashtagSelect({ value = [], onChange, maxCount = 10 }: HashtagSelectProps) {
   const [input, setInput] = useState("");
   const [recentTags, setRecentTags] = useState<string[]>([]);
+
   const { data: suggestions, isLoading: isSuggestLoading } = useFreeBoardHashTagSearch(input);
   const { data: popularTags, isLoading: isPopularLoading } = useFreeBoardPopularHashtags();
 
@@ -26,14 +32,29 @@ export default function HashtagSelect({ value = [], onChange, maxCount = 10 }: H
     .map((tag) => ({
       label: `${tag.tag} (${tag.count})`,
       value: tag.tag,
+      disabled: value.length >= maxCount,
     }));
 
-  const handleCopy = async (tag: string) => {
+  const handleDeleteRecent = (tag: string) => {
+    removeRecentHashtag(tag);
+    setRecentTags(getRecentHashtags());
+    message.success(`"${tag}" 태그 삭제됨`);
+  };
+
+  const handleClearRecent = () => {
+    clearRecentHashtags();
+    setRecentTags([]);
+    message.success("최근 태그 전체 삭제됨");
+  };
+
+  const handleCopyAllRecentTags = async () => {
+    if (recentTags.length === 0) return;
+    const commaSeparated = recentTags.join(",");
     try {
-      await navigator.clipboard.writeText(`#${tag}`);
-      message.success(`해시태그 #${tag} 복사됨`);
+      await navigator.clipboard.writeText(commaSeparated);
+      message.success(`최근 태그 전체 복사됨 (${recentTags.length}개)`);
     } catch (err) {
-      message.error("복사 실패 😢");
+      message.error(`복사 실패 😢 ${err}`);
     }
   };
 
@@ -49,8 +70,15 @@ export default function HashtagSelect({ value = [], onChange, maxCount = 10 }: H
         placeholder="해시태그를 입력하세요"
         value={value}
         onChange={(val) => {
-          val.forEach((tag) => addRecentHashtag(tag));
-          onChange?.(val);
+          if (val.length > maxCount) {
+            message.warning(`최대 ${maxCount}개까지만 입력할 수 있습니다`);
+            const trimmed = val.slice(0, maxCount);
+            trimmed.forEach((tag) => addRecentHashtag(tag));
+            onChange?.(trimmed);
+          } else {
+            val.forEach((tag) => addRecentHashtag(tag));
+            onChange?.(val);
+          }
         }}
         onSearch={setInput}
         onFocus={() => {
@@ -86,23 +114,18 @@ export default function HashtagSelect({ value = [], onChange, maxCount = 10 }: H
                   <Typography.Text type="secondary">🔥 인기 태그</Typography.Text>
                   <div style={{ marginTop: 8, display: "flex", flexWrap: "wrap", gap: 8 }}>
                     {popularTags.map((tag) => (
-                      <Tooltip title="클릭 시 복사" key={"popular-" + tag.tag}>
-                        <span
-                          style={{
-                            background: "#f0f0f0",
-                            padding: "4px 8px",
-                            borderRadius: 4,
-                            cursor: "copy",
-                            display: "inline-flex",
-                            alignItems: "center",
-                            gap: 4,
-                          }}
-                          onClick={() => handleCopy(tag.tag)}
-                        >
-                          #{tag.tag}
-                          <CopyOutlined style={{ fontSize: 12, color: "#888" }} />
-                        </span>
-                      </Tooltip>
+                      <span
+                        key={"popular-" + tag.tag}
+                        style={{
+                          background: "#f0f0f0",
+                          padding: "4px 8px",
+                          borderRadius: 4,
+                          display: "inline-block",
+                          opacity: value.length >= maxCount ? 0.4 : 1,
+                        }}
+                      >
+                        #{tag.tag}
+                      </span>
                     ))}
                   </div>
                 </div>
@@ -114,26 +137,54 @@ export default function HashtagSelect({ value = [], onChange, maxCount = 10 }: H
               <>
                 <Divider style={{ margin: "8px 0" }} />
                 <div style={{ padding: "8px 12px" }}>
-                  <Typography.Text type="secondary">🕘 최근 사용 태그</Typography.Text>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Typography.Text type="secondary">🕘 최근 사용 태그</Typography.Text>
+                    <div style={{ display: "flex", gap: 8 }}>
+                      <Button
+                        size="small"
+                        icon={<CopyOutlined />}
+                        onClick={handleCopyAllRecentTags}
+                      >
+                        전체 복사
+                      </Button>
+                      <Button
+                        size="small"
+                        danger
+                        icon={<DeleteOutlined />}
+                        onClick={handleClearRecent}
+                      >
+                        전체 삭제
+                      </Button>
+                    </div>
+                  </div>
                   <div style={{ marginTop: 8, display: "flex", flexWrap: "wrap", gap: 8 }}>
                     {recentTags.map((tag) => (
-                      <Tooltip title="클릭 시 복사" key={"recent-" + tag}>
-                        <span
-                          style={{
-                            background: "#e6f7ff",
-                            padding: "4px 8px",
-                            borderRadius: 4,
-                            cursor: "copy",
-                            display: "inline-flex",
-                            alignItems: "center",
-                            gap: 4,
+                      <span
+                        key={"recent-" + tag}
+                        style={{
+                          background: "#e6f7ff",
+                          padding: "4px 8px",
+                          borderRadius: 4,
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: 4,
+                        }}
+                      >
+                        #{tag}
+                        <CloseOutlined
+                          style={{ fontSize: 10, cursor: "pointer", color: "#999" }}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleDeleteRecent(tag);
                           }}
-                          onClick={() => handleCopy(tag)}
-                        >
-                          #{tag}
-                          <CopyOutlined style={{ fontSize: 12, color: "#888" }} />
-                        </span>
-                      </Tooltip>
+                        />
+                      </span>
                     ))}
                   </div>
                 </div>
