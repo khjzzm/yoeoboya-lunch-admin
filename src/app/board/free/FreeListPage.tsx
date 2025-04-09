@@ -1,9 +1,9 @@
 "use client";
 
-import { Button, List, Pagination } from "antd";
+import { Button, Input, List, Pagination } from "antd";
 import dayjs from "dayjs";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 import {
   BoardSearchCondition,
@@ -15,7 +15,7 @@ import {
 import SearchFilters from "@/components/filters/SearchFilters";
 
 import { usePaginationQuerySync } from "@/lib/hooks/usePaginationQuerySync";
-import { useFreeBoards } from "@/lib/queries/board/useFreeBoard";
+import { useFreeBoards, useFreeBoardVerifyPassword } from "@/lib/queries";
 import { isRead, markAsRead } from "@/lib/utils/readHistory";
 
 export default function FreeListPage() {
@@ -23,6 +23,7 @@ export default function FreeListPage() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { page, pageSize, setPagination } = usePaginationQuerySync();
+  const { mutate: verifyPassword, isPending } = useFreeBoardVerifyPassword();
 
   const filters: BoardSearchCondition = useMemo(() => {
     const searchType = searchParams.get("searchType") as BoardSearchType | undefined;
@@ -32,6 +33,7 @@ export default function FreeListPage() {
   }, [searchParams]);
 
   const { data, isLoading } = useFreeBoards(page, pageSize, filters);
+
   const list = data?.data.list || [];
   const pagination = data?.data.pagination;
 
@@ -44,6 +46,21 @@ export default function FreeListPage() {
     router.push(`${pathname}?${url.toString()}`);
   };
 
+  const [openPasswordInput, setOpenPasswordInput] = useState<number | null>(null);
+  const [password, setPassword] = useState("");
+
+  const handleVerifyAndNavigate = (boardNo: number) => {
+    verifyPassword(
+      { boardNo, password },
+      {
+        onSuccess: () => {
+          router.push(`/board/free/view?boardNo=${boardNo}&pin=${password}`);
+          markAsRead(boardNo);
+        },
+      },
+    );
+  };
+
   return (
     <div className="max-w-5xl mx-auto px-2 md:px-0">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
@@ -53,61 +70,103 @@ export default function FreeListPage() {
         </Button>
       </div>
 
+      {/* ✅ 상단 헤더 */}
+      <div className="grid grid-cols-[40px_60px_1fr_100px_100px_60px_60px] py-5 text-xs font-semibold border-b bg-gray-50 gap-1">
+        <div className="text-center">번호</div>
+        <div className="text-center">카테고리</div>
+        <div className="text-center">제목</div>
+        <div className="text-center">글쓴이</div>
+        <div className="text-center">작성일</div>
+        <div className="text-center">조회</div>
+        <div className="text-center">추천</div>
+      </div>
+
       <List<FreeBoardResponse>
         loading={isLoading}
         dataSource={list}
         renderItem={(item) => (
-          <List.Item className="px-3 py-3 border-b transition-all">
-            <div className="w-full flex flex-col gap-1">
-              {/* 작성자 + 시간 */}
-              <div className="flex justify-between text-xs text-gray-500">
-                <span
-                  className="truncate cursor-pointer hover:underline"
-                  onClick={() => handleSearch({ author: item.name })}
-                >
-                  {item.name}
-                </span>
-                <span>{dayjs(item.createdDate).format("YY.MM.DD HH:mm")}</span>
-              </div>
+          <List.Item
+            className="border-b text-xs hover:bg-gray-100 transition-colors"
+            style={{ paddingTop: 5, paddingBottom: 5 }}
+          >
+            <div className="w-full grid grid-cols-[40px_60px_1fr_100px_100px_60px_60px] gap-1">
+              <div className="row-span-2 flex justify-center items-center">{item.boardNo}</div>
 
-              {/* 제목 클릭 → 상세 페이지 이동 */}
               <div
-                className={`font-semibold text-sm truncate hover:underline cursor-pointer ${
-                  isRead(item.boardNo) ? "text-purple-500" : "text-black"
-                }`}
-                onClick={() => {
-                  router.push(`/board/free/view?boardNo=${item.boardNo}`);
-                  markAsRead(item.boardNo);
-                }}
+                className="row-span-2 flex justify-center items-center text-blue-500 font-medium cursor-pointer"
+                onClick={() => handleSearch({ category: item.category })}
               >
-                {item.secret && "🔒"} {item.title}
+                [{item.category}]
               </div>
 
-              {/* 카테고리 + 해시태그 */}
-              <div className="flex flex-wrap gap-2 text-xs text-gray-500">
-                <span
-                  className="text-blue-500 font-medium cursor-pointer"
-                  onClick={() => handleSearch({ category: item.category })}
+              <div className="flex flex-col">
+                <div
+                  className={`truncate cursor-pointer hover:underline text-sm`}
+                  style={{
+                    color: isRead(item.boardNo) ? "#770088" : "black",
+                  }}
+                  onClick={() => {
+                    if (item.secret) {
+                      setOpenPasswordInput(item.boardNo);
+                    } else {
+                      markAsRead(item.boardNo);
+                      router.push(`/board/free/view?boardNo=${item.boardNo}`);
+                    }
+                  }}
                 >
-                  [{item.category}]
-                </span>
-                {item.hashTag?.map((tagObj) => (
-                  <span
-                    key={tagObj.tag}
-                    className="text-gray-400 cursor-pointer"
-                    onClick={() => handleSearch({ hashtag: tagObj.tag })}
-                  >
-                    #{tagObj.tag}
-                  </span>
-                ))}
+                  {!item.secret && item.hasFile && <span>📷</span>}
+                  {item.secret && "🔒"} {item.title}
+                  {item.replyCount > 0 && (
+                    <span className="text-gray-400"> ({item.replyCount})</span>
+                  )}
+                </div>
+
+                {openPasswordInput === item.boardNo && (
+                  <div className="flex gap-2 items-center mt-2">
+                    <Input.Password
+                      placeholder="비밀번호를 입력하세요"
+                      maxLength={4}
+                      style={{ width: 200 }}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      onPressEnter={() => handleVerifyAndNavigate(item.boardNo)}
+                    />
+                    <button
+                      disabled={isPending}
+                      onClick={() => handleVerifyAndNavigate(item.boardNo)}
+                      className="text-xs bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 disabled:opacity-50"
+                    >
+                      {isPending ? "확인중..." : "확인"}
+                    </button>
+                  </div>
+                )}
+
+                {item.hashTag?.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-1 text-gray-400">
+                    {item.hashTag.map((tagObj) => (
+                      <span
+                        key={tagObj.tag}
+                        className="cursor-pointer"
+                        onClick={() => handleSearch({ hashtag: tagObj.tag })}
+                      >
+                        #{tagObj.tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
 
-              {/* 좋아요/댓글/조회수 */}
-              <div className="flex justify-end gap-3 text-xs text-gray-500">
-                <span>👀 {item.viewCount}</span>
-                <span>👍 {item.likeCount}</span>
-                <span>💬 {item.replyCount}</span>
+              <div className="row-span-2 flex justify-center items-center truncate cursor-pointer hover:underline">
+                <span onClick={() => handleSearch({ author: item.name })}>{item.name}</span>
               </div>
+
+              <div className="row-span-2 flex justify-center items-center">
+                {dayjs(item.createdDate).format("YY.MM.DD HH:mm")}
+              </div>
+
+              <div className="row-span-2 flex justify-center items-center">{item.viewCount}</div>
+
+              <div className="row-span-2 flex justify-center items-center">{item.likeCount}</div>
             </div>
           </List.Item>
         )}
@@ -122,7 +181,7 @@ export default function FreeListPage() {
             setPagination(newPage, newSize);
           }}
           showSizeChanger
-          pageSizeOptions={["10", "20", "30"]}
+          pageSizeOptions={["20", "30", "50"]}
           locale={{ items_per_page: "개" }}
         />
       </div>

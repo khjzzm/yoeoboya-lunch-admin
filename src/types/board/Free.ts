@@ -39,6 +39,7 @@ export interface FreeBoardResponse {
   like: boolean;
   createdDate: string | null;
   hashTag: HashTagResponse[];
+  hasFile: boolean;
 }
 
 export interface FreeBoardDetailResponse {
@@ -46,7 +47,7 @@ export interface FreeBoardDetailResponse {
   title: string;
   content: string;
   category: string;
-  pin: number;
+  pin: string;
   secret: boolean;
   viewCount: number;
   hashTag: HashTagResponse[];

@@ -5,7 +5,7 @@ import Link from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { message, Spin } from "antd";
+import { Form, message, Spin } from "antd";
 import { useEffect, useRef, useState } from "react";
 
 import { Toolbar } from "./Toolbar";
@@ -118,39 +118,41 @@ export default function TiptapEditor({ content, setContent, uploadToS3 }: Props)
   }, [content, editor]);
 
   return (
-    <div className="relative border rounded-md w-full min-h-[300px]">
-      {isDragging && (
-        <div className="absolute inset-0 z-20 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center border-2 border-dashed border-blue-400 rounded-md pointer-events-none">
-          {isUploading ? (
-            <>
-              <Spin size="large" />
-              <p className="text-blue-500 font-medium mt-4">이미지를 업로드 중입니다...</p>
-            </>
-          ) : (
-            <>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-12 w-12 text-blue-400 mb-2"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={1.5}
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-              </svg>
-              <p className="text-blue-600 font-medium text-sm">
-                텍스트 혹은 사진을 여기로 내려놓으세요
-              </p>
-            </>
-          )}
-        </div>
-      )}
+    <Form.Item name="content" label="본문" className="!w-full" style={{ width: "100%" }}>
+      <div className="relative border rounded-md w-full min-h-[300px]">
+        {isDragging && (
+          <div className="absolute inset-0 z-20 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center border-2 border-dashed border-blue-400 rounded-md pointer-events-none">
+            {isUploading ? (
+              <>
+                <Spin size="large" />
+                <p className="text-blue-500 font-medium mt-4">이미지를 업로드 중입니다...</p>
+              </>
+            ) : (
+              <>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-12 w-12 text-blue-400 mb-2"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={1.5}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                </svg>
+                <p className="text-blue-600 font-medium text-sm">
+                  텍스트 혹은 사진을 여기로 내려놓으세요
+                </p>
+              </>
+            )}
+          </div>
+        )}
 
-      {/* 툴바 */}
-      {editor && <Toolbar editor={editor} uploadToS3={uploadToS3} />}
+        {/* 툴바 */}
+        {editor && <Toolbar editor={editor} uploadToS3={uploadToS3} />}
 
-      {/* 에디터 */}
-      <EditorContent editor={editor} className="w-full leading-relaxed [&_p]:mb-0 caret-black" />
-    </div>
+        {/* 에디터 */}
+        <EditorContent editor={editor} className="w-full leading-relaxed [&_p]:mb-0 caret-black" />
+      </div>
+    </Form.Item>
   );
 }

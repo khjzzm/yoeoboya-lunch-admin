@@ -9,7 +9,7 @@ export function usePaginationQuerySync() {
   const searchParams = useSearchParams();
 
   const page = Number(searchParams.get("page") || "1");
-  const pageSize = Number(searchParams.get("size") || "10");
+  const pageSize = Number(searchParams.get("size") || "20");
 
   const setPagination = (newPage: number, newSize?: number) => {
     const params = new URLSearchParams(searchParams.toString());

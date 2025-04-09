@@ -1,6 +1,6 @@
+import { CopyOutlined, DeleteOutlined, CloseOutlined } from "@ant-design/icons";
 import { Form, Select, Spin, Divider, Typography, message, Button } from "antd";
 import { useState, useEffect } from "react";
-import { CopyOutlined, DeleteOutlined, CloseOutlined } from "@ant-design/icons";
 
 import { useFreeBoardHashTagSearch, useFreeBoardPopularHashtags } from "@/lib/queries";
 import {

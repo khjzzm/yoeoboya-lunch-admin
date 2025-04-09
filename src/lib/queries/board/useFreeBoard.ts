@@ -23,6 +23,7 @@ import {
   useHashtagSearch,
   usePopularHashtags,
 } from "@/lib/queries";
+import { useVerifyPassword } from "@/lib/queries/board/base/useSecret";
 import { api } from "@/lib/utils/api";
 import { apiErrorMessage } from "@/lib/utils/apiErrorMessage";
 
@@ -72,12 +73,15 @@ export function useCreateFreeBoard() {
 }
 
 /** 게시글 상세 조회 */
-export function useFreeBoardDetail(boardNo: number | null) {
+export function useFreeBoardDetail(boardNo: number | null, pin?: string) {
   return useQuery<ApiResponse<FreeBoardDetailResponse>>({
-    queryKey: ["freeBoardDetail", boardNo],
+    queryKey: ["freeBoardDetail", boardNo, pin],
     queryFn: async () => {
       const { data } = await api.get(`/board/free/detail`, {
-        params: { boardNo },
+        params: {
+          boardNo,
+          ...(pin && { pin }),
+        },
       });
       return data;
     },
@@ -141,3 +145,4 @@ export const useUploadFreeBoardFileToS3 = () => useUploadFileToS3("/board/free/i
 export const useFreeBoardHashTagSearch = (keyword: string) =>
   useHashtagSearch("/board/free", keyword);
 export const useFreeBoardPopularHashtags = () => usePopularHashtags("/board/free");
+export const useFreeBoardVerifyPassword = () => useVerifyPassword("/board/free");

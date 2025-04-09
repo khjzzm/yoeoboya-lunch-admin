@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Form, Input, Space, Typography, InputNumber, Switch } from "antd";
+import { Button, Form, Input, Space, Typography } from "antd";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -8,6 +8,7 @@ import { BoardFormValues, FreeBoardCreate } from "@/types";
 
 import CategorySelect from "@/components/board/CategorySelect";
 import HashtagSelect from "@/components/board/HashtagSelect";
+import SecretToggle from "@/components/board/SecretToggle";
 import TiptapEditor from "@/components/board/TiptapEditor";
 
 import { useQueryParamNumber } from "@/lib/hooks/useQueryParam";
@@ -105,24 +106,9 @@ export default function FreeBoardWritePage() {
 
         <HashtagSelect />
 
-        <Form.Item
-          name="pin"
-          label="게시글 비밀번호 (숫자 4자리)"
-          tooltip="게시글에 비밀번호를 설정할 수 있어요"
-          rules={[
-            { type: "number", min: 0, max: 9999, message: "0부터 9999 사이의 숫자를 입력하세요." },
-          ]}
-        >
-          <InputNumber placeholder="예: 1234" maxLength={4} style={{ width: "100%" }} />
-        </Form.Item>
+        <SecretToggle form={form} />
 
-        <Form.Item name="secret" label="비밀글 여부" valuePropName="checked">
-          <Switch checkedChildren="비밀글" unCheckedChildren="공개글" />
-        </Form.Item>
-
-        <Form.Item name="content" label="본문">
-          <TiptapEditor content={content} setContent={setContent} uploadToS3={uploadToS3} />
-        </Form.Item>
+        <TiptapEditor content={content} setContent={setContent} uploadToS3={uploadToS3} />
 
         <div className="flex justify-end mt-4">
           <Space>

@@ -145,9 +145,7 @@ export default function NoticeWritePage() {
           </Space>
         </Form.Item>
 
-        <Form.Item name="content" label="본문" className="!w-full" style={{ width: "100%" }}>
-          <TiptapEditor content={content} setContent={setContent} uploadToS3={uploadToS3} />
-        </Form.Item>
+        <TiptapEditor content={content} setContent={setContent} uploadToS3={uploadToS3} />
 
         <Button htmlType="submit" type="primary">
           {editMode ? "수정 완료" : "작성 완료"}

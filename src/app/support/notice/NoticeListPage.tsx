@@ -116,7 +116,7 @@ export default function NoticeListPage() {
           total={pagination?.totalElements ?? 0}
           pageSize={pageSize}
           showSizeChanger
-          pageSizeOptions={["10", "30", "50"]}
+          pageSizeOptions={["20", "30", "50"]}
           onChange={(newPage, newSize) => {
             setPagination(newPage, newSize);
           }}
