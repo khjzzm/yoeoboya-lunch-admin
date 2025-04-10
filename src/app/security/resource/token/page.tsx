@@ -2,7 +2,10 @@
 
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import { Button, Form, Input, Modal, Space, Switch, Table, Tooltip } from "antd";
+import { ColumnsType } from "antd/es/table";
 import { useEffect, useState } from "react";
+
+import { TokenIgnore } from "@/types";
 
 import {
   useDeleteTokenIgnoreUrl,
@@ -11,19 +14,12 @@ import {
 } from "@/lib/queries";
 import { apiErrorMessage } from "@/lib/utils/apiErrorMessage";
 
-// TokenIgnoreUrl 인터페이스
-interface TokenIgnoreUrl {
-  id: number;
-  url: string;
-  isIgnore: boolean;
-}
-
 export default function TokenIgnoreUrlsPage() {
-  const { data, isLoading, error } = useFetchTokenIgnoreUrls();
+  const { data: tokenIgnoreUrls = [], isLoading, error } = useFetchTokenIgnoreUrls();
   const updateTokenIgnoreUrl = useUpdateTokenIgnoreUrl();
   const deleteTokenIgnoreUrl = useDeleteTokenIgnoreUrl();
 
-  const [selectedRecord, setSelectedRecord] = useState<TokenIgnoreUrl | null>(null);
+  const [selectedRecord, setSelectedRecord] = useState<TokenIgnore | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [form] = Form.useForm();
@@ -39,7 +35,7 @@ export default function TokenIgnoreUrlsPage() {
     form.setFieldsValue({ isIgnore: checked });
   };
 
-  const showModal = (record?: TokenIgnoreUrl) => {
+  const showModal = (record?: TokenIgnore) => {
     setSelectedRecord(record || { id: 0, url: "", isIgnore: false });
     form.setFieldsValue(record || { url: "", isIgnore: false });
     setIsModalOpen(true);
@@ -47,7 +43,7 @@ export default function TokenIgnoreUrlsPage() {
 
   const handleCancel = () => setIsModalOpen(false);
 
-  const showDeleteModal = (record: TokenIgnoreUrl) => {
+  const showDeleteModal = (record: TokenIgnore) => {
     setSelectedRecord(record);
     setIsDeleteModalOpen(true);
   };
@@ -78,9 +74,7 @@ export default function TokenIgnoreUrlsPage() {
     });
   };
 
-  const tokenIgnoreUrls = Array.isArray(data) ? data : [];
-
-  const columns = [
+  const columns: ColumnsType<TokenIgnore> = [
     {
       title: <div style={{ textAlign: "center" }}>ID</div>,
       dataIndex: "id",
@@ -104,7 +98,7 @@ export default function TokenIgnoreUrlsPage() {
       title: <div style={{ textAlign: "center" }}>액션</div>,
       key: "action",
       width: 100,
-      render: (_: unknown, record: TokenIgnoreUrl) => (
+      render: (_: unknown, record: TokenIgnore) => (
         <Space>
           <Button onClick={() => showModal(record)} type="text" icon={<EditOutlined />} />
           <Button

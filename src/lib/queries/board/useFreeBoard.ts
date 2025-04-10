@@ -6,30 +6,30 @@ import { useRouter } from "next/navigation";
 import {
   ApiResponse,
   BoardEdit,
-  FreeBoardCreate,
   BoardSearchCondition,
-  Pagination,
-  FreeBoardResponse,
+  FreeBoardCreate,
   FreeBoardDetailResponse,
+  FreeBoardResponse,
+  Pagination,
 } from "@/types";
 
 import {
-  useUploadFileToS3,
   useCreateReply,
   useDeleteReply,
+  useHashtagSearch,
   useLike,
+  usePopularHashtags,
   useReplies,
   useUnlike,
-  useHashtagSearch,
-  usePopularHashtags,
+  useUploadFileToS3,
 } from "@/lib/queries";
 import { useVerifyPassword } from "@/lib/queries/board/base/useSecret";
 import { api } from "@/lib/utils/api";
 import { apiErrorMessage } from "@/lib/utils/apiErrorMessage";
 
-/** 게시글 목록 조회 (검색, 페이지네이션 포함) */
+// 게시글 목록 조회 (검색, 페이지네이션 포함)
 export function useFreeBoards(page: number, size: number, filters?: BoardSearchCondition) {
-  return useQuery<ApiResponse<{ list: FreeBoardResponse[]; pagination: Pagination }>>({
+  return useQuery<{ list: FreeBoardResponse[]; pagination: Pagination }>({
     queryKey: ["freeBoards", page, size, stringify(filters)],
     queryFn: async () => {
       const params = new URLSearchParams();
@@ -48,13 +48,15 @@ export function useFreeBoards(page: number, size: number, filters?: BoardSearchC
         }
       }
 
-      const { data } = await api.get(`/board/free?${params.toString()}`);
-      return data;
+      const { data } = await api.get<
+        ApiResponse<{ list: FreeBoardResponse[]; pagination: Pagination }>
+      >(`/board/free?${params.toString()}`);
+      return data?.data ?? [];
     },
   });
 }
 
-/** 게시글 작성 */
+// 게시글 작성
 export function useCreateFreeBoard() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -72,24 +74,24 @@ export function useCreateFreeBoard() {
   });
 }
 
-/** 게시글 상세 조회 */
+// 게시글 상세 조회
 export function useFreeBoardDetail(boardNo: number | null, pin?: string) {
-  return useQuery<ApiResponse<FreeBoardDetailResponse>>({
+  return useQuery<FreeBoardDetailResponse>({
     queryKey: ["freeBoardDetail", boardNo, pin],
     queryFn: async () => {
-      const { data } = await api.get(`/board/free/detail`, {
+      const { data } = await api.get<ApiResponse<FreeBoardDetailResponse>>(`/board/free/detail`, {
         params: {
           boardNo,
           ...(pin && { pin }),
         },
       });
-      return data;
+      return data.data;
     },
     enabled: !!boardNo && boardNo > 0,
   });
 }
 
-/** 게시글 수정 */
+// 게시글 수정
 export function useUpdateFreeBoard(boardNo: number) {
   const queryClient = useQueryClient();
   return useMutation({
@@ -110,7 +112,7 @@ export function useUpdateFreeBoard(boardNo: number) {
   });
 }
 
-/** 게시글 삭제 Hook */
+// 게시글 삭제
 export function useDeleteFreeBoard(boardNo: number) {
   const queryClient = useQueryClient();
   const router = useRouter();

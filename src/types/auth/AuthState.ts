@@ -1,8 +1,8 @@
-import { User } from "@/types";
+import { Member } from "@/types";
 
 export interface AuthState {
-  user: User | null;
-  setUser: (user: User | null) => void;
+  user: Member | null;
+  setUser: (user: Member | null) => void;
   isExpired: boolean;
   setExpired: (val: boolean) => void;
   logout: () => void;

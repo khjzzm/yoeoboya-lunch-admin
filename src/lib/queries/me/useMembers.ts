@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import { api } from "@/lib/utils/api";
 
-/** 내정보 가져오기 */
+// 내정보 가져오기
 export function useMeInfo() {
   return useQuery({
     queryKey: ["fetchMeInfo"],
@@ -13,7 +13,7 @@ export function useMeInfo() {
   });
 }
 
-/** 회원정보 가져오기 */
+// 회원정보 가져오기
 export function useMembers(
   page: number,
   pageSize: number,
@@ -34,7 +34,7 @@ export function useMembers(
   });
 }
 
-/** 특정 회원 요약 정보 조회 */
+// 특정 회원 요약 정보 조회
 export function useFetchMemberSummary(memberLoginId: string) {
   return useQuery({
     queryKey: ["fetchMemberSummary", memberLoginId], //  캐시를 위한 키

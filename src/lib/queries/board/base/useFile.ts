@@ -4,6 +4,7 @@ import { message } from "antd";
 import { api } from "@/lib/utils/api";
 import { apiErrorMessage } from "@/lib/utils/apiErrorMessage";
 
+// 파일 업로드
 export function useUploadFileToS3(endpoint: string) {
   return useMutation({
     mutationFn: async (file: File) => {

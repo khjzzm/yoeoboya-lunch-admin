@@ -5,7 +5,7 @@ import { AxiosError } from "axios";
 import { refetchMyInfo } from "@/lib/hooks/useFetchMyInfo";
 import { api } from "@/lib/utils/api";
 
-/** 내 정보 수정 Hook */
+// 내 정보 수정
 export function useUpdateMyInfo() {
   const queryClient = useQueryClient();
 
@@ -21,7 +21,7 @@ export function useUpdateMyInfo() {
   });
 }
 
-/** 계좌 등록 Hook */
+// 계좌 등록
 export function useRegisterAccount() {
   const queryClient = useQueryClient();
 
@@ -37,7 +37,7 @@ export function useRegisterAccount() {
   });
 }
 
-/** 계좌 수정 Hook */
+// 계좌 수정
 export function useUpdateAccount() {
   const queryClient = useQueryClient();
 
@@ -53,7 +53,7 @@ export function useUpdateAccount() {
   });
 }
 
-/** 대표 프로필 이미지 등록 Hook */
+// 대표 프로필 이미지 등록
 export function useSetDefaultProfileImage() {
   const queryClient = useQueryClient();
 
@@ -69,7 +69,7 @@ export function useSetDefaultProfileImage() {
   });
 }
 
-/** 프로필 이미지 업로드 Hook */
+// 프로필 이미지 업로드
 export function useUploadProfileImage() {
   const queryClient = useQueryClient();
 
@@ -105,7 +105,7 @@ export function useUploadProfileImage() {
   });
 }
 
-/** 프로필 이미지 삭제 Hook */
+// 프로필 이미지 삭제
 export function useDeleteProfileImage() {
   const queryClient = useQueryClient();
 

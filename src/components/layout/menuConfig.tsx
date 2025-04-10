@@ -1,11 +1,11 @@
 // src/config/menuConfig.ts
 import {
-  HomeOutlined,
-  UserOutlined,
-  NotificationOutlined,
   CommentOutlined,
+  HomeOutlined,
+  NotificationOutlined,
   SafetyCertificateOutlined,
   SettingOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
 
 export type MenuItem = {
@@ -46,6 +46,7 @@ export const menuItems: MenuItem[] = [
       { key: "/security/role/authorities", label: "회원권한" },
       { key: "/security/resource", label: "리소스" },
       { key: "/security/resource/token", label: "토큰" },
+      { key: "/security/ip", label: "아이피" },
     ],
   },
   { key: "/me/settings", icon: <SettingOutlined />, label: "설정" },

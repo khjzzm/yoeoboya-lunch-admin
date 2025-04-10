@@ -8,7 +8,7 @@ import { api } from "@/lib/utils/api";
 
 import { useAuthStore } from "@/store/useAuthStore";
 
-/** 로그인 Hook */
+// 로그인
 export function useLogin() {
   const router = useRouter();
 
@@ -42,7 +42,7 @@ export function useLogin() {
   });
 }
 
-/** 회원가입 Hook  */
+// 회원가입
 export function useSignUp() {
   const router = useRouter();
   const setUser = useAuthStore((state) => state.setUser);
@@ -82,7 +82,7 @@ export function useSignUp() {
   });
 }
 
-/** 소셜 회원가입 Hook */
+// 소셜 회원가입
 export function useSocialSignUp() {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -107,7 +107,7 @@ export function useSocialSignUp() {
   });
 }
 
-/** 로그아웃 Hook */
+// 로그아웃
 export function useLogout() {
   const { logout } = useAuthStore();
   const router = useRouter();
@@ -130,7 +130,7 @@ export function useLogout() {
   });
 }
 
-/** 비밀번호 변경 API Hook */
+// 비밀번호 변경 API
 export function useChangePassword() {
   const logout = useAuthStore((state) => state.logout);
   const router = useRouter();

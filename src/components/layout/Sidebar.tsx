@@ -5,7 +5,7 @@ import { Button, Layout, Menu, Typography } from "antd";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
-import { menuItems as rawMenuItems, MenuItem } from "@/components/layout/menuConfig";
+import { MenuItem, menuItems as rawMenuItems } from "@/components/layout/menuConfig";
 
 const { Sider } = Layout;
 const { Title } = Typography;

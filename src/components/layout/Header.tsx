@@ -4,7 +4,7 @@ import { Layout, Typography } from "antd";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
-import { menuItems, MenuItem } from "@/components/layout/menuConfig";
+import { MenuItem, menuItems } from "@/components/layout/menuConfig";
 import ProfileDropdown from "@/components/me/ProfileDropdown";
 
 const { Header } = Layout;

@@ -1,5 +1,5 @@
-// User 인터페이스 (회원 정보)
-export interface User {
+// Member 인터페이스 (회원 정보)
+export interface Member {
   loginId: string;
   email?: string;
   name?: string;
@@ -7,7 +7,7 @@ export interface User {
   role: string;
   roleDesc?: string;
   account?: Account;
-  info?: UserInfo;
+  info?: MemberInfo;
   profileImages?: ProfileImage[];
 }
 
@@ -18,7 +18,7 @@ export interface Account {
 }
 
 // 사용자 정보 (닉네임, 소개, 전화번호)
-export interface UserInfo {
+export interface MemberInfo {
   nickName: string;
   bio: string;
   phoneNumber: string;

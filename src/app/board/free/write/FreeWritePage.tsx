@@ -31,15 +31,15 @@ export default function FreeBoardWritePage() {
   const [form] = Form.useForm();
   const [content, setContent] = useState<string>("");
 
-  const { data: boardDetail } = useFreeBoardDetail(Number(boardNo));
+  const { data: detail } = useFreeBoardDetail(Number(boardNo));
   const { data: categories = [] } = useCategories("FREE");
   const { mutateAsync: uploadToS3 } = useUploadFreeBoardFileToS3();
   const createBoard = useCreateFreeBoard();
   const updateBoard = useUpdateFreeBoard(Number(boardNo));
 
   useEffect(() => {
-    if (editMode && boardDetail?.data && categories.length > 0) {
-      const data = boardDetail.data;
+    if (editMode && detail && categories.length > 0) {
+      const data = detail;
       const matchedCategory = categories.find((c) => c.name === data.category);
 
       form.setFieldsValue({
@@ -51,7 +51,7 @@ export default function FreeBoardWritePage() {
       });
       setContent(data.content);
     }
-  }, [editMode, form, boardDetail, categories]);
+  }, [editMode, form, detail, categories]);
 
   useEffect(() => {
     if (!editMode && categories.length > 0) {

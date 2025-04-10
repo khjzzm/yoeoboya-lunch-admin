@@ -10,13 +10,13 @@ import ReplyComponent from "@/components/board/ReplyComponent";
 
 import { useQueryParamNumber } from "@/lib/hooks/useQueryParam";
 import {
-  useNoticeDetail,
   useDeleteNotice,
   useLikeNotice,
-  useUnlikeNotice,
-  useNoticeReplies,
   useNoticeCreateReply,
   useNoticeDeleteReply,
+  useNoticeDetail,
+  useNoticeReplies,
+  useUnlikeNotice,
 } from "@/lib/queries";
 
 import { useAuthStore } from "@/store/useAuthStore";
@@ -30,7 +30,7 @@ export default function NoticeViewPage() {
   const router = useRouter();
   const boardNo = useQueryParamNumber("boardNo");
 
-  const { data: boardData, isLoading } = useNoticeDetail(boardNo);
+  const { data: detail, isLoading } = useNoticeDetail(boardNo);
   const { mutate: deleteBoard } = useDeleteNotice(boardNo);
   const likeService = {
     useLike: useLikeNotice,
@@ -43,7 +43,7 @@ export default function NoticeViewPage() {
     useDeleteReply: useNoticeDeleteReply,
   };
 
-  if (isLoading || !boardData) {
+  if (isLoading || !detail) {
     return <Skeleton active paragraph={{ rows: 8 }} />;
   }
 
@@ -51,16 +51,15 @@ export default function NoticeViewPage() {
     ACTIVE: { label: "활성", color: "green" },
     INACTIVE: { label: "비활성", color: "red" },
   };
-  const status = statusMap[boardData.data.status] ?? { label: "알 수 없음", color: "default" };
+  const status = statusMap[detail.status] ?? { label: "알 수 없음", color: "default" };
 
   return (
     <div className="max-w-4xl mx-auto">
-      <Title level={2}>{boardData.data.title}</Title>
+      <Title level={2}>{detail.title}</Title>
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 text-sm text-gray-500">
         <div className="flex flex-col md:flex-row md:gap-4">
           <Text>
-            공지 기간: {boardData.data.startDate?.slice(0, 10)} ~{" "}
-            {boardData.data.endDate?.slice(0, 10)}
+            공지 기간: {detail.startDate?.slice(0, 10)} ~ {detail.endDate?.slice(0, 10)}
           </Text>
         </div>
         <div>
@@ -69,19 +68,19 @@ export default function NoticeViewPage() {
       </div>
 
       <Card>
-        <div className="prose max-w-none">{parse(boardData.data.content)}</div>
+        <div className="prose max-w-none">{parse(detail.content)}</div>
       </Card>
 
       <div className="mt-6 flex justify-between items-center">
         <div className="flex items-center gap-4">
-          <LikeButton boardNo={boardNo} hasLiked={boardData.data.hasLiked} service={likeService} />
+          <LikeButton boardNo={boardNo} hasLiked={detail.hasLiked} service={likeService} />
         </div>
 
         {isAdmin() && (
           <div className="flex gap-2">
             <Button
               icon={<EditOutlined />}
-              onClick={() => router.push(`/support/notice/write?boardNo=${boardData.data.boardNo}`)}
+              onClick={() => router.push(`/support/notice/write?boardNo=${detail.boardNo}`)}
             >
               수정
             </Button>

@@ -1,16 +1,16 @@
 "use client";
 
-import { Table, Button, Modal, Form, Input, Select, Popconfirm } from "antd";
+import { Button, Form, Input, Modal, Popconfirm, Select, Table } from "antd";
 import { useEffect, useMemo, useState } from "react";
 
-import { BoardType, CategoryResponse, CategoryCreateRequest, CategoryEditRequest } from "@/types";
+import { BoardType, CategoryCreateRequest, CategoryEditRequest, CategoryResponse } from "@/types";
 
 import {
+  useBoardTypes,
   useCategories,
   useCreateCategory,
   useDeleteCategory,
   useUpdateCategory,
-  useBoardTypes,
 } from "@/lib/queries";
 
 export default function AdminCategoryPage() {
@@ -28,7 +28,7 @@ export default function AdminCategoryPage() {
 
   const boardTypeOptions = useMemo(
     () =>
-      boardTypeList?.data.map((type) => ({
+      boardTypeList?.map((type) => ({
         label: type.name,
         value: type.code,
       })) ?? [],

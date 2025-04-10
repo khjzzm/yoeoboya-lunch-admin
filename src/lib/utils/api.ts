@@ -1,4 +1,7 @@
+import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+
+import { ApiResponse } from "@/types";
 
 import { useAuthStore } from "@/store/useAuthStore";
 
@@ -31,3 +34,14 @@ api.interceptors.response.use(
     return Promise.reject(error);
   },
 );
+
+// 공통 useApiQuery 유틸
+export function useApiQuery<T>(key: string[], url: string, params?: string[]) {
+  return useQuery<T>({
+    queryKey: key,
+    queryFn: async () => {
+      const { data } = await api.get<ApiResponse<T>>(url, { params });
+      return data.data;
+    },
+  });
+}

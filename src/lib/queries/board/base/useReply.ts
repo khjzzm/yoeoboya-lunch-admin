@@ -6,6 +6,7 @@ import { ApiResponse, Pagination, Reply, ReplyCreateRequest } from "@/types";
 import { api } from "@/lib/utils/api";
 import { apiErrorMessage } from "@/lib/utils/apiErrorMessage";
 
+// 댓글작성
 export function useCreateReply(endpoint: string, queryKeyPrefix: string) {
   const queryClient = useQueryClient();
 
@@ -24,6 +25,7 @@ export function useCreateReply(endpoint: string, queryKeyPrefix: string) {
   });
 }
 
+// 댓글삭제
 export function useDeleteReply(endpoint: string, queryKeyPrefix: string, boardNo: number) {
   const queryClient = useQueryClient();
 
@@ -44,14 +46,18 @@ export function useDeleteReply(endpoint: string, queryKeyPrefix: string, boardNo
   });
 }
 
+// 댓글조회
 export function useReplies(endpoint: string, queryKeyPrefix: string, boardNo: number) {
-  return useQuery<ApiResponse<{ list: Reply[]; pagination: Pagination }>>({
+  return useQuery<{ list: Reply[]; pagination: Pagination }>({
     queryKey: [`${queryKeyPrefix}Replies`, boardNo],
     queryFn: async () => {
-      const { data } = await api.get(`${endpoint}/replies`, {
-        params: { boardNo },
-      });
-      return data;
+      const { data } = await api.get<ApiResponse<{ list: Reply[]; pagination: Pagination }>>(
+        `${endpoint}/replies`,
+        {
+          params: { boardNo },
+        },
+      );
+      return data.data;
     },
     enabled: !!boardNo,
   });

@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/utils/api";
 import { apiErrorMessage } from "@/lib/utils/apiErrorMessage";
 
+// 좋아요
 export function useLike(endpoint: string, queryKeyPrefix: string, boardNo: number) {
   const queryClient = useQueryClient();
 
@@ -22,6 +23,7 @@ export function useLike(endpoint: string, queryKeyPrefix: string, boardNo: numbe
   });
 }
 
+// 좋아요취소
 export function useUnlike(endpoint: string, queryKeyPrefix: string, boardNo: number) {
   const queryClient = useQueryClient();
 

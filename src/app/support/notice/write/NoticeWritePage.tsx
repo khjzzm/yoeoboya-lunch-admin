@@ -5,18 +5,18 @@ import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { NoticeFormValues, NoticeCreate } from "@/types";
+import { NoticeCreate, NoticeFormValues } from "@/types";
 
 import CategorySelect from "@/components/board/CategorySelect";
 import TiptapEditor from "@/components/board/TiptapEditor";
 
 import { useQueryParamNumber } from "@/lib/hooks/useQueryParam";
 import {
+  useCategories,
   useCreateNotice,
   useNoticeDetail,
   useUpdateNotice,
   useUploadNoticeFileToS3,
-  useCategories,
 } from "@/lib/queries";
 import { applyApiValidationErrors } from "@/lib/utils/apiErrorMessage";
 
@@ -41,8 +41,8 @@ export default function NoticeWritePage() {
   const updateNotice = useUpdateNotice(Number(boardNo));
 
   useEffect(() => {
-    if (editMode && noticeDetail?.data && categories.length > 0) {
-      const data = noticeDetail.data;
+    if (editMode && noticeDetail && categories.length > 0) {
+      const data = noticeDetail;
       const matchedCategory = categories.find((c) => c.name === data.category);
 
       form.setFieldsValue({

@@ -6,27 +6,27 @@ import { useRouter } from "next/navigation";
 import {
   ApiResponse,
   BoardSearchCondition,
-  NoticeDetailResponse,
   NoticeCreate,
+  NoticeDetailResponse,
+  NoticeEdit,
   NoticeResponse,
   Pagination,
-  NoticeEdit,
 } from "@/types";
 
 import {
   useCreateReply,
   useDeleteReply,
-  useReplies,
   useLike,
+  useReplies,
   useUnlike,
   useUploadFileToS3,
 } from "@/lib/queries";
 import { api } from "@/lib/utils/api";
 import { apiErrorMessage } from "@/lib/utils/apiErrorMessage";
 
-/** 공지사항 목록 조회 (검색 시 호출용) */
+// 공지사항 목록 조회 (검색 시 호출용)
 export function useNotices(page: number, pageSize: number, filters?: BoardSearchCondition) {
-  return useQuery<ApiResponse<{ list: NoticeResponse[]; pagination: Pagination }>>({
+  return useQuery<{ list: NoticeResponse[]; pagination: Pagination }>({
     queryKey: ["fetchNotices", page, pageSize, stringify(filters)],
     queryFn: async () => {
       const params = new URLSearchParams();
@@ -45,13 +45,15 @@ export function useNotices(page: number, pageSize: number, filters?: BoardSearch
         }
       }
 
-      const { data } = await api.get(`/support/notice?${params.toString()}`);
-      return data;
+      const { data } = await api.get<
+        ApiResponse<{ list: NoticeResponse[]; pagination: Pagination }>
+      >(`/support/notice?${params.toString()}`);
+      return data.data;
     },
   });
 }
 
-/** 공지사항 등록 */
+// 공지사항 등록
 export function useCreateNotice() {
   const queryClient = useQueryClient();
 
@@ -70,21 +72,21 @@ export function useCreateNotice() {
   });
 }
 
-/** 공지사항 상세 조회 */
+// 공지사항 상세 조회
 export function useNoticeDetail(boardNo: number | null) {
-  return useQuery<ApiResponse<NoticeDetailResponse>>({
+  return useQuery<NoticeDetailResponse>({
     queryKey: ["noticeDetail", boardNo],
     queryFn: async () => {
-      const { data } = await api.get(`/support/notice/detail`, {
+      const { data } = await api.get<ApiResponse<NoticeDetailResponse>>(`/support/notice/detail`, {
         params: { boardNo },
       });
-      return data;
+      return data.data;
     },
     enabled: !!boardNo && boardNo > 0,
   });
 }
 
-/** 공지사항 수정 Hook */
+// 공지사항 수정
 export function useUpdateNotice(boardNo: number) {
   const queryClient = useQueryClient();
 
@@ -106,7 +108,7 @@ export function useUpdateNotice(boardNo: number) {
   });
 }
 
-/** 공지사항 삭제 Hook */
+// 공지사항 삭제
 export function useDeleteNotice(boardNo: number) {
   const queryClient = useQueryClient();
   const router = useRouter();

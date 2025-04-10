@@ -2,6 +2,7 @@ export type NoticeStatus = "ACTIVE" | "INACTIVE";
 export type NoticePriority = "LOW" | "MEDIUM" | "HIGH";
 
 import type { Dayjs } from "dayjs";
+
 export interface NoticeFormValues {
   title: string;
   content: string;

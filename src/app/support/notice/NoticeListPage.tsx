@@ -31,8 +31,8 @@ export default function NoticeListPage() {
   }, [searchParams]);
 
   const { data, isLoading } = useNotices(page, pageSize, filters);
-  const list = data?.data.list || [];
-  const pagination = data?.data.pagination;
+  const list = data?.list || [];
+  const pagination = data?.pagination;
 
   const handleSearch = (params: Record<string, string | string[]>) => {
     const [[key, value]] = Object.entries(params);

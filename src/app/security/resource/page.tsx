@@ -4,33 +4,22 @@ import { Select, Table, Tag, Tooltip } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useState } from "react";
 
-import { roleOptions } from "@/types";
+import { roleOptions, RoleResource } from "@/types";
 
 import { useAddResourceRole, useResources } from "@/lib/queries";
 import { apiErrorMessage } from "@/lib/utils/apiErrorMessage";
 
-interface Resource {
-  resourceId: number;
-  resourceName: string;
-  resourceDesc: string | null;
-  httpMethod: string | null;
-  orderNum: number;
-  resourceType: string;
-  roleDesc: string | null;
-}
-
 export default function ResourcesPage() {
-  const { data, isLoading, error } = useResources();
-  const resources: Resource[] = Array.isArray(data) ? data : [];
+  const { data: resources = [], isLoading, error } = useResources();
   const [pageSize, setPageSize] = useState(20);
   const addResourceRole = useAddResourceRole();
 
   const [selectedRoles, setSelectedRoles] = useState<Record<number, string>>({});
 
   const handleRoleChange = (resourceId: number, newRole: string) => {
-    const prevRole =
-      selectedRoles[resourceId] ||
-      data?.find((item: Resource) => item.resourceId === resourceId)?.roleDesc;
+    const currentResource = resources.find((item) => item.resourceId === resourceId);
+    const prevRole = selectedRoles[resourceId] ?? currentResource?.roleDesc ?? "";
+
     setSelectedRoles((prev) => ({ ...prev, [resourceId]: newRole }));
 
     addResourceRole.mutate(
@@ -44,7 +33,7 @@ export default function ResourcesPage() {
     );
   };
 
-  const columns: ColumnsType<Resource> = [
+  const columns: ColumnsType<RoleResource> = [
     {
       title: <div style={{ textAlign: "center" }}>ID</div>,
       dataIndex: "resourceId",

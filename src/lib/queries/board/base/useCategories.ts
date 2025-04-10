@@ -6,7 +6,7 @@ import { ApiResponse, Category, CategoryCreateRequest, CategoryEditRequest } fro
 import { api } from "@/lib/utils/api";
 
 export function useCategories(boardType: string) {
-  return useQuery({
+  return useQuery<Category[]>({
     queryKey: ["categories", boardType],
     queryFn: async () => {
       const { data } = await api.get<ApiResponse<Category[]>>("/board/categories", {

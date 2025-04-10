@@ -1,6 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { message } from "antd";
 
+import { ApiResponse, Pagination, Role } from "@/types";
+
 import { api } from "@/lib/utils/api";
 import { apiErrorMessage } from "@/lib/utils/apiErrorMessage";
 
@@ -10,7 +12,7 @@ export function useRole(
   pageSize: number,
   filters?: Record<string, string | string[]>,
 ) {
-  return useQuery({
+  return useQuery<{ list: Role[]; pagination: Pagination }>({
     queryKey: ["fetchRole", page, pageSize, filters],
     queryFn: async () => {
       const params = new URLSearchParams({
@@ -19,8 +21,10 @@ export function useRole(
         ...(filters || {}),
       });
 
-      const { data } = await api.get(`/role/authorities?${params.toString()}`);
-      return data;
+      const { data } = await api.get<ApiResponse<{ list: Role[]; pagination: Pagination }>>(
+        `/role/authorities?${params.toString()}`,
+      );
+      return data.data;
     },
   });
 }

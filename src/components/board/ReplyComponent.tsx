@@ -5,7 +5,7 @@ import { UseMutationResult, UseQueryResult } from "@tanstack/react-query";
 import { Button, Input, Popconfirm, Spin, Typography } from "antd";
 import { useEffect, useState } from "react";
 
-import { ApiResponse, Reply, ReplyCreateRequest, Pagination } from "@/types";
+import { Pagination, Reply, ReplyCreateRequest } from "@/types";
 
 import { useAuthStore } from "@/store/useAuthStore";
 
@@ -19,9 +19,7 @@ interface EnhancedReply extends Reply {
 
 /** 외부에서 주입받는 댓글 서비스 인터페이스 */
 interface ReplyService {
-  useReplies: (
-    boardNo: number,
-  ) => UseQueryResult<ApiResponse<{ list: Reply[]; pagination: Pagination }>, Error>;
+  useReplies: (boardNo: number) => UseQueryResult<{ list: Reply[]; pagination: Pagination }, Error>;
   useCreateReply: () => UseMutationResult<void, Error, ReplyCreateRequest>;
   useDeleteReply: (boardNo: number) => UseMutationResult<void, Error, number>;
 }
@@ -44,10 +42,10 @@ export default function ReplyComponent({ boardNo, service }: ReplyComponentProps
 
   // 댓글 + 대댓글 정리
   useEffect(() => {
-    if (!data?.data?.list || !data?.data?.pagination) return;
+    if (!data?.list || !data?.pagination) return;
 
-    const allReplies = data.data.list;
-    const pagination = data.data.pagination;
+    const allReplies = data.list;
+    const pagination = data.pagination;
 
     const rootReplies = allReplies
       .filter((r) => !r.parentId)

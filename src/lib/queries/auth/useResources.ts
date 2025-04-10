@@ -1,20 +1,22 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { message } from "antd";
 
+import { ApiResponse, RoleResource, TokenIgnore } from "@/types";
+
 import { api } from "@/lib/utils/api";
 
-/** 토큰 무시 URL 조회 Hook */
+// 토큰 무시 URL 조회
 export function useFetchTokenIgnoreUrls() {
-  return useQuery({
+  return useQuery<TokenIgnore[]>({
     queryKey: ["fetchTokenIgnoreUrls"],
     queryFn: async () => {
-      const { data } = await api.get("/resource/token-ignore-url");
-      return data?.data ?? []; // 데이터가 없을 경우 빈 배열 반환
+      const { data } = await api.get<ApiResponse<TokenIgnore[]>>("/resource/token-ignore-url");
+      return data.data; // 데이터가 없을 경우 빈 배열 반환
     },
   });
 }
 
-/** 토큰 무시 URL 추가 및 수정 Hook */
+// 토큰 무시 URL 추가 및 수정
 export function useUpdateTokenIgnoreUrl() {
   const queryClient = useQueryClient();
 
@@ -30,7 +32,7 @@ export function useUpdateTokenIgnoreUrl() {
   });
 }
 
-/** 토큰 무시 URL 삭제 Hook */
+// 토큰 무시 URL 삭제
 export function useDeleteTokenIgnoreUrl() {
   const queryClient = useQueryClient(); // 데이터 캐싱을 위한 QueryClient
 
@@ -47,18 +49,18 @@ export function useDeleteTokenIgnoreUrl() {
   });
 }
 
-/** 리소스조회 Hook */
+// 리소스조회
 export function useResources() {
-  return useQuery({
+  return useQuery<RoleResource[]>({
     queryKey: ["fetchResources"],
     queryFn: async () => {
-      const { data } = await api.get("/resource");
-      return data?.data ?? [];
+      const { data } = await api.get<ApiResponse<RoleResource[]>>("/resource");
+      return data?.data;
     },
   });
 }
 
-/** 리소스에 역할 추가하는 Hook */
+// 리소스에 역할 추가
 export function useAddResourceRole() {
   const queryClient = useQueryClient();
 

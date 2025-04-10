@@ -4,23 +4,11 @@ import { Select, Switch, Table, Tooltip } from "antd";
 import { ColumnsType } from "antd/es/table";
 import { useState } from "react";
 
-import { AuthoritiesOptions, roleOptions } from "@/types";
+import { AuthoritiesOptions, Role, roleOptions } from "@/types";
 
 import SearchFilters from "@/components/filters/SearchFilters";
 
 import { useRole, useUpdateRole, useUpdateSecurityStatus } from "@/lib/queries";
-
-// Role 데이터 타입 정의
-interface RoleData {
-  loginId: string;
-  email: string;
-  name: string;
-  provider: string;
-  roleDesc: string;
-  authority: string;
-  enabled: boolean;
-  accountNonLocked: boolean;
-}
 
 export default function RoleAuthoritiesPage() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -31,11 +19,12 @@ export default function RoleAuthoritiesPage() {
     setFilters(newFilters);
   };
   const { data, isLoading, error } = useRole(currentPage, pageSize, filters);
+
   const updateSecurityStatus = useUpdateSecurityStatus();
   const updateRole = useUpdateRole();
 
   // 상태 변경 핸들러들
-  const handleToggleEnabled = (record: RoleData) => {
+  const handleToggleEnabled = (record: Role) => {
     updateSecurityStatus.mutate({
       loginId: record.loginId,
       enabled: !record.enabled,
@@ -43,7 +32,7 @@ export default function RoleAuthoritiesPage() {
     });
   };
 
-  const handleToggleAccountLock = (record: RoleData) => {
+  const handleToggleAccountLock = (record: Role) => {
     updateSecurityStatus.mutate({
       loginId: record.loginId,
       enabled: record.enabled,
@@ -56,7 +45,7 @@ export default function RoleAuthoritiesPage() {
   };
 
   // 컬럼 정의
-  const columns: ColumnsType<RoleData> = [
+  const columns: ColumnsType<Role> = [
     { title: "로그인 ID", dataIndex: "loginId", key: "loginId", width: 150 },
     { title: "이메일", dataIndex: "email", key: "email", width: 200 },
     { title: "이름", dataIndex: "name", key: "name", width: 120 },
@@ -111,14 +100,14 @@ export default function RoleAuthoritiesPage() {
       <SearchFilters onSearch={handleSearch} filterOptions={AuthoritiesOptions} />
       <div className="overflow-x-auto">
         <Table
-          dataSource={data?.data.list || []}
+          dataSource={data?.list || []}
           columns={columns}
           rowKey="loginId"
           loading={isLoading}
           scroll={{ x: "max-content" }}
           pagination={{
             current: currentPage,
-            total: data?.data?.pagination?.totalElements || 0,
+            total: data?.pagination?.totalElements || 0,
             pageSize: pageSize,
             showSizeChanger: true,
             pageSizeOptions: ["10", "20", "50", "100"],

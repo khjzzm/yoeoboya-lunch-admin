@@ -10,11 +10,11 @@ export interface BoardTypeResponse {
 }
 
 export const useBoardTypes = () => {
-  return useQuery<ApiResponse<BoardTypeResponse[]>>({
+  return useQuery<BoardTypeResponse[]>({
     queryKey: ["boardTypes"],
     queryFn: async () => {
-      const { data } = await api.get("/board/types");
-      return data;
+      const { data } = await api.get<ApiResponse<BoardTypeResponse[]>>("/board/types");
+      return data.data;
     },
   });
 };

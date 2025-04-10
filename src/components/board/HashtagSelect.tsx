@@ -1,13 +1,13 @@
-import { CopyOutlined, DeleteOutlined, CloseOutlined } from "@ant-design/icons";
-import { Form, Select, Spin, Divider, Typography, message, Button } from "antd";
-import { useState, useEffect } from "react";
+import { CloseOutlined, CopyOutlined, DeleteOutlined } from "@ant-design/icons";
+import { Button, Divider, Form, message, Select, Spin, Typography } from "antd";
+import { useEffect, useState } from "react";
 
 import { useFreeBoardHashTagSearch, useFreeBoardPopularHashtags } from "@/lib/queries";
 import {
   addRecentHashtag,
+  clearRecentHashtags,
   getRecentHashtags,
   removeRecentHashtag,
-  clearRecentHashtags,
 } from "@/lib/utils/localRecentTags";
 
 interface HashtagSelectProps {
