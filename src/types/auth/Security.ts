@@ -15,8 +15,6 @@ export interface RoleResource {
   httpMethod: string; // HTTP 메서드 (GET, POST 등)
 }
 
-import dayjs from "dayjs";
-
 export interface AccessIpRequest {
   ipAddress: string;
   block: boolean;
@@ -34,8 +32,12 @@ export interface AccessIpResponse {
   hitCount: number;
 }
 
-export interface AccessIpFormFields extends Omit<AccessIpRequest, "expiresAt"> {
-  expiresAt?: dayjs.Dayjs;
+import { Dayjs } from "dayjs";
+export interface AccessIpFormFields {
+  ipAddress: string;
+  block: boolean;
+  reason?: string;
+  expiresAt?: Dayjs;
 }
 
 export interface Role {

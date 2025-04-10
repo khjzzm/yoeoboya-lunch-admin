@@ -100,46 +100,54 @@ export default function FreeListPage() {
               </div>
 
               <div className="flex flex-col">
-                <div
-                  className={`truncate cursor-pointer hover:underline text-sm`}
-                  style={{
-                    color: isRead(item.boardNo) ? "#770088" : "black",
-                  }}
-                  onClick={() => {
-                    if (item.secret) {
-                      setOpenPasswordInput(item.boardNo);
-                    } else {
-                      markAsRead(item.boardNo);
-                      router.push(`/board/free/view?boardNo=${item.boardNo}`);
-                    }
-                  }}
-                >
-                  {!item.secret && item.hasFile && <span>📷</span>}
-                  {item.secret && "🔒"} {item.title}
-                  {item.replyCount > 0 && (
-                    <span className="text-gray-400"> ({item.replyCount})</span>
+                <div className="flex items-center gap-2">
+                  <div
+                    className={`truncate cursor-pointer hover:underline text-sm`}
+                    style={{
+                      color: isRead(item.boardNo) ? "#770088" : "black",
+                    }}
+                    onClick={() => {
+                      if (item.secret) {
+                        setOpenPasswordInput((prev) =>
+                          prev === item.boardNo ? null : item.boardNo,
+                        );
+                      } else {
+                        markAsRead(item.boardNo);
+                        router.push(`/board/free/view?boardNo=${item.boardNo}`);
+                      }
+                    }}
+                  >
+                    {!item.secret && item.hasFile && <span>📷</span>}
+                    {item.secret && "🔒"} {item.title}
+                    {item.replyCount > 0 && (
+                      <span className="text-gray-400"> ({item.replyCount})</span>
+                    )}
+                  </div>
+
+                  {openPasswordInput === item.boardNo && (
+                    <div className="flex items-center gap-1 ml-2">
+                      <Input.Group compact style={{ display: "flex" }}>
+                        <Input.Password
+                          placeholder="비밀번호"
+                          maxLength={4}
+                          size="small"
+                          style={{ width: 140 }}
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          onPressEnter={() => handleVerifyAndNavigate(item.boardNo)}
+                        />
+                        <Button
+                          size="small"
+                          type="primary"
+                          onClick={() => handleVerifyAndNavigate(item.boardNo)}
+                          disabled={isPending}
+                        >
+                          확인
+                        </Button>
+                      </Input.Group>
+                    </div>
                   )}
                 </div>
-
-                {openPasswordInput === item.boardNo && (
-                  <div className="flex gap-2 items-center mt-2">
-                    <Input.Password
-                      placeholder="비밀번호를 입력하세요"
-                      maxLength={4}
-                      style={{ width: 200 }}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      onPressEnter={() => handleVerifyAndNavigate(item.boardNo)}
-                    />
-                    <button
-                      disabled={isPending}
-                      onClick={() => handleVerifyAndNavigate(item.boardNo)}
-                      className="text-xs bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 disabled:opacity-50"
-                    >
-                      {isPending ? "확인중..." : "확인"}
-                    </button>
-                  </div>
-                )}
 
                 {item.hashTag?.length > 0 && (
                   <div className="flex flex-wrap gap-2 mt-1 text-gray-400">

@@ -1,7 +1,6 @@
 "use client";
 
 import { Button, DatePicker, Form, Input, Modal, Popconfirm, Switch, Table } from "antd";
-import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 
 import type { AccessIpFormFields, AccessIpRequest, AccessIpResponse } from "@/types";
@@ -12,6 +11,7 @@ import {
   useDeleteAccessIp,
   useUpdateAccessIp,
 } from "@/lib/queries";
+import dayjs from "@/lib/utils/dayjs";
 
 export default function AdminAccessIpPage() {
   const [form] = Form.useForm<AccessIpFormFields>();
@@ -27,7 +27,7 @@ export default function AdminAccessIpPage() {
     if (editingIp) {
       form.setFieldsValue({
         ...editingIp,
-        expiresAt: editingIp.expiresAt ? dayjs(editingIp.expiresAt) : undefined,
+        expiresAt: editingIp.expiresAt ? dayjs(editingIp.expiresAt).tz("Asia/Seoul") : undefined,
       });
     } else {
       form.resetFields();
@@ -37,8 +37,14 @@ export default function AdminAccessIpPage() {
   const handleSubmit = (values: AccessIpFormFields) => {
     const payload: AccessIpRequest = {
       ...values,
-      expiresAt: values.expiresAt ? values.expiresAt.toISOString() : undefined,
+      expiresAt: values.expiresAt
+        ? dayjs.tz(values.expiresAt, "Asia/Seoul").toDate().toISOString()
+        : undefined,
     };
+
+    // 디버그 로그
+    console.log("⏰ expiresAt raw:", values.expiresAt?.toString());
+    console.log("📦 전송:", payload.expiresAt);
 
     if (editingIp) {
       update.mutate({ id: editingIp.id, data: payload });

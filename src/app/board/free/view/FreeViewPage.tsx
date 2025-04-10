@@ -33,6 +33,7 @@ export default function FreeViewPage() {
   const pin = useQueryParamString("pin") || undefined;
   const boardNo = useQueryParamNumber("boardNo");
   const { data: detail, isLoading } = useFreeBoardDetail(boardNo, pin);
+
   const { mutate: deleteBoard } = useDeleteFreeBoard(boardNo);
   const verifyPassword = useFreeBoardVerifyPassword();
 
@@ -52,9 +53,9 @@ export default function FreeViewPage() {
     return <Skeleton active paragraph={{ rows: 6 }} />;
   }
 
-  if (detail.secret && !pin) {
+  if (detail.secret && !detail.checkedPin) {
     return (
-      <div className="max-w-md mx-auto mt-20 text-center">
+      <div className="max-w-md mx-auto m-20 text-center">
         <LockOutlined style={{ fontSize: 40, color: "#888" }} />
         <p className="mt-4 mb-2">비밀글입니다. 비밀번호를 입력해주세요.</p>
         <Input.Password

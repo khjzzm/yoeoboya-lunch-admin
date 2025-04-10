@@ -54,4 +54,5 @@ export interface FreeBoardDetailResponse {
   hasLiked: boolean;
   createdDate: string | null;
   mine: boolean;
+  checkedPin: boolean;
 }

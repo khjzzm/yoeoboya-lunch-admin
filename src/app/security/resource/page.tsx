@@ -62,9 +62,10 @@ export default function ResourcesPage() {
       render: (text) => {
         let color = "black";
         if (text === "GET") color = "blue";
-        else if (text === "POST") color = "orange";
+        else if (text === "POST") color = "purple";
         else if (text === "DELETE") color = "red";
-        else if (text === "PATCH") color = "green";
+        else if (text === "PATCH") color = "volcano";
+        else if (text === "PUT") color = "cyan";
 
         return <Tag color={color}>{text || "-"}</Tag>;
       },
