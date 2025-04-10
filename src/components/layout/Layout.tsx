@@ -4,6 +4,8 @@ import { Layout } from "antd";
 import { usePathname } from "next/navigation";
 import React from "react";
 
+import { isBlankPath } from "@/constants/paths";
+
 import AppHeader from "./Header";
 import Sidebar from "./Sidebar";
 
@@ -16,7 +18,7 @@ interface AppLayoutProps {
 
 export default function AppLayout({ children }: AppLayoutProps) {
   const pathname = usePathname();
-  const isAuthPage = pathname.startsWith("/user/login") || pathname.startsWith("/user/signup");
+  const isAuthPage = isBlankPath(pathname);
 
   return isAuthPage ? (
     <>{children}</>

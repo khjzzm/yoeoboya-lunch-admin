@@ -166,10 +166,26 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* ✅ 회원가입 안내 */}
-        <div className="flex justify-center items-center mt-6 space-x-2 text-sm sm:text-base">
-          <Text type="secondary">계정이 없으신가요?</Text>
-          <Button type="link" onClick={() => router.push("/user/signup")} className="font-medium">
+        <div className="flex justify-center items-center mt-6 space-x-4 text-sm">
+          <Button
+            type="link"
+            style={{ color: "#4B5563" }}
+            className="px-1"
+            onClick={() => router.push("/user/find-id")}
+          >
+            아이디 찾기
+          </Button>
+          <span>|</span>
+          <Button
+            type="link"
+            style={{ color: "#4B5563" }}
+            className="px-1"
+            onClick={() => router.push("/user/reset/password")}
+          >
+            비밀번호 찾기
+          </Button>
+          <span>|</span>
+          <Button type="link" className="px-1" onClick={() => router.push("/user/signup")}>
             회원가입
           </Button>
         </div>

@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
+import { isBlankPath } from "@/constants/paths";
+
 export function middleware(req: NextRequest) {
   const token = req.cookies.get("token")?.value;
   const { pathname } = req.nextUrl;
@@ -12,8 +14,7 @@ export function middleware(req: NextRequest) {
     pathname.match(/\.(.*)$/) ||
     pathname.startsWith("/api/") ||
     pathname.startsWith("/_next/") ||
-    pathname.startsWith("/user/login") ||
-    pathname.startsWith("/user/signup")
+    isBlankPath(pathname)
   ) {
     return NextResponse.next();
   }

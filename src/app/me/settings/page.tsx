@@ -8,9 +8,12 @@ import AccountSettings from "@/components/me/settings/AccountSettings";
 import ProfileSettings from "@/components/me/settings/ProfileSettings";
 import SecuritySettings from "@/components/me/settings/SecuritySettings";
 
+import { useAuthStore } from "@/store/useAuthStore";
+
 const { Content, Sider } = Layout;
 
 export default function SettingsPage() {
+  const { user } = useAuthStore();
   const contentRef = useRef<HTMLDivElement>(null);
   const [selectedKey, setSelectedKey] = useState<string>("profile");
 
@@ -27,7 +30,8 @@ export default function SettingsPage() {
         key: "security",
         label: "비밀번호 및 인증",
         icon: <LockOutlined />,
-        component: <SecuritySettings />,
+        component: user?.provider === "yeoboya" ? <SecuritySettings /> : null,
+        disabled: user?.provider !== "yeoboya",
       },
       {
         key: "account",
@@ -37,7 +41,7 @@ export default function SettingsPage() {
       },
     ],
     [],
-  );
+  ).filter((section) => !section.disabled);
 
   // 동적 ref 배열: 각 섹션마다 React.createRef() 생성 (useMemo로 캐싱)
   const sectionRefs = useMemo(() => {

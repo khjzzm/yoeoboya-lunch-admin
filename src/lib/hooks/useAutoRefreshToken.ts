@@ -4,6 +4,8 @@ import { useQuery } from "@tanstack/react-query";
 import { usePathname } from "next/navigation";
 import { useEffect, useMemo } from "react";
 
+import { isBlankPath } from "@/constants/paths";
+
 import { api } from "@/lib/utils/api";
 
 import { useAuthStore } from "@/store/useAuthStore";
@@ -14,9 +16,7 @@ export function useAutoRefreshToken() {
   const pathname = usePathname();
 
   const shouldSkip = useMemo(() => {
-    return ["/user/login", "/user/signup", "/user/signup/social"].some((excluded) =>
-      pathname.startsWith(excluded),
-    );
+    return isBlankPath(pathname);
   }, [pathname]);
 
   const isLoggedIn = user !== null && typeof user === "object" && "loginId" in user;

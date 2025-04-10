@@ -1,10 +1,12 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { message, notification } from "antd";
+import axios from "axios";
 import { useRouter } from "next/navigation";
 
 import { ChangePasswordRequest, SignUpRequest, SocialSignUpRequest } from "@/types";
 
 import { api } from "@/lib/utils/api";
+import { apiErrorMessage } from "@/lib/utils/apiErrorMessage";
 
 import { useAuthStore } from "@/store/useAuthStore";
 
@@ -65,7 +67,6 @@ export function useSignUp() {
           password: signUpData.password,
         });
 
-        // ✅ 토큰 재발급 후 사용자 정보 갱신
         await api.post("/user/reissue");
         const { data: memberData } = await api.get("/me");
         if (memberData?.data) {
@@ -159,3 +160,48 @@ export function useChangePassword() {
     },
   });
 }
+
+export interface ResetPasswordRequest {
+  loginId: string;
+  email: string;
+  authorityPage: string;
+}
+
+// 비밀번호 찾기 메일 전송
+export const useSendResetPasswordMail = (onSuccessCallback?: () => void) => {
+  return useMutation({
+    mutationFn: async (values: Omit<ResetPasswordRequest, "authorityPage">) => {
+      await api.post("/user/sendResetPasswordMail", {
+        ...values,
+        authorityPage: "/user/reset/password/confirm",
+      });
+    },
+    onSuccess: () => {
+      message.success("비밀번호 재설정 메일을 전송했습니다.");
+      onSuccessCallback?.();
+    },
+  });
+};
+
+export const useResetPassword = (email?: string | null, passKey?: string | null) => {
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: async (values: { newPassword: string; confirmNewPassword: string }) => {
+      if (!email || !passKey) throw new Error("유효하지 않은 접근입니다.");
+      return await api.post("/user/resetPassword", {
+        email,
+        passKey,
+        newPassword: values.newPassword,
+        confirmNewPassword: values.confirmNewPassword,
+      });
+    },
+    onSuccess: () => {
+      message.success("비밀번호가 성공적으로 변경되었습니다.");
+      router.push("/login");
+    },
+    onError: () => {
+      message.error("링크가 만료되었거나 유효하지 않습니다.");
+    },
+  });
+};

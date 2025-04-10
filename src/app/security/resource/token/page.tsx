@@ -116,15 +116,10 @@ export default function TokenIgnoreUrlsPage() {
 
   return (
     <div>
-      <div className="flex justify-between items-center border-b pb-2 mb-4">
-        <Tooltip title="추가">
-          <Button
-            type="primary"
-            shape="circle"
-            icon={<PlusOutlined />}
-            onClick={() => showModal()}
-          />
-        </Tooltip>
+      <div className="flex justify-end mb-4">
+        <Button type="primary" onClick={() => showModal()}>
+          토큰 추가
+        </Button>
       </div>
 
       <div className="overflow-x-auto">
