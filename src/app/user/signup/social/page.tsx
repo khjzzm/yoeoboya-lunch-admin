@@ -1,10 +1,11 @@
 "use client";
 
 import { Alert, Avatar, Button, Card, Form, Input, Typography } from "antd";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { SocialSignUpRequest } from "@/types";
 
+import { useRandomKoreanName } from "@/lib/hooks/useRandomKoreanName";
 import { useSocialSignUp } from "@/lib/queries";
 import { apiErrorMessage, applyApiValidationErrors } from "@/lib/utils/apiErrorMessage";
 
@@ -15,6 +16,7 @@ export default function SocialSignUpPage() {
   const signUpMutation = useSocialSignUp();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [params, setParams] = useState<SocialSignUpRequest>({});
+  const nickName = useRandomKoreanName();
 
   useEffect(() => {
     const query = new URLSearchParams(window.location.search);
@@ -25,11 +27,12 @@ export default function SocialSignUpPage() {
       name: query.get("name") || undefined,
       provider: query.get("provider") || undefined,
       profileImageUrl: query.get("picture") ? decodeURIComponent(query.get("picture")!) : undefined,
+      nickName: nickName ? nickName : undefined,
     };
 
     setParams(parsed);
     form.setFieldsValue(parsed);
-  }, [form]);
+  }, [form, nickName]);
 
   const handleSocialSignUp = (values: SocialSignUpRequest) => {
     signUpMutation.mutate(values, {
@@ -87,6 +90,10 @@ export default function SocialSignUpPage() {
 
           <Form.Item name="profileImageUrl" hidden>
             <Input type="hidden" />
+          </Form.Item>
+
+          <Form.Item name="nickName" hidden>
+            <Input readOnly type="hidden" value={params.nickName} />
           </Form.Item>
 
           <Button

@@ -7,6 +7,7 @@ import { SignUpRequest } from "@/types";
 
 import YeoboyaLogo from "@/components/common/YeoboyaLogo";
 
+import { useRandomKoreanName } from "@/lib/hooks/useRandomKoreanName";
 import { useSignUp } from "@/lib/queries";
 import { apiErrorMessage, applyApiValidationErrors } from "@/lib/utils/apiErrorMessage";
 
@@ -16,16 +17,13 @@ export default function SignUpPage() {
   const [form] = Form.useForm();
   const signUpMutation = useSignUp();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [email, setEmail] = useState<string>("");
+  const nickName = useRandomKoreanName();
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const emailParam = params.get("email");
-    if (emailParam) {
-      setEmail(emailParam);
-      form.setFieldsValue({ email: emailParam });
+    if (nickName) {
+      form.setFieldsValue({ nickName });
     }
-  }, [form]);
+  }, [nickName, form]);
 
   const handleSignUp = (values: SignUpRequest) => {
     signUpMutation.mutate(values, {
@@ -51,7 +49,7 @@ export default function SignUpPage() {
           form={form}
           layout="vertical"
           onFinish={handleSignUp}
-          className="space-y-4"
+          className="space-y-8"
           requiredMark={false}
         >
           <Form.Item
@@ -62,19 +60,13 @@ export default function SignUpPage() {
             <Input size="large" placeholder="아이디 입력" />
           </Form.Item>
 
-          {email ? (
-            <Form.Item label="이메일" name="email">
-              <Input size="large" disabled value={email} />
-            </Form.Item>
-          ) : (
-            <Form.Item
-              label="이메일"
-              name="email"
-              rules={[{ required: true, message: "이메일을 입력하세요!" }]}
-            >
-              <Input size="large" placeholder="이메일 입력" />
-            </Form.Item>
-          )}
+          <Form.Item
+            label="이메일"
+            name="email"
+            rules={[{ required: true, message: "이메일을 입력하세요!" }]}
+          >
+            <Input size="large" placeholder="이메일 입력" />
+          </Form.Item>
 
           <Form.Item
             label="이름"
@@ -90,6 +82,10 @@ export default function SignUpPage() {
             rules={[{ required: true, message: "비밀번호를 입력하세요!" }]}
           >
             <Input.Password size="large" placeholder="비밀번호 입력" />
+          </Form.Item>
+
+          <Form.Item name="nickName" hidden>
+            <Input readOnly value={nickName} />
           </Form.Item>
 
           <Button

@@ -41,6 +41,7 @@ export default function FindIdPage() {
           layout="vertical"
           onFinish={handleSubmit}
           requiredMark={false}
+          className="space-y-4"
           validateTrigger="onBlur"
         >
           <Form.Item

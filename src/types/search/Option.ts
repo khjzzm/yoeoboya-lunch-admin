@@ -39,6 +39,7 @@ export const roleOptions: SearchOption[] = [
   { label: "유저", value: "ROLE_USER" },
   { label: "게스트", value: "ROLE_GUEST" },
   { label: "차단", value: "ROLE_BLOCK" },
+  { label: "탈퇴", value: "ROLE_WITHDRAWN" },
 ];
 
 export const AuthoritiesOptions: SearchFilterOption[] = [

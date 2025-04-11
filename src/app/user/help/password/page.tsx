@@ -43,6 +43,7 @@ export default function ResetPasswordRequestPage() {
         <Form
           form={form}
           layout="vertical"
+          className="space-y-8"
           onFinish={handleSignUp}
           requiredMark={false}
           validateTrigger="onBlur"

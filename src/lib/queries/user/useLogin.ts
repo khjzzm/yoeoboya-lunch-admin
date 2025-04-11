@@ -2,7 +2,14 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { message, notification } from "antd";
 import { useRouter } from "next/navigation";
 
-import { ApiResponse, ChangePasswordRequest, SignUpRequest, SocialSignUpRequest } from "@/types";
+import {
+  ApiResponse,
+  ChangePasswordRequest,
+  ResetPasswordRequest,
+  SignUpRequest,
+  SocialSignUpRequest,
+  WithdrawRequest,
+} from "@/types";
 
 import { api } from "@/lib/utils/api";
 
@@ -129,7 +136,7 @@ export function useLogout() {
   });
 }
 
-// 비밀번호 변경 API
+// 비밀번호 변경
 export function useChangePassword() {
   const logout = useAuthStore((state) => state.logout);
   const router = useRouter();
@@ -157,12 +164,6 @@ export function useChangePassword() {
       }, 3000);
     },
   });
-}
-
-export interface ResetPasswordRequest {
-  loginId: string;
-  email: string;
-  authorityPage: string;
 }
 
 // 비밀번호 찾기 메일 전송
@@ -234,3 +235,30 @@ export const useFindLoginId = () => {
     },
   });
 };
+
+// 회원 탈퇴
+export function useWithdraw() {
+  const router = useRouter();
+  const logout = useAuthStore((state) => state.logout);
+
+  return useMutation({
+    mutationFn: async (payload: WithdrawRequest) => {
+      const { data } = await api.delete("/user/delete/account", {
+        data: payload, // DELETE with body
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      return data;
+    },
+    onSuccess: () => {
+      message.success("회원 탈퇴가 완료되었습니다.").then(() => {
+        logout();
+        router.push("/user/login");
+      });
+    },
+    onError: () => {
+      message.error("회원 탈퇴에 실패했습니다. 다시 시도해주세요.");
+    },
+  });
+}

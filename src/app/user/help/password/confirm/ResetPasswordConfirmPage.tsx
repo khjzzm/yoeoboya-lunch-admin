@@ -30,7 +30,13 @@ export default function ResetPasswordConfirmPage() {
           비밀번호 재설정
         </Title>
 
-        <Form form={form} layout="vertical" onFinish={mutate} requiredMark={false}>
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={mutate}
+          className="space-y-4"
+          requiredMark={false}
+        >
           <Form.Item label="아이디" name="loginId" hidden initialValue={loginId}>
             <Input readOnly disabled />
           </Form.Item>

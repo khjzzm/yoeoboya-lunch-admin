@@ -13,6 +13,22 @@ export interface SignUpRequest {
   email: string;
   name: string;
   password: string;
+  nickName?: string;
+}
+
+// 회원탈퇴
+export interface WithdrawRequest {
+  loginId: string;
+  email: string;
+  provider?: string;
+  reason?: string;
+}
+
+// 비밀번호 찾기 요청
+export interface ResetPasswordRequest {
+  loginId: string;
+  email: string;
+  authorityPage: string;
 }
 
 // URL 파라미터 파싱용 타입은 모두 optional
@@ -23,4 +39,5 @@ export interface SocialSignUpRequest {
   name?: string;
   provider?: string | SocialProvider;
   profileImageUrl?: string;
+  nickName?: string;
 }

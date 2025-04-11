@@ -59,7 +59,7 @@ export default function LoginPage() {
           form={form}
           layout="vertical"
           onFinish={handleLogin}
-          className="space-y-4"
+          className="space-y-8"
           requiredMark={false}
         >
           <Form.Item
