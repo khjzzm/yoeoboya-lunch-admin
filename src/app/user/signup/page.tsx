@@ -1,9 +1,11 @@
 "use client";
 
 import { Alert, Button, Card, Form, Input, Typography } from "antd";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { SignUpRequest } from "@/types";
+
+import YeoboyaLogo from "@/components/common/YeoboyaLogo";
 
 import { useSignUp } from "@/lib/queries";
 import { apiErrorMessage, applyApiValidationErrors } from "@/lib/utils/apiErrorMessage";
@@ -38,6 +40,7 @@ export default function SignUpPage() {
   return (
     <div className="flex items-center justify-center min-h-dvh bg-gray-100 px-4 sm:px-6">
       <Card className="w-full max-w-md sm:max-w-lg lg:max-w-xl p-6 sm:p-10 shadow-2xl rounded-xl bg-white">
+        <YeoboyaLogo size="xl" containerClassName="mb-6 mt-2" />
         <Title level={3} className="text-center text-gray-900 mb-6 text-lg sm:text-xl md:text-2xl">
           회원가입
         </Title>

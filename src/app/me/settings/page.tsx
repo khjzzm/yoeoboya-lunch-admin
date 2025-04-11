@@ -40,7 +40,7 @@ export default function SettingsPage() {
         component: <AccountSettings />,
       },
     ],
-    [],
+    [user?.provider],
   ).filter((section) => !section.disabled);
 
   // 동적 ref 배열: 각 섹션마다 React.createRef() 생성 (useMemo로 캐싱)

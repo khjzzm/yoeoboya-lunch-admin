@@ -7,11 +7,13 @@ import React, { useEffect, useState } from "react";
 
 import { SocialProvider } from "@/types";
 
+import YeoboyaLogo from "@/components/common/YeoboyaLogo";
+
 import { useQueryParamString } from "@/lib/hooks/useQueryParam";
 import { useLogin } from "@/lib/queries";
 import { apiErrorMessage, applyApiValidationErrors } from "@/lib/utils/apiErrorMessage";
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 export default function LoginPage() {
   const [form] = Form.useForm();
   const login = useLogin();
@@ -50,10 +52,7 @@ export default function LoginPage() {
   return (
     <div className="flex items-center justify-center min-h-dvh bg-gray-100 px-4 sm:px-6">
       <Card className="w-full max-w-md sm:max-w-lg lg:max-w-xl p-6 sm:p-10 shadow-2xl rounded-xl bg-white">
-        <Title level={3} className="text-center text-gray-900 mb-6 text-lg sm:text-xl md:text-2xl">
-          로그인
-        </Title>
-
+        <YeoboyaLogo size="3xl" containerClassName="mb-6 mt-2" />
         {errorMessage && <Alert message={errorMessage} type="error" showIcon className="mb-4" />}
 
         <Form
@@ -171,7 +170,7 @@ export default function LoginPage() {
             type="link"
             style={{ color: "#4B5563" }}
             className="px-1"
-            onClick={() => router.push("/user/find-id")}
+            onClick={() => router.push("/user/help/find-id")}
           >
             아이디 찾기
           </Button>
@@ -180,7 +179,7 @@ export default function LoginPage() {
             type="link"
             style={{ color: "#4B5563" }}
             className="px-1"
-            onClick={() => router.push("/user/reset/password")}
+            onClick={() => router.push("/user/help/password")}
           >
             비밀번호 찾기
           </Button>

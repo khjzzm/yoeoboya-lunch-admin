@@ -2,7 +2,7 @@ export const BLANK_PATHS = {
   login: "/user/login",
   signup: "/user/signup",
   socialSignup: "/user/signup/social",
-  resetPrefix: "/user/reset",
+  resetPrefix: "/user/help",
 };
 
 export const isBlankPath = (pathname: string) => {

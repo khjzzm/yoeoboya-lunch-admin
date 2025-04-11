@@ -1,12 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { message, notification } from "antd";
-import axios from "axios";
 import { useRouter } from "next/navigation";
 
-import { ChangePasswordRequest, SignUpRequest, SocialSignUpRequest } from "@/types";
+import { ApiResponse, ChangePasswordRequest, SignUpRequest, SocialSignUpRequest } from "@/types";
 
 import { api } from "@/lib/utils/api";
-import { apiErrorMessage } from "@/lib/utils/apiErrorMessage";
 
 import { useAuthStore } from "@/store/useAuthStore";
 
@@ -168,40 +166,71 @@ export interface ResetPasswordRequest {
 }
 
 // 비밀번호 찾기 메일 전송
-export const useSendResetPasswordMail = (onSuccessCallback?: () => void) => {
+export const useSendResetPasswordMail = () => {
+  const router = useRouter();
   return useMutation({
     mutationFn: async (values: Omit<ResetPasswordRequest, "authorityPage">) => {
       await api.post("/user/sendResetPasswordMail", {
         ...values,
-        authorityPage: "/user/reset/password/confirm",
+        authorityPage: "/user/help/password/confirm",
       });
     },
     onSuccess: () => {
-      message.success("비밀번호 재설정 메일을 전송했습니다.");
-      onSuccessCallback?.();
+      router.push("/user/help/password/success");
     },
   });
 };
 
-export const useResetPassword = (email?: string | null, passKey?: string | null) => {
+// 비밀번호 변경
+export const useResetPassword = () => {
   const router = useRouter();
 
   return useMutation({
-    mutationFn: async (values: { newPassword: string; confirmNewPassword: string }) => {
-      if (!email || !passKey) throw new Error("유효하지 않은 접근입니다.");
-      return await api.post("/user/resetPassword", {
+    mutationFn: async (values: {
+      loginId: string;
+      email: string;
+      passKey: string;
+      newPassword: string;
+      confirmNewPassword: string;
+    }) => {
+      const { loginId, email, passKey, newPassword, confirmNewPassword } = values;
+
+      if (!email || !passKey || !loginId) {
+        throw new Error("유효하지 않은 접근입니다.");
+      }
+
+      return await api.patch("/user/resetPassword", {
+        loginId,
         email,
         passKey,
-        newPassword: values.newPassword,
-        confirmNewPassword: values.confirmNewPassword,
+        newPassword,
+        confirmNewPassword,
       });
     },
     onSuccess: () => {
-      message.success("비밀번호가 성공적으로 변경되었습니다.");
-      router.push("/login");
+      message.success("비밀번호가 성공적으로 변경되었습니다.").then(() => {
+        router.push("/login");
+      });
     },
     onError: () => {
       message.error("링크가 만료되었거나 유효하지 않습니다.");
+    },
+  });
+};
+
+// 아이디 찾기
+export const useFindLoginId = () => {
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: async (values: { email: string }) => {
+      const { data } = await api.get<ApiResponse<string>>("/user/findLoginId", {
+        params: values,
+      });
+      return data.data;
+    },
+    onSuccess: (loginId: string) => {
+      router.push(`/user/help/find-id/success?loginId=${loginId}`);
     },
   });
 };

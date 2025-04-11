@@ -5,6 +5,7 @@ import { Button, Layout, Menu, Typography } from "antd";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
+import YeoboyaLogo from "@/components/common/YeoboyaLogo";
 import { MenuItem, menuItems as rawMenuItems } from "@/components/layout/menuConfig";
 
 const { Sider } = Layout;
@@ -67,7 +68,7 @@ export default function Sidebar() {
       >
         {!collapsed && (
           <Title level={4} style={{ marginBottom: 0 }} className="text-gray-800 text-center w-full">
-            관리자 메뉴
+            <YeoboyaLogo size="xs" color={"000000"} />
           </Title>
         )}
         <Button
