@@ -40,6 +40,7 @@ export interface FreeBoardResponse {
   createdDate: string | null;
   hashTag: HashTagResponse[];
   hasFile: boolean;
+  writtenByWithdrawnMember: boolean;
 }
 
 export interface FreeBoardDetailResponse {
@@ -47,12 +48,16 @@ export interface FreeBoardDetailResponse {
   title: string;
   content: string;
   category: string;
+  name: string;
   pin: string;
   secret: boolean;
   viewCount: number;
+  likeCount: number;
+  replyCount: number;
   hashTag: HashTagResponse[];
   hasLiked: boolean;
   createdDate: string | null;
   mine: boolean;
   checkedPin: boolean;
+  writtenByWithdrawnMember: boolean;
 }

@@ -11,13 +11,11 @@ import { useAuthStore } from "@/store/useAuthStore";
 
 const { Text, Title } = Typography;
 
-/** 컴포넌트 내부 전용 확장 타입 */
 interface EnhancedReply extends Reply {
   replyInput: string;
   childReplies: Reply[];
 }
 
-/** 외부에서 주입받는 댓글 서비스 인터페이스 */
 interface ReplyService {
   useReplies: (boardNo: number) => UseQueryResult<{ list: Reply[]; pagination: Pagination }, Error>;
   useCreateReply: () => UseMutationResult<void, Error, ReplyCreateRequest>;
@@ -27,9 +25,14 @@ interface ReplyService {
 interface ReplyComponentProps {
   boardNo: number;
   service: ReplyService;
+  writtenByWithdrawnMember: boolean; // 🔽 추가된 prop
 }
 
-export default function ReplyComponent({ boardNo, service }: ReplyComponentProps) {
+export default function ReplyComponent({
+  boardNo,
+  service,
+  writtenByWithdrawnMember,
+}: ReplyComponentProps) {
   const { user } = useAuthStore();
   const [comment, setComment] = useState("");
   const [replies, setReplies] = useState<EnhancedReply[]>([]);
@@ -40,7 +43,6 @@ export default function ReplyComponent({ boardNo, service }: ReplyComponentProps
   const { mutate: createReply } = useCreateReply();
   const { mutate: deleteReply } = useDeleteReply(boardNo);
 
-  // 댓글 + 대댓글 정리
   useEffect(() => {
     if (!data?.list || !data?.pagination) return;
 
@@ -59,7 +61,6 @@ export default function ReplyComponent({ boardNo, service }: ReplyComponentProps
     setReplies(rootReplies);
   }, [data]);
 
-  // 댓글 or 대댓글 작성
   const handleCommentSubmit = (content: string, parentReplyId?: number | null) => {
     if (!content.trim() || !user?.loginId) return;
 
@@ -72,7 +73,7 @@ export default function ReplyComponent({ boardNo, service }: ReplyComponentProps
       },
       {
         onSuccess: () => {
-          setComment(""); // 최상위 댓글 초기화만
+          setComment(""); // 초기화
         },
       },
     );
@@ -142,30 +143,32 @@ export default function ReplyComponent({ boardNo, service }: ReplyComponentProps
                   </div>
                 )}
 
-                {/* 대댓글 입력창 */}
-                <div className="mt-4 pl-4">
-                  <Input.TextArea
-                    rows={2}
-                    placeholder="답글을 작성하세요..."
-                    value={parent.replyInput}
-                    onChange={(e) =>
-                      setReplies((prev) =>
-                        prev.map((r) =>
-                          r.replyId === parent.replyId ? { ...r, replyInput: e.target.value } : r,
-                        ),
-                      )
-                    }
-                  />
-                  <div className="flex justify-end mt-2">
-                    <Button
-                      size="small"
-                      type="primary"
-                      onClick={() => handleCommentSubmit(parent.replyInput, parent.replyId)}
-                    >
-                      답글 등록
-                    </Button>
+                {/* 대댓글 입력창 - 탈퇴 회원이면 표시 X */}
+                {!writtenByWithdrawnMember && (
+                  <div className="mt-4 pl-4">
+                    <Input.TextArea
+                      rows={2}
+                      placeholder="답글을 작성하세요..."
+                      value={parent.replyInput}
+                      onChange={(e) =>
+                        setReplies((prev) =>
+                          prev.map((r) =>
+                            r.replyId === parent.replyId ? { ...r, replyInput: e.target.value } : r,
+                          ),
+                        )
+                      }
+                    />
+                    <div className="flex justify-end mt-2">
+                      <Button
+                        size="small"
+                        type="primary"
+                        onClick={() => handleCommentSubmit(parent.replyInput, parent.replyId)}
+                      >
+                        답글 등록
+                      </Button>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             ))
           )}
@@ -173,21 +176,27 @@ export default function ReplyComponent({ boardNo, service }: ReplyComponentProps
       )}
 
       {/* 최상위 댓글 입력창 */}
-      <div className="mt-8 p-4 border rounded-lg bg-gray-50">
-        <Text strong>댓글 작성</Text>
-        <Input.TextArea
-          rows={3}
-          className="mt-2"
-          placeholder="댓글을 입력하세요..."
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-        />
-        <div className="flex justify-end mt-2">
-          <Button type="primary" onClick={() => handleCommentSubmit(comment)}>
-            댓글 등록
-          </Button>
+      {writtenByWithdrawnMember ? (
+        <div className="mt-8 p-4 border rounded-lg bg-gray-50 text-center text-gray-500">
+          <Text>탈퇴한 사용자의 게시글에는 댓글을 작성할 수 없습니다.</Text>
         </div>
-      </div>
+      ) : (
+        <div className="mt-8 p-4 border rounded-lg bg-gray-50">
+          <Text strong>댓글 작성</Text>
+          <Input.TextArea
+            rows={3}
+            className="mt-2"
+            placeholder="댓글을 입력하세요..."
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+          />
+          <div className="flex justify-end mt-2">
+            <Button type="primary" onClick={() => handleCommentSubmit(comment)}>
+              댓글 등록
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

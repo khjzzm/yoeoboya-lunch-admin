@@ -2,6 +2,7 @@
 
 import { DeleteOutlined, EditOutlined, LockOutlined } from "@ant-design/icons";
 import { Button, Input, Skeleton, Space, Typography } from "antd";
+import dayjs from "dayjs";
 import parse from "html-react-parser";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -25,7 +26,7 @@ import { markAsRead } from "@/lib/utils/readHistory";
 
 import { useAuthStore } from "@/store/useAuthStore";
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 export default function FreeViewPage() {
   const { isAdmin } = useAuthStore();
@@ -87,15 +88,35 @@ export default function FreeViewPage() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <Title level={2}>{detail.title}</Title>
+      <Title level={3} className="text-base font-semibold mb-2">
+        [{detail.category}] {detail.title}
+      </Title>
 
-      <div className="flex flex-col gap-2 text-sm text-gray-500 mb-4">
-        <div>
-          카테고리: <Text>{detail.category}</Text>
-        </div>
-        <div>
-          작성일: <Text>{detail.createdDate?.slice(0, 10)}</Text>
-        </div>
+      <div className="flex flex-wrap items-center pb-3 gap-x-2 gap-y-1">
+        {/* 작성자 */}
+        <span className="flex items-center gap-1"> {detail.name} </span>
+
+        {/* 구분점 */}
+        <span className="text-gray-300">|</span>
+
+        {/* 작성일 */}
+        <span>{dayjs(detail.createdDate).format("YYYY.MM.DD HH:mm:ss")}</span>
+
+        {/* 조회수 */}
+        <span className="text-gray-400 ml-auto">
+          조회 <span className="text-black font-medium">{detail.viewCount}</span>
+        </span>
+
+        {/* 추천 */}
+        <span className="text-gray-300">|</span>
+        <span className="text-gray-400">
+          추천 <span className="text-black font-medium">{detail.likeCount}</span>
+        </span>
+
+        {/* 댓글 수 (버튼처럼 둥글게 강조) */}
+        <span className="ml-1 px-2 py-0.5 rounded-full bg-gray-100 text-gray-800 text-xs">
+          댓글 {detail.replyCount}
+        </span>
       </div>
 
       <div className="prose max-w-none border-t pt-6">{parse(detail.content || "")}</div>
@@ -127,9 +148,11 @@ export default function FreeViewPage() {
         )}
       </div>
 
-      <div className="mt-10">
-        <ReplyComponent boardNo={boardNo} service={replyService} />
-      </div>
+      <ReplyComponent
+        boardNo={boardNo}
+        service={replyService}
+        writtenByWithdrawnMember={detail.writtenByWithdrawnMember}
+      />
     </div>
   );
 }

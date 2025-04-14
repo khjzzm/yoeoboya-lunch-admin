@@ -52,7 +52,7 @@ export default function LoginPage() {
   return (
     <div className="flex items-center justify-center min-h-dvh bg-gray-100 px-4 sm:px-6">
       <Card className="w-full max-w-md sm:max-w-lg lg:max-w-xl p-6 sm:p-10 shadow-2xl rounded-xl bg-white">
-        <YeoboyaLogo size="3xl" containerClassName="mb-6 mt-2" />
+        <YeoboyaLogo size="3xl" containerClassName="mb-6 mt-2" onClick={() => {}} />
         {errorMessage && <Alert message={errorMessage} type="error" showIcon className="mb-4" />}
 
         <Form

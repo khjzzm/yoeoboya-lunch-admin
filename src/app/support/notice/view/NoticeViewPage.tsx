@@ -4,6 +4,7 @@ import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { Button, Card, Skeleton, Tag, Typography } from "antd";
 import parse from "html-react-parser";
 import { useRouter } from "next/navigation";
+import React from "react";
 
 import { LikeButton } from "@/components/board/LikeButton";
 import ReplyComponent from "@/components/board/ReplyComponent";
@@ -99,7 +100,11 @@ export default function NoticeViewPage() {
         )}
       </div>
 
-      <ReplyComponent boardNo={boardNo} service={replyService} />
+      <ReplyComponent
+        boardNo={boardNo}
+        service={replyService}
+        writtenByWithdrawnMember={detail.writtenByWithdrawnMember}
+      />
     </div>
   );
 }

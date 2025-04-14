@@ -243,7 +243,7 @@ export function useWithdraw() {
 
   return useMutation({
     mutationFn: async (payload: WithdrawRequest) => {
-      const { data } = await api.delete("/user/delete/account", {
+      const { data } = await api.delete("/user/leave-id", {
         data: payload, // DELETE with body
         headers: {
           "Content-Type": "application/json",
@@ -252,10 +252,16 @@ export function useWithdraw() {
       return data;
     },
     onSuccess: () => {
-      message.success("회원 탈퇴가 완료되었습니다.").then(() => {
+      notification.success({
+        message: "회원탈퇴 완료",
+        description: "보안을 위해 3초 후 로그인 페이지로 이동됩니다.",
+        duration: 5, // 3초 동안 표시
+      });
+
+      setTimeout(() => {
         logout();
         router.push("/user/login");
-      });
+      }, 3000);
     },
     onError: () => {
       message.error("회원 탈퇴에 실패했습니다. 다시 시도해주세요.");

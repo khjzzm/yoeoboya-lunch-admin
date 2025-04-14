@@ -22,6 +22,7 @@ export interface WithdrawRequest {
   email: string;
   provider?: string;
   reason?: string;
+  nickName?: string;
 }
 
 // 비밀번호 찾기 요청

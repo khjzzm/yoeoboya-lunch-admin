@@ -54,6 +54,7 @@ export default function NoticeListPage() {
         )}
       </div>
 
+      {/*  상단 헤더 */}
       <div className="hidden md:flex py-2 font-semibold text-gray-500 border-b bg-gray-50 text-sm">
         <div className="w-16 text-center shrink-0">번호</div>
         <div className="w-20 text-center shrink-0">카테고리</div>
@@ -67,8 +68,9 @@ export default function NoticeListPage() {
       <List<NoticeResponse>
         loading={isLoading}
         dataSource={list}
-        renderItem={(item) => {
+        renderItem={(item, index) => {
           const isExpired = dayjs(item.endDate).isBefore(dayjs());
+          const isLast = list && index === list.length - 1;
 
           return (
             <List.Item
@@ -77,6 +79,11 @@ export default function NoticeListPage() {
                 markAsRead(item.boardNo);
               }}
               className={`hover:bg-gray-50 px-2 md:px-4 py-3 cursor-pointer border-b ${item.pinned ? "bg-yellow-50" : ""}`}
+              style={{
+                paddingTop: 5,
+                paddingBottom: 5,
+                borderBottom: isLast ? "1px solid #29367c" : undefined,
+              }}
             >
               <div className="flex flex-col md:flex-row w-full items-start md:items-center text-xs md:text-sm gap-y-1 md:gap-0">
                 <div className="w-full md:w-16 text-left md:text-center shrink-0">
@@ -88,11 +95,17 @@ export default function NoticeListPage() {
                 <div className="w-full md:flex-1 text-left truncate min-w-0">
                   <div className="flex items-center gap-1">
                     {item.hasFile && <span>📷</span>}
-                    {item.pinned && <Tag color="gold">공지</Tag>}
-                    <span className={`line-clamp-1 ${isRead(item.boardNo) && "text-purple-500"}`}>
+                    <span
+                      className={`line-clamp-1`}
+                      style={{
+                        color: isRead(item.boardNo) ? "#770088" : "black",
+                      }}
+                    >
                       {item.title}
                     </span>
-                    <span className="text-gray-400">({item.replyCount})</span>
+                    {item.replyCount > 0 && (
+                      <span className="text-xs text-orange-600 ml-1">[{item.replyCount}]</span>
+                    )}
                     {isExpired && <Tag color="red">기간 종료</Tag>}
                   </div>
                 </div>

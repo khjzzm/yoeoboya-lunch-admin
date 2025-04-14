@@ -1,47 +1,25 @@
 "use client";
 
-import { BankOutlined, LockOutlined, UserOutlined } from "@ant-design/icons";
 import { Layout, Menu, Typography } from "antd";
+import { useRouter } from "next/navigation";
 import { createRef, RefObject, useEffect, useMemo, useRef, useState } from "react";
 
-import AccountSettings from "@/components/me/settings/AccountSettings";
-import ProfileSettings from "@/components/me/settings/ProfileSettings";
-import SecuritySettings from "@/components/me/settings/SecuritySettings";
+import { getSections } from "@/components/me/menuConfig";
 
 import { useAuthStore } from "@/store/useAuthStore";
 
 const { Content, Sider } = Layout;
 
 export default function SettingsPage() {
+  const router = useRouter();
   const { user } = useAuthStore();
   const contentRef = useRef<HTMLDivElement>(null);
   const [selectedKey, setSelectedKey] = useState<string>("profile");
 
   // 섹션 데이터 배열 정의 (추후 섹션이 추가될 때도 여기만 확장하면 됩니다)
-  const sections = useMemo(
-    () => [
-      {
-        key: "profile",
-        label: "프로필",
-        icon: <UserOutlined />,
-        component: <ProfileSettings />,
-      },
-      {
-        key: "security",
-        label: "비밀번호 및 인증",
-        icon: <LockOutlined />,
-        component: user?.provider === "yeoboya" ? <SecuritySettings /> : null,
-        disabled: user?.provider !== "yeoboya",
-      },
-      {
-        key: "account",
-        label: "계좌등록",
-        icon: <BankOutlined />,
-        component: <AccountSettings />,
-      },
-    ],
-    [user?.provider],
-  ).filter((section) => !section.disabled);
+  const sections = useMemo(() => {
+    return getSections(user?.provider).filter((section) => !section.disabled);
+  }, [user?.provider]);
 
   // 동적 ref 배열: 각 섹션마다 React.createRef() 생성 (useMemo로 캐싱)
   const sectionRefs = useMemo(() => {
@@ -141,6 +119,17 @@ export default function SettingsPage() {
             {section.component}
           </div>
         ))}
+        {/* 회원탈퇴 영역 */}
+        <div className="w-full border-t border-gray-200 pt-6 pb-6 flex justify-items-start">
+          <button
+            className="text-sm text-gray-400 hover:text-red-500 transition-colors duration-200"
+            onClick={() => {
+              router.push("/user/help/leave");
+            }}
+          >
+            회원탈퇴 &gt;
+          </button>
+        </div>
       </Content>
     </Layout>
   );

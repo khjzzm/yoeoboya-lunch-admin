@@ -62,7 +62,7 @@ export default function FreeListPage() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-2 md:px-0">
+    <div className="max-w-5xl mx-auto px-2 md:px-0 text-sm">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
         <SearchFilters onSearch={handleSearch} filterOptions={BoardSearchOptions} />
         <Button type="primary" onClick={() => router.push("/board/free/write")}>
@@ -70,8 +70,11 @@ export default function FreeListPage() {
         </Button>
       </div>
 
-      {/* ✅ 상단 헤더 */}
-      <div className="grid grid-cols-[40px_60px_1fr_100px_100px_60px_60px] py-5 text-xs font-semibold border-b bg-gray-50 gap-1">
+      {/*  상단 헤더 */}
+      <div
+        className="grid grid-cols-[50px_80px_1fr_100px_100px_60px_60px] py-3 font-semibold border-b bg-gray-50 gap-1"
+        style={{ borderTop: "2px solid #29367c", borderBottom: "1px solid #29367c" }}
+      >
         <div className="text-center">번호</div>
         <div className="text-center">카테고리</div>
         <div className="text-center">제목</div>
@@ -84,100 +87,111 @@ export default function FreeListPage() {
       <List<FreeBoardResponse>
         loading={isLoading}
         dataSource={list}
-        renderItem={(item) => (
-          <List.Item
-            className="border-b text-xs hover:bg-gray-100 transition-colors"
-            style={{ paddingTop: 5, paddingBottom: 5 }}
-          >
-            <div className="w-full grid grid-cols-[40px_60px_1fr_100px_100px_60px_60px] gap-1">
-              <div className="row-span-2 flex justify-center items-center">{item.boardNo}</div>
+        renderItem={(item, index) => {
+          const isLast = list && index === list.length - 1;
 
-              <div
-                className="row-span-2 flex justify-center items-center text-blue-500 font-medium cursor-pointer"
-                onClick={() => handleSearch({ category: item.category })}
-              >
-                [{item.category}]
-              </div>
+          return (
+            <List.Item
+              className="text-xs hover:bg-gray-100 transition-colors"
+              style={{
+                paddingTop: 5,
+                paddingBottom: 5,
+                borderBottom: isLast ? "1px solid #29367c" : undefined,
+              }}
+            >
+              <div className="w-full grid grid-cols-[50px_80px_1fr_100px_100px_60px_60px] gap-1 text-sm">
+                <div className="row-span-2 flex justify-center items-center">{item.boardNo}</div>
 
-              <div className="flex flex-col">
-                <div className="flex items-center gap-2">
-                  <div
-                    className={`truncate cursor-pointer hover:underline text-sm`}
-                    style={{
-                      color: isRead(item.boardNo) ? "#770088" : "black",
-                    }}
-                    onClick={() => {
-                      if (item.secret) {
-                        setOpenPasswordInput((prev) =>
-                          prev === item.boardNo ? null : item.boardNo,
-                        );
-                      } else {
-                        markAsRead(item.boardNo);
-                        router.push(`/board/free/view?boardNo=${item.boardNo}`);
-                      }
-                    }}
-                  >
-                    {!item.secret && item.hasFile && <span>📷</span>}
-                    {item.secret && "🔒"} {item.title}
-                    {item.replyCount > 0 && (
-                      <span className="text-gray-400"> ({item.replyCount})</span>
+                <div
+                  className="row-span-2 flex justify-center items-center cursor-pointer"
+                  onClick={() => handleSearch({ category: item.category })}
+                >
+                  [{item.category}]
+                </div>
+
+                <div className="flex flex-col">
+                  <div className="flex items-center gap-2">
+                    <div
+                      className={`truncate cursor-pointer hover:underline`}
+                      style={{
+                        color: isRead(item.boardNo) ? "#770088" : "black",
+                      }}
+                      onClick={() => {
+                        if (item.secret) {
+                          setOpenPasswordInput((prev) =>
+                            prev === item.boardNo ? null : item.boardNo,
+                          );
+                        } else {
+                          markAsRead(item.boardNo);
+                          router.push(`/board/free/view?boardNo=${item.boardNo}`);
+                        }
+                      }}
+                    >
+                      {!item.secret && item.hasFile && <span>📷</span>}
+                      {item.secret && "🔒"} <span className="">{item.title}</span>
+                      {item.replyCount > 0 && (
+                        <span className="text-xs text-orange-600 ml-1">[{item.replyCount}]</span>
+                      )}
+                      {item.writtenByWithdrawnMember && (
+                        <span className="text-xs pl-3">(탈퇴한 사용자의 게시글)</span>
+                      )}
+                    </div>
+
+                    {openPasswordInput === item.boardNo && (
+                      <div className="flex items-center gap-1 ml-2">
+                        <Input.Group compact style={{ display: "flex" }}>
+                          <Input.Password
+                            placeholder="비밀번호"
+                            maxLength={4}
+                            size="small"
+                            style={{ width: 140 }}
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            onPressEnter={() => handleVerifyAndNavigate(item.boardNo)}
+                          />
+                          <Button
+                            size="small"
+                            type="primary"
+                            onClick={() => handleVerifyAndNavigate(item.boardNo)}
+                            disabled={isPending}
+                          >
+                            확인
+                          </Button>
+                        </Input.Group>
+                      </div>
                     )}
                   </div>
 
-                  {openPasswordInput === item.boardNo && (
-                    <div className="flex items-center gap-1 ml-2">
-                      <Input.Group compact style={{ display: "flex" }}>
-                        <Input.Password
-                          placeholder="비밀번호"
-                          maxLength={4}
-                          size="small"
-                          style={{ width: 140 }}
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                          onPressEnter={() => handleVerifyAndNavigate(item.boardNo)}
-                        />
-                        <Button
-                          size="small"
-                          type="primary"
-                          onClick={() => handleVerifyAndNavigate(item.boardNo)}
-                          disabled={isPending}
+                  {item.hashTag?.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-1 text-gray-400">
+                      {item.hashTag.map((tagObj) => (
+                        <span
+                          key={tagObj.tag}
+                          className="cursor-pointer"
+                          onClick={() => handleSearch({ hashtag: tagObj.tag })}
                         >
-                          확인
-                        </Button>
-                      </Input.Group>
+                          #{tagObj.tag}
+                        </span>
+                      ))}
                     </div>
                   )}
                 </div>
 
-                {item.hashTag?.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-1 text-gray-400">
-                    {item.hashTag.map((tagObj) => (
-                      <span
-                        key={tagObj.tag}
-                        className="cursor-pointer"
-                        onClick={() => handleSearch({ hashtag: tagObj.tag })}
-                      >
-                        #{tagObj.tag}
-                      </span>
-                    ))}
-                  </div>
-                )}
+                <div className="row-span-2 flex justify-center items-center truncate cursor-pointer hover:underline">
+                  <span onClick={() => handleSearch({ author: item.name })}>{item.name}</span>
+                </div>
+
+                <div className="row-span-2 flex justify-center items-center">
+                  {dayjs(item.createdDate).format("HH:mm")}
+                </div>
+
+                <div className="row-span-2 flex justify-center items-center">{item.viewCount}</div>
+
+                <div className="row-span-2 flex justify-center items-center">{item.likeCount}</div>
               </div>
-
-              <div className="row-span-2 flex justify-center items-center truncate cursor-pointer hover:underline">
-                <span onClick={() => handleSearch({ author: item.name })}>{item.name}</span>
-              </div>
-
-              <div className="row-span-2 flex justify-center items-center">
-                {dayjs(item.createdDate).format("YY.MM.DD HH:mm")}
-              </div>
-
-              <div className="row-span-2 flex justify-center items-center">{item.viewCount}</div>
-
-              <div className="row-span-2 flex justify-center items-center">{item.likeCount}</div>
-            </div>
-          </List.Item>
-        )}
+            </List.Item>
+          );
+        }}
       />
 
       <div className="flex justify-center mt-6">
