@@ -47,15 +47,23 @@ export function useDeleteReply(endpoint: string, queryKeyPrefix: string, boardNo
 }
 
 // 댓글조회
-export function useReplies(endpoint: string, queryKeyPrefix: string, boardNo: number) {
+export function useReplies(
+  endpoint: string,
+  queryKeyPrefix: string,
+  boardNo: number,
+  page: number = 1,
+  size: number = 100,
+) {
   return useQuery<{ list: Reply[]; pagination: Pagination }>({
-    queryKey: [`${queryKeyPrefix}Replies`, boardNo],
+    queryKey: [`${queryKeyPrefix}Replies`, boardNo, page, size],
     queryFn: async () => {
+      const params = new URLSearchParams();
+      params.set("boardNo", String(boardNo));
+      params.set("page", String(page));
+      params.set("size", String(size));
+
       const { data } = await api.get<ApiResponse<{ list: Reply[]; pagination: Pagination }>>(
-        `${endpoint}/replies`,
-        {
-          params: { boardNo },
-        },
+        `${endpoint}/replies?${params.toString()}`,
       );
       return data.data;
     },

@@ -100,13 +100,12 @@ export default function FreeListPage() {
                   className="row-span-2 flex justify-center items-center cursor-pointer"
                   onClick={() => handleSearch({ category: item.category })}
                 >
-                  [{item.category}]
+                  {item.category}
                 </div>
 
                 <div className="flex flex-col">
                   <div className="flex items-center gap-2">
                     <div
-                      className={`cursor-pointer hover:underline`}
                       style={{
                         color: isRead(item.boardNo) ? "#770088" : "black",
                       }}
@@ -121,14 +120,20 @@ export default function FreeListPage() {
                         }
                       }}
                     >
-                      {!item.secret && item.hasFile && <span>📷</span>}
-                      {item.secret && "🔒"}
-                      {item.title}
+                      {item.secret ? (
+                        <span className="mr-1">🔒</span>
+                      ) : item.hasFile ? (
+                        <span className="mr-1">📷</span>
+                      ) : (
+                        <span className="mr-1">💬</span>
+                      )}
+                      {!item.writtenByWithdrawnMember ? (
+                        <span className="cursor-pointer hover:underline">{item.title}</span>
+                      ) : (
+                        <span className="cursor-pointer hover:underline">{item.title}</span>
+                      )}
                       {item.replyCount > 0 && (
                         <span className="text-xs text-orange-600 ml-1">[{item.replyCount}]</span>
-                      )}
-                      {item.writtenByWithdrawnMember && (
-                        <span className="text-xs pl-3">(탈퇴한 사용자의 게시글)</span>
                       )}
                     </div>
 
@@ -157,7 +162,7 @@ export default function FreeListPage() {
                   </div>
 
                   {item.hashTag?.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mt-1 text-gray-400">
+                    <div className="flex flex-wrap gap-2 mt-1 text-gray-400 text-xs">
                       {item.hashTag.map((tagObj) => (
                         <span
                           key={tagObj.tag}

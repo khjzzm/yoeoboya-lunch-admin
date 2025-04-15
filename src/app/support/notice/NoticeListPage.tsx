@@ -103,7 +103,11 @@ export default function NoticeListPage() {
                     {item.replyCount > 0 && (
                       <span className="text-xs text-orange-600 ml-1">[{item.replyCount}]</span>
                     )}
-                    {isExpired && <Tag color="red">기간 종료</Tag>}
+                    {isExpired && (
+                      <Tag bordered={false} color="red">
+                        <span>기간종료</span>
+                      </Tag>
+                    )}
                   </div>
                 </div>
                 <div className="w-full md:w-24 text-left md:text-center truncate">

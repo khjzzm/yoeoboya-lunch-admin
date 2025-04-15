@@ -118,6 +118,12 @@ export default function FreeViewPage() {
         </span>
       </div>
 
+      {detail.writtenByWithdrawnMember && (
+        <div className="mb-4 px-4 py-3 border border-gray-300 bg-gray-50 text-sm text-gray-500 rounded">
+          🚫 이 글은 <strong className="text-gray-700">탈퇴한 사용자</strong>가 작성한 게시글입니다.
+        </div>
+      )}
+
       <div className="prose max-w-none border-t pt-6">{parse(detail.content || "")}</div>
 
       <HashtagList hashtags={detail.hashTag} />

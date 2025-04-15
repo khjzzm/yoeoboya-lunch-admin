@@ -7,6 +7,7 @@ export interface Reply {
   date: string;
   mine: boolean;
   deleted: boolean;
+  ip: string;
   childReplies: Reply[]; // 대댓글 목록
 }
 
