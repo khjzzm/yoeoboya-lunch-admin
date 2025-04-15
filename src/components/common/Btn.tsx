@@ -11,7 +11,7 @@ interface VariantButtonProps extends ButtonProps {
 }
 
 export default function Btn({ visual = "primary", text, className, ...props }: VariantButtonProps) {
-  const baseStyle = "text-sm font-semibold";
+  const baseStyle = "text-sm";
 
   const variantStyles: Record<Visual, string> = {
     primary: "bg-[#29367c] text-white",

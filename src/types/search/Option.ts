@@ -11,20 +11,12 @@ export interface SearchFilterOption {
   options?: { label: string; value: string }[]; // checkbox, radio 전용 옵션
 }
 
-export const categoryOptions: SearchOption[] = [];
-
 export const BoardSearchOptions: SearchFilterOption[] = [
   { label: "제목+내용", value: BoardSearchType.title_content, inputType: "text" },
   { label: "제목", value: BoardSearchType.title, inputType: "text" },
   { label: "내용", value: BoardSearchType.content, inputType: "text" },
   { label: "작성자", value: BoardSearchType.author, inputType: "text" },
   { label: "댓글", value: BoardSearchType.comment, inputType: "text" },
-  {
-    label: "카테고리",
-    value: BoardSearchType.category,
-    inputType: "checkbox",
-    options: categoryOptions,
-  },
   // { label: "해시태그", value: BoardSearchType.hashtag, inputType: "text" }, // 필요 시 활성화
 ];
 

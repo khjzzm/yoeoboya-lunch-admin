@@ -63,7 +63,7 @@ export default function FreeListPage() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-2 md:px-0 text-sm">
+    <div className="max-w-7xl mx-auto px-2 md:px-0 text-sm">
       {/*  상단 헤더 */}
       <div
         className="grid grid-cols-[50px_80px_1fr_100px_100px_60px_60px] py-3 font-semibold border-b bg-gray-50 gap-1"
@@ -106,7 +106,7 @@ export default function FreeListPage() {
                 <div className="flex flex-col">
                   <div className="flex items-center gap-2">
                     <div
-                      className={`truncate cursor-pointer hover:underline`}
+                      className={`cursor-pointer hover:underline`}
                       style={{
                         color: isRead(item.boardNo) ? "#770088" : "black",
                       }}
@@ -122,7 +122,8 @@ export default function FreeListPage() {
                       }}
                     >
                       {!item.secret && item.hasFile && <span>📷</span>}
-                      {item.secret && "🔒"} <span className="">{item.title}</span>
+                      {item.secret && "🔒"}
+                      {item.title}
                       {item.replyCount > 0 && (
                         <span className="text-xs text-orange-600 ml-1">[{item.replyCount}]</span>
                       )}
@@ -170,7 +171,7 @@ export default function FreeListPage() {
                   )}
                 </div>
 
-                <div className="row-span-2 flex justify-center items-center truncate cursor-pointer hover:underline">
+                <div className="row-span-2 flex justify-center items-center cursor-pointer hover:underline">
                   <span onClick={() => handleSearch({ author: item.name })}>{item.name}</span>
                 </div>
 

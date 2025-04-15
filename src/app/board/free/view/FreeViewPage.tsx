@@ -86,7 +86,7 @@ export default function FreeViewPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-7xl mx-auto px-2 md:px-0">
       <Title level={3} className="text-base font-semibold mb-2">
         [{detail.category}] {detail.title}
       </Title>

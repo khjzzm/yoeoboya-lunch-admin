@@ -1,7 +1,9 @@
 "use client";
 
-import { Alert, Button, Form, Input, Radio } from "antd";
+import { Alert, Form, Input, Radio } from "antd";
 import { useEffect, useState } from "react";
+
+import Btn from "@/components/common/Btn";
 
 import { useRandomKoreanName } from "@/lib/hooks/useRandomKoreanName";
 import { useWithdraw } from "@/lib/queries";
@@ -179,9 +181,12 @@ export default function WithdrawNoticePage() {
             탈퇴 후에는 아이디 <strong>{user?.loginId}</strong>로 다시 가입할 수 없으며 <br />
             아이디와 데이터는 복구할 수 없습니다.
           </p>
-          <Button htmlType="submit" type="primary" loading={withdrawMutation.isPending}>
-            확인
-          </Button>
+          <Btn
+            htmlType="submit"
+            text={"탈퇴하기"}
+            visual={"danger"}
+            loading={withdrawMutation.isPending}
+          />
         </div>
       </Form>
     </div>

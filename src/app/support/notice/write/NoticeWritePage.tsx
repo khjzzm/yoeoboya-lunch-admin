@@ -87,7 +87,7 @@ export default function NoticeWritePage() {
   };
 
   return (
-    <div>
+    <div className="max-w-7xl mx-auto px-2 md:px-0">
       <h1 className="text-2xl font-bold mb-6">
         {" "}
         {editMode ? "✏️ 공지사항 수정" : "📌 공지사항 작성"}

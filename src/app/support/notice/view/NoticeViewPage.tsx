@@ -1,13 +1,13 @@
 "use client";
 
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import { Button, Card, Skeleton, Tag, Typography } from "antd";
+import { Card, Skeleton, Space, Tag, Typography } from "antd";
 import parse from "html-react-parser";
 import { useRouter } from "next/navigation";
 import React from "react";
 
 import { LikeButton } from "@/components/board/LikeButton";
 import ReplyComponent from "@/components/board/ReplyComponent";
+import Btn from "@/components/common/Btn";
 
 import { useQueryParamNumber } from "@/lib/hooks/useQueryParam";
 import {
@@ -55,7 +55,7 @@ export default function NoticeViewPage() {
   const status = statusMap[detail.status] ?? { label: "알 수 없음", color: "default" };
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-7xl mx-auto px-2 md:px-0">
       <Title level={2}>{detail.title}</Title>
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 text-sm text-gray-500">
         <div className="flex flex-col md:flex-row md:gap-4">
@@ -72,31 +72,24 @@ export default function NoticeViewPage() {
         <div className="prose max-w-none">{parse(detail.content)}</div>
       </Card>
 
-      <div className="mt-6 flex justify-between items-center">
-        <div className="flex items-center gap-4">
-          <LikeButton boardNo={boardNo} hasLiked={detail.hasLiked} service={likeService} />
-        </div>
-
+      <div className="mt-8 flex justify-between items-center border-t pt-6">
+        <LikeButton boardNo={boardNo} hasLiked={detail.hasLiked} service={likeService} />
         {isAdmin() && (
-          <div className="flex gap-2">
-            <Button
-              icon={<EditOutlined />}
+          <Space>
+            <Btn
+              text="수정"
               onClick={() => router.push(`/support/notice/write?boardNo=${detail.boardNo}`)}
-            >
-              수정
-            </Button>
-            <Button
-              danger
-              icon={<DeleteOutlined />}
+            />
+            <Btn
+              visual="danger"
+              text="삭제"
               onClick={() => {
                 if (confirm("정말 삭제하시겠습니까?")) {
                   deleteBoard();
                 }
               }}
-            >
-              삭제
-            </Button>
-          </div>
+            />
+          </Space>
         )}
       </div>
 

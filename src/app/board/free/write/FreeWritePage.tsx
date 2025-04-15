@@ -81,7 +81,7 @@ export default function FreeBoardWritePage() {
   };
 
   return (
-    <div>
+    <div className="max-w-7xl mx-auto px-2 md:px-0">
       <Title level={3} className="text-center">
         {editMode ? "✏️ 게시글 수정" : "📝 자유게시판 글쓰기"}
       </Title>

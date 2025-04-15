@@ -25,6 +25,5 @@ export function useRandomKoreanName() {
       cancelled = true;
     };
   }, []);
-  console.log(randomName);
   return randomName;
 }

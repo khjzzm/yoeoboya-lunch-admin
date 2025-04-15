@@ -1,12 +1,13 @@
 "use client";
 
-import { Button, List, Pagination, Tag } from "antd";
+import { List, Pagination, Tag } from "antd";
 import dayjs from "dayjs";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useMemo } from "react";
 
 import { BoardSearchCondition, BoardSearchOptions, BoardSearchType, NoticeResponse } from "@/types";
 
+import Btn from "@/components/common/Btn";
 import SearchFilters from "@/components/filters/SearchFilters";
 
 import { usePaginationQuerySync } from "@/lib/hooks/usePaginationQuerySync";
@@ -44,14 +45,10 @@ export default function NoticeListPage() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-2 md:px-0">
+    <div className="max-w-7xl mx-auto px-2 md:px-0">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
         <SearchFilters onSearch={handleSearch} filterOptions={BoardSearchOptions} />
-        {isManager() && (
-          <Button type="primary" onClick={() => router.push("/support/notice/write")}>
-            글쓰기
-          </Button>
-        )}
+        {isManager() && <Btn text="글쓰기" onClick={() => router.push("/support/notice/write")} />}
       </div>
 
       {/*  상단 헤더 */}
