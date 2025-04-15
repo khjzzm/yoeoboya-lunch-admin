@@ -100,11 +100,7 @@ export default function NoticeViewPage() {
         )}
       </div>
 
-      <ReplyComponent
-        boardNo={boardNo}
-        service={replyService}
-        writtenByWithdrawnMember={detail.writtenByWithdrawnMember}
-      />
+      <ReplyComponent boardNo={boardNo} service={replyService} />
     </div>
   );
 }

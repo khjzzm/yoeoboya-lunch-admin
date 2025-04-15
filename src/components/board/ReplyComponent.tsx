@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 
 import { Pagination, Reply, ReplyCreateRequest } from "@/types";
 
+import Btn from "@/components/common/Btn";
+
 import { useAuthStore } from "@/store/useAuthStore";
 
 const { Text, Title } = Typography;
@@ -25,13 +27,13 @@ interface ReplyService {
 interface ReplyComponentProps {
   boardNo: number;
   service: ReplyService;
-  writtenByWithdrawnMember: boolean; // 🔽 추가된 prop
+  writtenByWithdrawnMember?: boolean;
 }
 
 export default function ReplyComponent({
   boardNo,
   service,
-  writtenByWithdrawnMember,
+  writtenByWithdrawnMember = false,
 }: ReplyComponentProps) {
   const { user } = useAuthStore();
   const [comment, setComment] = useState("");
@@ -159,13 +161,12 @@ export default function ReplyComponent({
                       }
                     />
                     <div className="flex justify-end mt-2">
-                      <Button
+                      <Btn
+                        text={"등록"}
                         size="small"
                         type="primary"
                         onClick={() => handleCommentSubmit(parent.replyInput, parent.replyId)}
-                      >
-                        답글 등록
-                      </Button>
+                      />
                     </div>
                   </div>
                 )}
@@ -191,9 +192,7 @@ export default function ReplyComponent({
             onChange={(e) => setComment(e.target.value)}
           />
           <div className="flex justify-end mt-2">
-            <Button type="primary" onClick={() => handleCommentSubmit(comment)}>
-              댓글 등록
-            </Button>
+            <Btn text={"등록"} size="small" onClick={() => handleCommentSubmit(comment)} />
           </div>
         </div>
       )}

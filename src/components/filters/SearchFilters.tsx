@@ -1,7 +1,9 @@
-import { Button, Select, Space } from "antd";
+import { Select, Space } from "antd";
 import { useState } from "react";
 
 import { SearchFilterOption } from "@/types";
+
+import Btn from "@/components/common/Btn";
 
 import CheckboxFilterField from "./fields/CheckboxFilterField";
 import RadioFilterField from "./fields/RadioFilterField";
@@ -75,9 +77,7 @@ export default function SearchFilters({ onSearch, filterOptions }: FilterProps) 
           style={{ minWidth: 120 }}
         />
         {renderInputField()}
-        <Button type="primary" onClick={handleSearch}>
-          검색
-        </Button>
+        <Btn text={"검색"} onClick={handleSearch} />
       </Space>
     </Space>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Form, Input, Space, Typography } from "antd";
+import { Form, Input, Space, Typography } from "antd";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -10,6 +10,7 @@ import CategorySelect from "@/components/board/CategorySelect";
 import HashtagSelect from "@/components/board/HashtagSelect";
 import SecretToggle from "@/components/board/SecretToggle";
 import TiptapEditor from "@/components/board/TiptapEditor";
+import Btn from "@/components/common/Btn";
 
 import { useQueryParamNumber } from "@/lib/hooks/useQueryParam";
 import {
@@ -112,10 +113,8 @@ export default function FreeBoardWritePage() {
 
         <div className="flex justify-end mt-4">
           <Space>
-            <Button onClick={() => router.push("/board/free")}>취소</Button>
-            <Button type="primary" htmlType="submit">
-              {editMode ? "수정" : "등록"}
-            </Button>
+            <Btn visual="outline" text="취소" onClick={() => router.push("/board/free")} />
+            <Btn text={`${editMode ? "수정" : "등록"}`} htmlType={"submit"} />
           </Space>
         </div>
       </Form>

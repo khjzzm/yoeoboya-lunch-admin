@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Input, List, Pagination } from "antd";
+import { Input, List, Pagination } from "antd";
 import dayjs from "dayjs";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
@@ -12,6 +12,7 @@ import {
   FreeBoardResponse,
 } from "@/types";
 
+import Btn from "@/components/common/Btn";
 import SearchFilters from "@/components/filters/SearchFilters";
 
 import { usePaginationQuerySync } from "@/lib/hooks/usePaginationQuerySync";
@@ -63,13 +64,6 @@ export default function FreeListPage() {
 
   return (
     <div className="max-w-5xl mx-auto px-2 md:px-0 text-sm">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
-        <SearchFilters onSearch={handleSearch} filterOptions={BoardSearchOptions} />
-        <Button type="primary" onClick={() => router.push("/board/free/write")}>
-          글쓰기
-        </Button>
-      </div>
-
       {/*  상단 헤더 */}
       <div
         className="grid grid-cols-[50px_80px_1fr_100px_100px_60px_60px] py-3 font-semibold border-b bg-gray-50 gap-1"
@@ -149,14 +143,13 @@ export default function FreeListPage() {
                             onChange={(e) => setPassword(e.target.value)}
                             onPressEnter={() => handleVerifyAndNavigate(item.boardNo)}
                           />
-                          <Button
+                          <Btn
+                            text={"확인"}
                             size="small"
                             type="primary"
                             onClick={() => handleVerifyAndNavigate(item.boardNo)}
                             disabled={isPending}
-                          >
-                            확인
-                          </Button>
+                          />
                         </Input.Group>
                       </div>
                     )}
@@ -194,7 +187,15 @@ export default function FreeListPage() {
         }}
       />
 
-      <div className="flex justify-center mt-6">
+      <div className="flex items-center justify-between my-4">
+        <div className="flex gap-2">
+          <Btn text="전체글" onClick={() => router.push("/board/free")} />
+          <Btn visual={"outline"} text="개념글" />
+        </div>
+        <Btn text="글쓰기" onClick={() => router.push("/board/free/write")} />
+      </div>
+
+      <div className="flex justify-center my-4">
         <Pagination
           current={page}
           pageSize={pageSize}
@@ -206,6 +207,10 @@ export default function FreeListPage() {
           pageSizeOptions={["20", "30", "50"]}
           locale={{ items_per_page: "개" }}
         />
+      </div>
+
+      <div className="flex justify-center">
+        <SearchFilters onSearch={handleSearch} filterOptions={BoardSearchOptions} />
       </div>
     </div>
   );

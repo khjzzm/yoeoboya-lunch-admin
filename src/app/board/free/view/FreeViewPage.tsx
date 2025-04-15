@@ -1,7 +1,7 @@
 "use client";
 
-import { DeleteOutlined, EditOutlined, LockOutlined } from "@ant-design/icons";
-import { Button, Input, Skeleton, Space, Typography } from "antd";
+import { LockOutlined } from "@ant-design/icons";
+import { Input, Skeleton, Space, Typography } from "antd";
 import dayjs from "dayjs";
 import parse from "html-react-parser";
 import { useRouter } from "next/navigation";
@@ -10,6 +10,7 @@ import React, { useState } from "react";
 import HashtagList from "@/components/board/HashtagList";
 import { LikeButton } from "@/components/board/LikeButton";
 import ReplyComponent from "@/components/board/ReplyComponent";
+import Btn from "@/components/common/Btn";
 
 import { useQueryParamNumber, useQueryParamString } from "@/lib/hooks/useQueryParam";
 import {
@@ -67,9 +68,7 @@ export default function FreeViewPage() {
           onPressEnter={handlePinCheck}
           style={{ width: 200, marginBottom: 12 }}
         />
-        <Button type="primary" onClick={handlePinCheck}>
-          확인
-        </Button>
+        <Btn text={"확인"} type="primary" onClick={handlePinCheck} />
       </div>
     );
   }
@@ -127,23 +126,19 @@ export default function FreeViewPage() {
         <LikeButton boardNo={boardNo} hasLiked={detail.hasLiked} service={likeService} />
         {(isAdmin() || detail.mine) && (
           <Space>
-            <Button
-              icon={<EditOutlined />}
+            <Btn
+              text="수정"
               onClick={() => router.push(`/board/free/write?boardNo=${detail.boardNo}`)}
-            >
-              수정
-            </Button>
-            <Button
-              danger
-              icon={<DeleteOutlined />}
+            />
+            <Btn
+              visual="danger"
+              text="삭제"
               onClick={() => {
                 if (confirm("정말 삭제하시겠습니까?")) {
                   deleteBoard();
                 }
               }}
-            >
-              삭제
-            </Button>
+            />
           </Space>
         )}
       </div>

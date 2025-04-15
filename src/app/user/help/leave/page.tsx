@@ -3,8 +3,6 @@
 import { Alert, Button, Form, Input, Radio } from "antd";
 import { useEffect, useState } from "react";
 
-import { WithdrawRequest } from "@/types";
-
 import { useRandomKoreanName } from "@/lib/hooks/useRandomKoreanName";
 import { useWithdraw } from "@/lib/queries";
 import { apiErrorMessage, applyApiValidationErrors } from "@/lib/utils/apiErrorMessage";

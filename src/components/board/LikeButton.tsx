@@ -1,7 +1,8 @@
 import { LikeFilled, LikeOutlined } from "@ant-design/icons";
 import { UseMutationResult } from "@tanstack/react-query";
-import { Button } from "antd";
 import React from "react";
+
+import Btn from "@/components/common/Btn";
 
 /** 외부에서 주입받는 댓글 서비스 인터페이스 */
 interface LikeService {
@@ -21,12 +22,11 @@ export function LikeButton({ boardNo, hasLiked, service }: LikeButtonProps) {
   const handleLike = () => (hasLiked ? unlike : like)();
 
   return (
-    <Button
-      type={hasLiked ? "primary" : "default"}
-      icon={hasLiked ? <LikeFilled /> : <LikeOutlined></LikeOutlined>}
+    <Btn
+      text="좋아요"
+      visual={hasLiked ? "primary" : "outline"}
+      icon={hasLiked ? <LikeFilled /> : <LikeOutlined />}
       onClick={handleLike}
-    >
-      좋아요
-    </Button>
+    />
   );
 }
