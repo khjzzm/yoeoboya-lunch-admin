@@ -13,6 +13,7 @@ export * from "./board/base/useSecret";
 export * from "./board/base/useFile";
 
 export * from "./board/useFreeBoard";
+export * from "./board/useAnonymousBoard";
 
 export * from "./me/useMe";
 export * from "./me/useMembers";

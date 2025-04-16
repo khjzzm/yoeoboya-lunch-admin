@@ -4,6 +4,7 @@ export * from "./auth/UserAuth";
 export * from "./auth/Security";
 export * from "./board/Reply";
 export * from "./board/Free";
+export * from "./board/Anonymous";
 export * from "./board/HashTag";
 export * from "./board/BoardSearchCondition";
 export * from "./board/Category";
