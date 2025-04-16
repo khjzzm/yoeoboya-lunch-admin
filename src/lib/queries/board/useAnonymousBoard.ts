@@ -18,6 +18,7 @@ import {
   SlicePagination,
 } from "@/types";
 
+import { useLike } from "@/lib/queries";
 import { api } from "@/lib/utils/api";
 import { apiErrorMessage } from "@/lib/utils/apiErrorMessage";
 import { getOrCreateAnonymousUUID } from "@/lib/utils/uuid";
@@ -84,7 +85,8 @@ export function useHandleAnonymousNewPostClick(
 }
 
 // 최신글 감지
-export function useDetectNewAnonymousPost(clientUUID: string) {
+export function useDetectNewAnonymousPost() {
+  const uuid = getOrCreateAnonymousUUID();
   const [hasNewPost, setHasNewPost] = useState(false);
 
   useEffect(() => {
@@ -94,7 +96,7 @@ export function useDetectNewAnonymousPost(clientUUID: string) {
       try {
         const { data } = await api.get<ApiResponse<boolean>>("/board/anonymous/has-new-detect", {
           headers: {
-            "X-Anonymous-UUID": clientUUID,
+            "X-Anonymous-UUID": uuid,
           },
         });
 
@@ -107,7 +109,7 @@ export function useDetectNewAnonymousPost(clientUUID: string) {
     }, 10000);
 
     return () => clearInterval(interval);
-  }, [hasNewPost, clientUUID]);
+  }, [hasNewPost, uuid]);
 
   const clear = () => setHasNewPost(false);
   return { hasNewPost, clear };
@@ -229,17 +231,76 @@ export function useDeleteAnonymousBoard() {
 }
 
 // 익명 게시글 신고
+
 export function useReportAnonymousBoard() {
+  const queryClient = useQueryClient();
+  const clientUUID = getOrCreateAnonymousUUID();
+
   return useMutation({
     mutationFn: async (payload: AnonymousBoardReport) => {
-      const { data } = await api.post(`/board/anonymous/report`, payload);
-      return data;
+      const { data } = await api.post(`/board/anonymous/report`, payload, {
+        headers: {
+          "X-Anonymous-UUID": clientUUID,
+        },
+      });
+      return { ...payload, response: data };
     },
-    onSuccess: () => {
+    onSuccess: (reported) => {
       message.success("게시글이 신고되었습니다.");
+
+      const reportedId = reported.boardId;
+
+      queryClient.setQueryData<InfiniteData<AnonymousBoardPage>>(["anonymousBoards"], (old) => {
+        if (!old) return old;
+
+        const updatedPages = old.pages.map((page) => ({
+          ...page,
+          list: page.list.map((post) =>
+            post.boardId === reportedId ? { ...post, reportCount: post.reportCount + 1 } : post,
+          ),
+        }));
+
+        return {
+          ...old,
+          pages: updatedPages,
+        };
+      });
     },
     onError: (error) => {
       apiErrorMessage(error);
     },
   });
 }
+
+// 익명 게시판 좋아요 훅
+export const useLikeAnonymousBoard = (boardId: number) => {
+  const queryClient = useQueryClient();
+
+  return useLike("/board/anonymous", "anonymous", boardId, true, () => {
+    // 1. 상세 뷰 업데이트
+    queryClient.setQueryData<AnonymousBoardResponse>(["anonymousDetail", boardId], (old) => {
+      if (!old) return old;
+      return {
+        ...old,
+        likeCount: old.likeCount + 1,
+      };
+    });
+
+    // 2. 목록 뷰 업데이트
+    queryClient.setQueryData<InfiniteData<AnonymousBoardPage>>(["anonymousBoards"], (old) => {
+      if (!old) return old;
+
+      const updatedPages = old.pages.map((page) => ({
+        ...page,
+        list: page.list.map((post) =>
+          post.boardId === boardId ? { ...post, likeCount: post.likeCount + 1 } : post,
+        ),
+      }));
+
+      return {
+        ...old,
+        pages: updatedPages,
+      };
+    });
+  });
+};

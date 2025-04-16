@@ -42,10 +42,6 @@ export function useLogin() {
         message.error("사용자 정보를 불러오지 못했습니다.");
       }
     },
-    onError: (error: unknown) => {
-      console.error("로그인 실패", error);
-      message.error("로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.");
-    },
   });
 }
 

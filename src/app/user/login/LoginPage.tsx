@@ -16,7 +16,7 @@ import { apiErrorMessage, applyApiValidationErrors } from "@/lib/utils/apiErrorM
 const { Text } = Typography;
 export default function LoginPage() {
   const [form] = Form.useForm();
-  const login = useLogin();
+  const { mutate: login, isPending } = useLogin();
   const router = useRouter();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -28,7 +28,7 @@ export default function LoginPage() {
   }, [messageFromSocial]);
 
   const handleLogin = (values: { loginId: string; password: string }) => {
-    login.mutate(values, {
+    login(values, {
       onError: (error) => {
         if (applyApiValidationErrors(error, form)) return;
         const returnedError = apiErrorMessage(error, false);
@@ -84,9 +84,9 @@ export default function LoginPage() {
               htmlType="submit"
               size="large"
               className="w-full h-12 sm:h-14"
-              loading={login.isPending}
+              loading={isPending}
             >
-              {login.isPending ? "로그인 중..." : "로그인"}
+              {isPending ? "로그인 중..." : "로그인"}
             </Button>
           </Form.Item>
         </Form>

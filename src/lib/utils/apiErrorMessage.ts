@@ -14,10 +14,18 @@ export const apiErrorMessage = (
 ): string | undefined => {
   if (typeof error === "object" && error !== null && "response" in error) {
     const axiosError = error as { response?: { data?: ApiResponse<ValidationError> } };
-    const errorMessage = axiosError.response?.data?.message || "오류 발생. 다시 시도하세요.";
-    if (showMessage) {
-      message.error(errorMessage);
+    const responseData = axiosError.response?.data;
+
+    const errorMessage = responseData?.message || "오류 발생. 다시 시도하세요.";
+    const detail = responseData?.detail;
+
+    // code가 200대가 아니면 오류로 간주
+    const isErrorCode = responseData?.code && responseData.code >= 400;
+
+    if (showMessage && isErrorCode) {
+      message.error(detail || errorMessage);
     }
+
     return errorMessage;
   }
 };

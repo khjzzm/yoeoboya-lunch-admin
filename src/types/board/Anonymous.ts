@@ -4,7 +4,7 @@ export interface AnonymousBoardCreate {
   nickname: string;
   content: string;
   password: string;
-  clientUUID: string;
+  clientUUID?: string;
   deleteAt?: string; // ISO 문자열 또는 LocalDateTime 기준 (nullable)
 }
 
@@ -28,11 +28,11 @@ export interface AnonymousBoardResponse {
   boardId: number;
   title: string;
   content: string;
-  viewCount: number;
+  likeCount: number;
+  reportCount: number;
   createdDate: string;
   nickname: string;
   deleteAt?: string;
-  reportCount: number;
-  writtenByMe: boolean; // 같은 IP 기반 식별 여부
   clientUUID: string;
+  remainingTime: string;
 }
