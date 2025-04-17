@@ -181,7 +181,7 @@ export default function FreeListPage() {
                 </div>
 
                 <div className="row-span-2 flex justify-center items-center">
-                  {dayjs(item.createdDate).format("HH:mm")}
+                  {dayjs(item.createdDate).format("MM.DD HH:mm")}
                 </div>
 
                 <div className="row-span-2 flex justify-center items-center">{item.viewCount}</div>

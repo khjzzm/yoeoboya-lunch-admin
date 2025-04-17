@@ -4,6 +4,7 @@ import { message } from "antd";
 import { ApiResponse, Category, CategoryCreateRequest, CategoryEditRequest } from "@/types";
 
 import { api } from "@/lib/utils/api";
+import { apiErrorMessage } from "@/lib/utils/apiErrorMessage";
 
 export function useCategories(boardType: string) {
   return useQuery<Category[]>({
@@ -25,6 +26,9 @@ export const useCreateCategory = (onSuccess?: () => void) =>
       message.success("생성 완료");
       onSuccess?.();
     },
+    onError: (error) => {
+      apiErrorMessage(error);
+    },
   });
 
 export const useUpdateCategory = (onSuccess?: () => void) =>
@@ -37,6 +41,9 @@ export const useUpdateCategory = (onSuccess?: () => void) =>
       message.success("수정 완료");
       onSuccess?.();
     },
+    onError: (error) => {
+      apiErrorMessage(error);
+    },
   });
 
 export const useDeleteCategory = (onSuccess?: () => void) =>
@@ -48,5 +55,8 @@ export const useDeleteCategory = (onSuccess?: () => void) =>
     onSuccess: () => {
       message.success("삭제 완료");
       onSuccess?.();
+    },
+    onError: (error) => {
+      apiErrorMessage(error);
     },
   });
