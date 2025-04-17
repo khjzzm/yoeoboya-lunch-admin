@@ -36,7 +36,7 @@ export default function Page() {
       <NewPostBanner visible={hasNewPost} onClick={handleNewPostClick} />
 
       {/* 게시글 작성 */}
-      <AnonymousWrite />
+      <AnonymousWrite clear={clear} />
 
       {/* 게시글 목록 */}
       {posts.map((post, index) => (

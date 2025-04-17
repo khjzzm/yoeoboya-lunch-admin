@@ -1,7 +1,7 @@
 import { MoreOutlined } from "@ant-design/icons";
 import { Button, Dropdown, Input, MenuProps, message } from "antd";
 import dayjs from "dayjs";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { AnonymousBoardResponse } from "@/types";
 
@@ -13,15 +13,18 @@ import {
   useReportAnonymousBoard,
 } from "@/lib/queries";
 
+import { useAnonymousStore } from "@/store/anonymousStore";
+
 interface Props {
   post: AnonymousBoardResponse;
   inViewRef?: (node?: Element | null) => void;
 }
 
 function AnonymousPost({ post, inViewRef }: Props) {
+  const { setContentToWrite } = useAnonymousStore();
+
   const [showDeleteInput, setShowDeleteInput] = useState(false);
   const [deletePassword, setDeletePassword] = useState("");
-
   const [showReportInput, setShowReportInput] = useState(false);
   const [reportReason, setReportReason] = useState("");
 
@@ -58,22 +61,45 @@ function AnonymousPost({ post, inViewRef }: Props) {
     },
   ];
 
+  const deleteRef = useRef<HTMLDivElement>(null);
+  const reportRef = useRef<HTMLDivElement>(null);
+
+  // 외부 클릭 시 닫기
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (showDeleteInput && deleteRef.current && !deleteRef.current.contains(e.target as Node)) {
+        setShowDeleteInput(false);
+      }
+
+      if (showReportInput && reportRef.current && !reportRef.current.contains(e.target as Node)) {
+        setShowReportInput(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showDeleteInput, showReportInput]);
+
   return (
-    <div ref={inViewRef} className="p-4">
+    <div ref={inViewRef} className="p-4 border-b hover:bg-gray-50 transition-colors duration-200">
       {/* 글번호 / 작성자 / 시간 / 삭제 시간 / 메뉴 */}
       <div className="text-xs text-gray-500 mb-2 flex justify-between items-center">
         <div>
           <button
             onClick={() => {
               navigator.clipboard.writeText(`#${post.boardId}`);
+              setContentToWrite(`#${post.boardId}`);
             }}
             className="hover:underline hover:text-blue-500 transition-all"
-            title="클릭 시 복사"
+            title="클릭 시 복사 및 인용 작성"
           >
             #{post.boardId}
           </button>{" "}
-          | {!post.nickname ? "익명" : post.nickname} |{" "}
-          {dayjs(post.createdDate).format("MM.DD HH:mm:ss")}
+          |{" "}
+          <span className={post.nickname ? "text-gray-800 font-medium" : ""}>
+            {post.nickname || "익명"}
+          </span>{" "}
+          | {dayjs(post.createdDate).format("MM.DD HH:mm")}
           {post.remainingTime && (
             <>
               {" "}
@@ -85,7 +111,6 @@ function AnonymousPost({ post, inViewRef }: Props) {
           <Button type="text" icon={<MoreOutlined />} />
         </Dropdown>
       </div>
-
       {/* 내용 */}
       <div className="whitespace-pre-wrap break-words text-gray-800 mb-2">{post.content}</div>
 
@@ -104,7 +129,7 @@ function AnonymousPost({ post, inViewRef }: Props) {
 
       {/* 신고 입력 */}
       {showReportInput && (
-        <div className="mt-3 flex gap-2 items-center">
+        <div ref={reportRef} className="mt-3 flex gap-2 items-center">
           <Input
             size="small"
             placeholder="신고 사유를 입력해주세요"
@@ -118,7 +143,7 @@ function AnonymousPost({ post, inViewRef }: Props) {
 
       {/* 삭제 입력 */}
       {showDeleteInput && (
-        <div className="mt-3 flex gap-2 items-center">
+        <div ref={deleteRef} className="mt-3 flex gap-2 items-center">
           <Input.Password
             size="small"
             placeholder="비밀번호 입력"

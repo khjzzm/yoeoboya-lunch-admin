@@ -19,7 +19,7 @@ export function useLike(
     mutationFn: async () => {
       const { data } = await api.post(`${endpoint}/like`, null, {
         params: { boardNo },
-        headers: useAnonymousHeader ? { "X-Anonymous-UUID": clientUUID } : undefined,
+        headers: useAnonymousHeader ? { "X-Anonymous-Client-UUID": clientUUID } : undefined,
       });
       return data;
     },

@@ -39,7 +39,7 @@ export function useInfiniteAnonymousBoards(pageSize: number) {
         ApiResponse<{ list: AnonymousBoardResponse[]; pagination: SlicePagination }>
       >(`/board/anonymous?${params.toString()}`, {
         headers: {
-          "X-Anonymous-UUID": uuid,
+          "X-Anonymous-Client-UUID": uuid,
         },
       });
 
@@ -96,7 +96,7 @@ export function useDetectNewAnonymousPost() {
       try {
         const { data } = await api.get<ApiResponse<boolean>>("/board/anonymous/has-new-detect", {
           headers: {
-            "X-Anonymous-UUID": uuid,
+            "X-Anonymous-Client-UUID": uuid,
           },
         });
 
@@ -121,7 +121,7 @@ export function useSyncLatestAnonymousPost() {
     mutationFn: async (clientUUID: string) => {
       await api.post("/board/anonymous/latest-sync", null, {
         headers: {
-          "X-Anonymous-UUID": clientUUID,
+          "X-Anonymous-Client-UUID": clientUUID,
         },
       });
     },
@@ -240,7 +240,7 @@ export function useReportAnonymousBoard() {
     mutationFn: async (payload: AnonymousBoardReport) => {
       const { data } = await api.post(`/board/anonymous/report`, payload, {
         headers: {
-          "X-Anonymous-UUID": clientUUID,
+          "X-Anonymous-Client-UUID": clientUUID,
         },
       });
       return { ...payload, response: data };
