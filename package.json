@@ -22,7 +22,7 @@
     "@tiptap/starter-kit": "^2.11.5",
     "@typescript-eslint/parser": "^8.29.0",
     "antd": "^5.11.3-alpha.0",
-    "axios": "^1.8.1",
+    "axios": "^1.13.5",
     "clsx": "^2.1.1",
     "html-react-parser": "^5.2.2",
     "js-cookie": "^3.0.5",
